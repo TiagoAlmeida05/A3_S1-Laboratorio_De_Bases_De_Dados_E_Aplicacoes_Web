@@ -15,6 +15,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     // Disable default created_at and updated_at timestamps for this model.
+    protected $table = 'registered_user';
     public $timestamps  = false;
 
     /**
