@@ -2,16 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\CardController;
 use App\Http\Controllers\ItemController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
 
+use App\Http\Controllers\JobPostingController;
+
 // Home
 Route::redirect('/', '/login');
 
+/*
 // Cards (authentication required)
 Route::middleware('auth')->controller(CardController::class)->group(function () {
     Route::get('/cards', 'index')->name('cards.index');
@@ -24,6 +26,7 @@ Route::middleware('auth')->controller(CardController::class)->group(function () 
     Route::post('/api/cards', 'store');              // create card
     Route::delete('/api/cards/{card}', 'destroy');   // delete card
 });
+*/
 
 Route::middleware('auth')->controller(ItemController::class)->group(function () {
     Route::post('/api/cards/{card}/items', 'store'); // add item to card
@@ -45,4 +48,10 @@ Route::controller(LogoutController::class)->group(function () {
 Route::controller(RegisterController::class)->group(function () {
     Route::get('/register', 'showRegistrationForm')->name('register');
     Route::post('/register', 'register');
+});
+
+// JobPosting (authentication required) ---> based on Cards!!
+Route::middleware('auth')->controller(JobPostingController::class)->group(function () {
+    Route::get('/job_postings', 'index')->name('job_postings.index');
+    Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
 });

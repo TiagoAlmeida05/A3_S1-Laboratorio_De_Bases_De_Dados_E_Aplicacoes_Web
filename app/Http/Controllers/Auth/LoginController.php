@@ -20,7 +20,7 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('cards.index');
+            return redirect()->route('job_postings.index');
         } else {
             return view('auth.login');
         }
@@ -47,7 +47,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
  
             // Redirect the user to their intended destination (default: /cards).
-            return redirect()->intended(route('cards.index'));
+            return redirect()->intended(route('job_postings.index'));
         }
  
         // Authentication failed: return back with an error message.

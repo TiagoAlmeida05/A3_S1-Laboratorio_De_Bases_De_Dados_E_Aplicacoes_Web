@@ -63,8 +63,8 @@ class User extends Authenticatable
      * Defines a one-to-many relationship:
      * a user can have multiple cards.
      */
-    public function cards(): HasMany
+    /* public function cards(): HasMany
     {
         return $this->hasMany(Card::class);
-    }
+    } */
 }
