@@ -714,7 +714,7 @@ VALUES
 
 INSERT INTO registered_user (name, email, password, birthday, age, status)
 VALUES
-('Alice Silva', 'alice@hireup.com', 'hashedpwd1', '1990-04-10', 34, 'Active'),
+('Alice Silva', 'alice@hireup.com', '$2y$12$s.HHpvgpxU5ZHLpR5d5Hdu6nHDVZdwQMnyfJevRJzrjqGuPBQOt0e', '1990-04-10', 34, 'Active'),
 ('Bruno Costa', 'bruno@hireup.com', 'hashedpwd2', '1988-07-21', 36, 'Active'),
 ('Carla Mendes', 'carla@hireup.com', 'hashedpwd3', '1998-02-15', 27, 'Active'),
 ('David Sousa', 'david@hireup.com', 'hashedpwd4', '1997-09-11', 28, 'Active'),
