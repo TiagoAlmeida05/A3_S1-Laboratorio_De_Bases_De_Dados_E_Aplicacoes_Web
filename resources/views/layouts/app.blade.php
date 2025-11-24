@@ -25,6 +25,8 @@
 
                 @auth
                     <a class="button" href="{{ url('/logout') }}"> Logout </a> <span>{{ Auth::user()->name }}</span>
+                @else
+                    <a class="button" href="{{ url('/login') }}">Login</a>
                 @endauth
             </header>
 

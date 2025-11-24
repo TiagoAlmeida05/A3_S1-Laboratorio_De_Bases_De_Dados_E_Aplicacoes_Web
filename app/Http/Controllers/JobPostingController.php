@@ -20,11 +20,11 @@ class JobPostingController extends Controller {
     }
 
     public function index() {
-        Gate::authorize('viewAny', JobPosting::class);
         $jobPostings = JobPosting::with('city')->orderBy('id')->get();
 
         return view('pages.job_postings', [
             'job_postings' => $jobPostings
         ]);
     }
+
 }

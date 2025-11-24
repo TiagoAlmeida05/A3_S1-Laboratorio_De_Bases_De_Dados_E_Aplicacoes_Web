@@ -12,9 +12,12 @@ use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\JobSeekerController;
 
 // Home
-Route::redirect('/', '/login');
+Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
-/*
+Route::get('/job_postings', function() {
+    return redirect('/');
+});
+
 // Cards (authentication required)
 Route::middleware('auth')->controller(CardController::class)->group(function () {
     Route::get('/cards', 'index')->name('cards.index');
@@ -27,7 +30,6 @@ Route::middleware('auth')->controller(CardController::class)->group(function () 
     Route::post('/api/cards', 'store');              // create card
     Route::delete('/api/cards/{card}', 'destroy');   // delete card
 });
-*/
 
 Route::middleware('auth')->controller(ItemController::class)->group(function () {
     Route::post('/api/cards/{card}/items', 'store'); // add item to card
