@@ -42,7 +42,8 @@ Route::controller(LoginController::class)->group(function () {
 });
 
 Route::controller(LogoutController::class)->group(function () {
-    Route::get('/logout', 'logout')->name('logout');
+    Route::post('/logout', 'logout')->name('logout');
+    Route::get('/logout', 'logout');
 });
 
 Route::controller(RegisterController::class)->group(function () {
@@ -57,7 +58,7 @@ Route::middleware('auth')->controller(JobPostingController::class)->group(functi
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs');
-    Route::get('/admin/content', [AdminController::class, 'manageContent'])->name('admin.content');
-    Route::get('/admin/pages', [AdminController::class, 'editPages'])->name('admin.pages');
+    Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs'); 
+    Route::patch('/admin/jobs/{id}/approve', [AdminController::class, 'approveJob'])->name('admin.jobs.approve');
+    Route::delete('/admin/jobs/{id}', [AdminController::class, 'deleteJob'])->name('admin.jobs.delete');
 });

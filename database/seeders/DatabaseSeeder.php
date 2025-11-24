@@ -2,45 +2,34 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash; // Importante para a password
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
+    /**
+     * Runs database/thingy-seed.sql as-is.
+     * The SQL reads current_setting('app.schema', true) and defaults to 'thingy'.
+     */
     public function run(): void
     {
-        // 1. Criar o SUPER ADMIN (Para tu usares)
-        User::factory()->create([
-            'name' => 'Super Admin',
-            'email' => 'admin@hireup.pt',
-            'password' => Hash::make('12345678'), // A tua password de testes
-            'type' => 'ADM',      // O tal tipo novo que criámos
-            'is_blocked' => false,
-        ]);
+        // Get schema name from environment (e.g., .env or .env.testing)
+        $schema = env('DB_SCHEMA');
 
-        // 2. Criar um RECRUTADOR de teste
-        User::factory()->create([
-            'name' => 'Recrutador Exemplo',
-            'email' => 'recruiter@company.com',
-            'password' => Hash::make('12345678'),
-            'type' => 'RCR',
-        ]);
+        // Load the raw SQL file
+        $path = base_path('database/hire-up-seed.sql');
+        $sql = file_get_contents($path);
 
-        // 3. Criar um CANDIDATO (Job Seeker) de teste
-        User::factory()->create([
-            'name' => 'Candidato Exemplo',
-            'email' => 'seeker@email.com',
-            'password' => Hash::make('12345678'),
-            'type' => 'JSK',
-        ]);
+        // If DB_SCHEMA is set, expose it to the SQL script
+        // (the script reads it via current_setting('app.schema', true))
+        if ($schema !== null) {
+            DB::statement("SELECT set_config('app.schema', ?, false)", [$schema]);
+        }
 
-        // 4. Criar 10 utilizadores aleatórios (para encher chouriços)
-        User::factory(10)->create([
-            'type' => 'JSK' // Cria 10 candidatos aleatórios
-        ]);
-        
-        echo "Base de dados populada com sucesso! \n";
-        echo "Admin Login: admin@hireup.pt / 12345678 \n";
+        // Run the SQL script
+        DB::unprepared($sql);
+
+        // Show a message in the Artisan console
+        $this->command?->info('Database seeded using schema: ' . ($schema ?? 'thingy (default)'));
     }
 }

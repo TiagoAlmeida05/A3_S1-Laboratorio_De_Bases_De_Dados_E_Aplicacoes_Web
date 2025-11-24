@@ -13,13 +13,16 @@ class AdminController extends Controller
         return view('admin.jobs', ['jobs' => $jobs]);
     }
 
-    // US57: Gerir Conteúdo
-    public function manageContent() {
-        return "Olá Admin! Aqui vais ver denúncias e apagar conteúdo (US57).";
+    public function approveJob($id) {
+        $job = JobPosting::findOrFail($id);
+        $job->status = 'Active';
+        $job->save();
+        return redirect()->route('admin.jobs')->with('success', 'Oferta aprovada!');
     }
 
-    // US58: Editar Páginas Estáticas
-    public function editPages() {
-        return "Olá Admin! Aqui vais editar o 'Sobre Nós' (US58).";
+    public function deleteJob($id) {
+        $job = JobPosting::findOrFail($id);
+        $job->delete();
+        return redirect()->route('admin.jobs')->with('success', 'Oferta removida!');
     }
 }
