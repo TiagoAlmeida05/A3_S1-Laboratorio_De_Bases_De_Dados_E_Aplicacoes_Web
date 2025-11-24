@@ -7,8 +7,8 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
-
 use App\Http\Controllers\JobPostingController;
+use App\Http\Controllers\AdminController;
 
 // Home
 Route::redirect('/', '/login');
@@ -54,4 +54,10 @@ Route::controller(RegisterController::class)->group(function () {
 Route::middleware('auth')->controller(JobPostingController::class)->group(function () {
     Route::get('/job_postings', 'index')->name('job_postings.index');
     Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
+});
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs');
+    Route::get('/admin/content', [AdminController::class, 'manageContent'])->name('admin.content');
+    Route::get('/admin/pages', [AdminController::class, 'editPages'])->name('admin.pages');
 });

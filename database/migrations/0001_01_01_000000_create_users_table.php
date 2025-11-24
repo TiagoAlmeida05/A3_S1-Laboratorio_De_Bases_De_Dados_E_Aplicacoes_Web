@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('type', ['JSK', 'RCR', 'MNG', 'ADM'])->default('JSK');
+            $table->string('image')->nullable();
+            $table->boolean('is_blocked')->default(false);
+            
             $table->rememberToken();
             $table->timestamps();
         });

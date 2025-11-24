@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 
 // Import Eloquent relationship classes.
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -17,6 +18,7 @@ class User extends Authenticatable
     // Disable default created_at and updated_at timestamps for this model.
     protected $table = 'registered_user';
     public $timestamps  = false;
+    protected $primaryKey = 'id';
 
     /**
      * The attributes that are mass assignable.
@@ -30,6 +32,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'birthday',
+        'age',
+        'status',
+        'sign_up_date'
     ];
 
     /**
@@ -54,17 +60,39 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             // Ensures password is always hashed automatically when set.
             'password' => 'hashed',
+            'birthday' => 'date',
+            'sign_up_date' => 'date',
         ];
     }
 
-    /**
-     * Get the cards owned by this user.
-     *
-     * Defines a one-to-many relationship:
-     * a user can have multiple cards.
-     */
-    /* public function cards(): HasMany
+    public function administrator(): HasOne
     {
-        return $this->hasMany(Card::class);
-    } */
+        return $this->hasOne(Administrator::class, 'registered_user_id');
+    }
+
+    public function recruiter(): HasOne
+    {
+        return $this->hasOne(Recruiter::class, 'registered_user_id');
+    }
+
+    public function jobSeeker(): HasOne
+    {
+        return $this->hasOne(JobSeeker::class, 'registered_user_id');
+    }
+
+    //aux
+    public function isAdmin(): bool
+    {
+        return $this->administrator()->exists();
+    }
+
+    public function isRecruiter(): bool
+    {
+        return $this->recruiter()->exists();
+    }
+
+    public function isJobSeeker(): bool
+    {
+        return $this->jobSeeker()->exists();
+    }
 }
