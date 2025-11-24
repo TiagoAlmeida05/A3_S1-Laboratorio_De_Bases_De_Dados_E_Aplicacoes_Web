@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
 
 use App\Http\Controllers\JobPostingController;
+use App\Http\Controllers\JobSeekerController;
 
 // Home
 Route::redirect('/', '/login');
@@ -54,4 +55,8 @@ Route::controller(RegisterController::class)->group(function () {
 Route::middleware('auth')->controller(JobPostingController::class)->group(function () {
     Route::get('/job_postings', 'index')->name('job_postings.index');
     Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
 });
