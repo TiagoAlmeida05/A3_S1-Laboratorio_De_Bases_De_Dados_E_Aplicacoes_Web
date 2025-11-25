@@ -16,7 +16,7 @@
         /* Barra Lateral (Sidebar) */
         #admin-sidebar {
             width: 250px;
-            background-color: #2c3e50; /* Azul escuro */
+            background-color: #9b4dca;
             color: white;
             padding: 20px;
             flex-shrink: 0;
@@ -27,7 +27,7 @@
             color: #ecf0f1;
             text-decoration: none;
             padding: 10px 0;
-            border-bottom: 1px solid #34495e;
+            border-bottom: 1px solid #ecf0f1;
         }
         #admin-sidebar a:hover { color: #3498db; padding-left: 5px; transition: 0.3s; }
         
@@ -35,21 +35,21 @@
         #admin-content { flex-grow: 1; padding: 40px; background-color: #f4f6f7; overflow-y: auto; }
         
         /* Botão de Sair na Sidebar */
-        .logout-btn { margin-top: 20px; color: #e74c3c !important; cursor: pointer; background: none; border: none; text-align: left; padding: 0; }
+        .logout-btn { margin-top: 20px; color: #ea4c3aff !important; cursor: pointer; background: none; border: none; text-align: left; padding: 0; }
     </style>
 </head>
 <body>
 
     <aside id="admin-sidebar">
-        <h3>🛡️ Admin</h3>
+        <h3>Admin</h3>
         
         <nav>
-            <a href="{{ route('admin.jobs') }}">💼 Gerir Ofertas (US56)</a>
+            <a href="{{ route('admin.jobs') }}">Job Postings Management</a>
         </nav>
 
         <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit" class="logout-btn">Sair</button>
+            <button type="submit" class="logout-btn">Logout</button>
         </form>
     </aside>
 

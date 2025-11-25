@@ -9,7 +9,7 @@ class AdminController extends Controller
 {
     // US56: Gerir Ofertas de Emprego
     public function manageJobs() {
-        $jobs = JobPosting::all();
+        $jobs = JobPosting::orderBy('id', 'asc')->get();
         return view('admin.jobs', ['jobs' => $jobs]);
     }
 
