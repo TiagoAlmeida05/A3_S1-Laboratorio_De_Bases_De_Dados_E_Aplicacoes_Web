@@ -7,8 +7,9 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
+
 use App\Http\Controllers\JobPostingController;
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\JobSeekerController;
 
 // Home
 Route::redirect('/', '/login');
@@ -42,8 +43,7 @@ Route::controller(LoginController::class)->group(function () {
 });
 
 Route::controller(LogoutController::class)->group(function () {
-    Route::post('/logout', 'logout')->name('logout');
-    Route::get('/logout', 'logout');
+    Route::get('/logout', 'logout')->name('logout');
 });
 
 Route::controller(RegisterController::class)->group(function () {
@@ -57,8 +57,6 @@ Route::middleware('auth')->controller(JobPostingController::class)->group(functi
     Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
 });
 
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs'); 
-    Route::patch('/admin/jobs/{id}/approve', [AdminController::class, 'approveJob'])->name('admin.jobs.approve');
-    Route::delete('/admin/jobs/{id}', [AdminController::class, 'deleteJob'])->name('admin.jobs.delete');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
 });
