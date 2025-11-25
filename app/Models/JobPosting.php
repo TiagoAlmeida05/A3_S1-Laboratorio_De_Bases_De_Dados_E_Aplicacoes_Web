@@ -12,10 +12,13 @@ class JobPosting extends Model {
     protected $fillable = [
         'title',
         'description',
+        'creation_date',
         'deadline',
         'min_wage',
         'max_wage',
         'requirements',
+        'status',
+        'recruiter_id',
         'city_id'
     ];
 
@@ -23,4 +26,12 @@ class JobPosting extends Model {
         return $this->belongsTo(City::class);
     }
 
+    protected $casts = [
+        'creation_date' => 'date',
+        'deadline' => 'date',
+    ];
+
+    public function recruiter(): BelongsTo {
+        return $this->belongsTo(Recruiter::class, 'recruiter_id', 'registered_user_id');
+    }
 }

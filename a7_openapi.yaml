@@ -1,0 +1,468 @@
+openapi: 3.0.0
+
+info:
+  version: '1.0'
+  title: 'HireUp Web API'
+  description: 'Web Resources Specification (A7) for HireUp'
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+
+tags:
+  - name: 'M01: Authentication and User Profile'
+  - name: 'M02: Job Posting'
+  - name: 'M05: Job Applications'
+  - name: 'M06: Managers'
+  - name: 'M07: User Administration and Static pages'
+
+paths:
+  /login:
+    get:
+      operationId: R101
+      summary: 'R101: Login Form'
+      description: 'Provide login form. Access: PUB'
+      tags:
+        - 'M01: Authentication and User Profile'
+      responses:
+        '200':
+          description: 'Ok. Show log-in UI'
+    post:
+      operationId: R102
+      summary: 'R102: Login Action'
+      description: 'Processes the login form submission. Access: PUB'
+      tags:
+        - 'M01: Authentication and User Profile'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '302':
+          description: 'Redirect after processing the login credentials.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful authentication. Redirect to dashboard.'
+                  value: '/dashboard'
+                302Error:
+                  description: 'Failed authentication. Redirect to login form.'
+                  value: '/login'
+
+  /logout:
+    post:
+      operationId: R103
+      summary: 'R103: Logout Action'
+      description: 'Logout the current authenticated user. Access: JSK, RCR, MNG, ADM'
+      tags:
+        - 'M01: Authentication and User Profile'
+      responses:
+        '302':
+          description: 'Redirect after processing logout.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful logout. Redirect to homepage.'
+                  value: '/'
+
+  /register:
+    get:
+      operationId: R104
+      summary: 'R104: Register Form'
+      description: 'Provide new user registration form. Access: PUB'
+      tags:
+        - 'M01: Authentication and User Profile'
+      responses:
+        '200':
+          description: 'Ok. Show sign-up UI'
+    post:
+      operationId: R105
+      summary: 'R105: Register Action'
+      description: 'Processes the new user registration form submission. Access: PUB'
+      tags:
+        - 'M01: Authentication and User Profile'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                type:
+                  type: string
+              required:
+                - name
+                - email
+                - password
+      responses:
+        '302':
+          description: 'Redirect after processing the new user information.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful registration. Redirect to dashboard.'
+                  value: '/dashboard'
+                302Failure:
+                  description: 'Failed registration. Redirect to register form.'
+                  value: '/register'
+
+  /profile/{id}:
+    get:
+      operationId: R106
+      summary: 'R106: View user profile'
+      description: 'Show the individual user profile. Access: JSK, RCR, MNG'
+      tags:
+        - 'M01: Authentication and User Profile'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: 'Ok. Show User Profile UI'
+
+  /profile/edit:
+    get:
+      operationId: R107
+      summary: 'R107: Edit Profile Form'
+      description: 'Provide form to update user profile. Access: JSK'
+      tags:
+        - 'M01: Authentication and User Profile'
+      responses:
+        '200':
+          description: 'Ok. Show Edit Profile UI'
+    post:
+      operationId: R108
+      summary: 'R108: Update Profile Action'
+      description: 'Processes profile updates. Access: JSK'
+      tags:
+        - 'M01: Authentication and User Profile'
+      responses:
+        '302':
+          description: 'Redirect after processing profile update.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful update. Redirect to profile.'
+                  value: '/profile/{id}'
+
+  /seekers:
+    get:
+      operationId: R109
+      summary: 'R109: Search Job Seekers'
+      description: 'List job seekers with filters. Access: JSK, RCR, MNG'
+      tags:
+        - 'M01: Authentication and User Profile'
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Ok. Show Seekers List UI'
+
+  /:
+    get:
+      operationId: R201
+      summary: 'R201: Homepage'
+      description: 'Show latest job offers. Access: PUB'
+      tags:
+        - 'M02: Job Posting'
+      responses:
+        '200':
+          description: 'Ok. Show Homepage UI'
+
+  /jobs:
+    get:
+      operationId: R202
+      summary: 'R202: Search Jobs'
+      description: 'List jobs with search keywords. Access: PUB'
+      tags:
+        - 'M02: Job Posting'
+      parameters:
+        - in: query
+          name: q
+          description: Full text search keywords
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Ok. Show Jobs List UI'
+    post:
+      operationId: R203
+      summary: 'R203: Create Job Action'
+      description: 'Processes new job creation. Access: RCR'
+      tags:
+        - 'M02: Job Posting'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                location:
+                  type: string
+              required:
+                - title
+                - description
+      responses:
+        '302':
+          description: 'Redirect after creating job.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful creation. Redirect to job details.'
+                  value: '/jobs/{id}'
+
+  /jobs/create:
+    get:
+      operationId: R204
+      summary: 'R204: Create Job Form'
+      description: 'Provide UI to create a job. Access: RCR'
+      tags:
+        - 'M02: Job Posting'
+      responses:
+        '200':
+          description: 'Ok. Show Create Job UI'
+
+  /jobs/{id}:
+    get:
+      operationId: R205
+      summary: 'R205: Job Details'
+      description: 'Show job info. Access: PUB'
+      tags:
+        - 'M02: Job Posting'
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Ok. Show Job UI'
+    delete:
+      operationId: R206
+      summary: 'R206: Delete Job Action'
+      description: 'Remove a job posting. Access: RCR'
+      tags:
+        - 'M02: Job Posting'
+      responses:
+        '302':
+          description: 'Redirect after deleting job.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful deletion. Redirect to jobs list.'
+                  value: '/jobs'
+
+  /jobs/{id}/edit:
+    get:
+      operationId: R207
+      summary: 'R207: Edit Job Form'
+      description: 'Provide UI to edit an existing job. Access: RCR'
+      tags:
+        - 'M02: Job Posting'
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Ok. Show Edit Job UI'
+    post:
+      operationId: R208
+      summary: 'R208: Update Job Action'
+      description: 'Process job update. Access: RCR'
+      tags:
+        - 'M02: Job Posting'
+      responses:
+        '302':
+          description: 'Redirect after updating job.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful update. Redirect to job details.'
+                  value: '/jobs/{id}'
+
+  /companies:
+    get:
+      operationId: R209
+      summary: 'R209: Search Companies'
+      description: 'List companies. Access: PUB'
+      tags:
+        - 'M02: Job Posting'
+      responses:
+        '200':
+          description: 'Ok. Show Company List UI'
+
+  /api/jobs:
+    get:
+      operationId: R210
+      summary: 'R210: API Job Search'
+      description: 'Returns JSON data for dynamic search. Access: PUB'
+      tags:
+        - 'M02: Job Posting'
+      parameters:
+        - in: query
+          name: q
+          description: Search keyword
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    company:
+                      type: string
+                  example:
+                    - id: 1
+                      title: Software Engineer
+                      company: TechCorp
+                    - id: 2
+                      title: Product Manager
+                      company: BizSolutions
+
+  /jobs/{id}/apply:
+    post:
+      operationId: R501
+      summary: 'R501: Apply to Job'
+      description: 'Submit application for a job. Access: JSK'
+      tags:
+        - 'M05: Job Applications'
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '302':
+          description: 'Redirect after applying.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful application. Redirect to job page.'
+                  value: '/jobs/{id}'
+
+  /company/profile/edit:
+    get:
+      operationId: R601
+      summary: 'R601: Edit Company Profile Form'
+      description: 'Form to edit company info. Access: MNG'
+      tags:
+        - 'M06: Managers'
+      responses:
+        '200':
+          description: 'Ok. Show Company Edit UI'
+    post:
+      operationId: R602
+      summary: 'R602: Update Company Action'
+      description: 'Process company info update. Access: MNG'
+      tags:
+        - 'M06: Managers'
+      responses:
+        '302':
+          description: 'Redirect after updating company.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful update. Redirect to company profile.'
+                  value: '/company/profile'
+
+  /admin/jobs:
+    get:
+      operationId: R701
+      summary: 'R701: Manage Job Postings'
+      description: 'Admin view to approve or remove jobs. Access: ADM'
+      tags:
+        - 'M07: User Administration and Static pages'
+      responses:
+        '200':
+          description: 'Ok. Show Admin Jobs UI'
+
+  /admin/content:
+    get:
+      operationId: R702
+      summary: 'R702: Manage Content'
+      description: 'Admin view to review content. Access: ADM'
+      tags:
+        - 'M07: User Administration and Static pages'
+      responses:
+        '200':
+          description: 'Ok. Show Content Management UI'
+
+  /admin/pages:
+    get:
+      operationId: R703
+      summary: 'R703: Edit Platform Info'
+      description: 'Admin view to edit static pages. Access: ADM'
+      tags:
+        - 'M07: User Administration and Static pages'
+      responses:
+        '200':
+          description: 'Ok. Show Pages Edit UI'

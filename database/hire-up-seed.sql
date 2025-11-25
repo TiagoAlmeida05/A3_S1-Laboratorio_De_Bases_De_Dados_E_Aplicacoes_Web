@@ -746,7 +746,7 @@ VALUES
 ('David Sousa', 'david@hireup.com', 'hashedpwd4', '1997-09-11', 28, 'Active'),
 ('Eva Rocha', 'eva@hireup.com', 'hashedpwd5', '1995-12-02', 29, 'Active'),
 ('Filipe Gomes', 'filipe@hireup.com', 'hashedpwd6', '1990-11-10', 34, 'Active'),
-('Admin One', 'admin1@hireup.com', 'hashedpwd7', '1980-06-15', 44, 'Active'),
+('Admin One', 'admin1@hireup.com', '$2y$12$s.HHpvgpxU5ZHLpR5d5Hdu6nHDVZdwQMnyfJevRJzrjqGuPBQOt0e', '1980-06-15', 44, 'Active'),
 ('Admin Two', 'admin2@hireup.com', 'hashedpwd8', '1982-05-10', 42, 'Active'),
 ('Gabriela Lima', 'gabriela@hireup.com', 'hashedpwd7', '1993-05-17', 32, 'Active'),
 ('Henrique Duarte', 'henrique@hireup.com', 'hashedpwd8', '1989-03-28', 36, 'Active');
