@@ -11,10 +11,8 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     <style>
-        /* CSS Específico para o Layout de Admin */
         body { display: flex; min-height: 100vh; margin: 0; font-family: 'Roboto', sans-serif; }
         
-        /* Barra Lateral (Sidebar) */
         #admin-sidebar {
             width: 250px;
             background-color: #9b4dca;
@@ -32,10 +30,8 @@
         }
         #admin-sidebar a:hover { color: #3498db; padding-left: 5px; transition: 0.3s; }
         
-        /* Conteúdo Principal */
         #admin-content { flex-grow: 1; padding: 40px; background-color: #f4f6f7; overflow-y: auto; }
         
-        /* Botão de Sair na Sidebar */
         .logout-btn { margin-top: 20px; color: #ea4c3aff !important; cursor: pointer; background: none; border: none; text-align: left; padding: 0; }
     </style>
 </head>

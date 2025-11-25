@@ -69,7 +69,6 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// --- ÁREA DE ADMINISTRAÇÃO (Vindo da tua branch - US56) ---
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs'); 
