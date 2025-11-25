@@ -24,7 +24,8 @@
                 <h1>HireUp!</h1>
 
                 @auth
-                    <a class="button" href="{{ url('/logout') }}"> Logout </a> <span>{{ Auth::user()->name }}</span>
+                    <a class="button" href="{{ url('/logout') }}"> Logout </a> <a href="{{ route('jobseeker.profile', Auth::user()->id) }}"><span>{{ Auth::user()->name }}</span></a>
+
                 @endauth
             </header>
 
