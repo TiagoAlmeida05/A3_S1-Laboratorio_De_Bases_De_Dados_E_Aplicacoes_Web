@@ -65,7 +65,9 @@ Route::middleware('auth')->group(function () {
 
     // Job Seeker Profile (Vindo da branch DELA - US19)
     Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
-
+    Route::get('/job-seeker/profile/edit', [JobSeekerController::class, 'edit'])->name('jobseeker.profile.edit');
+    Route::put('/job-seeker/profile/update', [JobSeekerController::class, 'update'])->name('jobseeker.profile.update');
+    
 });
 
 

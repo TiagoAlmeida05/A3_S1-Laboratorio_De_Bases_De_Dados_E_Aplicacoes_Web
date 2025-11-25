@@ -34,6 +34,11 @@ class JobSeeker extends Model
         return $this->belongsTo(RegisteredUser::class, 'registered_user_id');
     }
 
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
+
     public function applications()
     {
         return $this->hasMany(Application::class, 'job_seeker_id');
