@@ -3,13 +3,16 @@
         <a href="{{ route('job_postings.show', $job_posting) }}">
             {{ $job_posting->title }}
         </a>
+        <div class="jp-creation-date">
+            <p><strong>Creation date</strong>: {{ \Carbon\Carbon::parse($job_posting->creation_date)->format('d-m-Y') }}</p>
+        </div>
         <div class="jp-status">
             <p><strong>Status</strong>: {{ $job_posting->status }}</p>
         </div>
         <div class="jp-actions">
             @if($job_posting->status !== 'Closed')
-                <p><strong>Edit</strong></p>
-                <p><strong>Delete</strong></p>
+                <button><strong>Edit</strong></button>
+                <button><strong>Delete</strong></button>
             @endif
         </div>
     </div>
