@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\AdminController;      // <--- Teu (US56)
 use App\Http\Controllers\JobSeekerController;  // <--- Dela (US19)
+use App\Http\Controllers\RecruiterController;
 
 // Home
 Route::redirect('/', '/login');
@@ -84,4 +85,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 Route::get('/recruiter-dashboard', function () {
     
+});
+
+Route::middleware('user-role:recruiter')->controller(RecruiterController::class)->group(function () {
+    Route::get('/recruiter-dashboard', 'index')->name('recruiter-dashboard.index');
 });

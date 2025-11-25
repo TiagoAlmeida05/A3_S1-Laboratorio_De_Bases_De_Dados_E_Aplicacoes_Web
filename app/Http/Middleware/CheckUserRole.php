@@ -15,9 +15,23 @@ class CheckUserRole
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next, $role): Response {
-        if (!Auth::check() || Auth::user()->role !== $role) {
+        $user = Auth::user();
+
+        if (!$user) {
             abort(403);
         }
+
+        switch($role) {
+            case 'recruiter':
+                if (!$user->recruiter) {
+                    abort(403);
+                }
+                break;
+                // DO LATER: we will have to add here the logic for the other user roles (maybe?)
+            default:
+                abort(403);
+        }
+
         return $next($request);
     }
 }
