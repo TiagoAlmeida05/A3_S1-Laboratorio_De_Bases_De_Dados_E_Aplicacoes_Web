@@ -1,0 +1,115 @@
+@extends('layouts.app')
+
+@section('title', 'New job posting' . ' | ' . config('app.name'))
+
+@section('content')
+<section id="new-job-posting">
+    <h1>New job posting</h1>
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    <div class='form-container'>
+        <form method="POST" action="{{ route('job_postings.store') }}">
+            @csrf
+
+            <div class="form-element" id="fe-1">
+                <label for="title">Title</label>
+                <input class="form-text" id="title" name="title" type="text" placeholder="Insert title." value="{{ old('title') }}" required>
+            </div>
+
+            <div class="form-element" id="fe-2">
+                <label for="description">Description</label>
+                <textarea class="form-textarea" id="description" name="description" placeholder="Insert description." value="{{ old('description') }}" required></textarea>
+            </div>
+
+            <div class="form-element" id="fe-3">
+                <label for="days_to_deadline">Deadline (in days)</label>
+                <input class="form-number" id="days_to_deadline" name="days_to_deadline" type="number" placeholder="Days" value="{{ old('days_to_deadline') }}" required>
+            </div>
+
+            <input type="hidden" id="deadline" name="deadline">
+
+            <div class="form-element" id="fe-4">
+                <label for="min_wage">Minimum wage</label>
+                <input class="form-number" id="min-wage" name="min-wage" type="number" placeholder="Insert minimum wage (optional)." value="{{ old('min_wage') }}">
+            </div>
+
+            <div class="form-element" id="fe-5">
+                <label for="max_wage">Maximum wage</label>
+                <input class="form-number" id="max-wage" name="max-wage" type="number" placeholder="Insert maximum wage (optional)." value="{{ old('max_wage') }}">
+            </div>
+
+            <div class="form-element" id="fe-6">
+                <label for="requirements">Job requirements</label>
+                <textarea class="form-textarea" id="requirements" name="requirements" placeholder="Insert job requirements (optional)." value="{{ old('requirements') }}"></textarea>
+            </div>
+
+            <div class="form-element" id="fe-7"> <!-- DO LATER: add Country support -->
+                <label for="city_id">City</label>
+                <select class="form-dropdown" id="city_id" name="city_id" value="{{ old('city_id') }}">
+                    <option value="" disabled selected>Select city</option>
+                    @foreach ($cities as $city)
+                        <option value="{{ $city->id }}">{{ $city->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <button class="submit-button" type="submit">Create new job posting</button>
+            
+        </form>
+    </div>
+</section>
+
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
+@endsection
+
+<!-- IMPORTANT: deadline is retrieved from the recruiter as the number of days to elapse FROM THE CURRENT DATE;
+ so we needed to convert this number into an actual date to be inserted into the database -- JavaScript! -->
+
+<script id="js-deadline-converter">
+    document.addEventListener('DOMContentLoaded', function() {
+        const daysToDeadline = document.getElementById('days_to_deadline');
+        let deadlineInput = document.getElementById('deadline');
+        let deadlineDate;
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        daysToDeadline.addEventListener('input', function() {
+            const days = parseInt(daysToDeadline.value);
+
+            if (isNaN(days) || days < 3) {
+                deadlineInput.value = '';
+                return;
+            }
+
+            let today = new Date();
+            deadlineDate = new Date(today);
+            deadlineDate.setDate(today.getDate() + days);
+            const formattedDeadline = formatDate(deadlineDate);
+            
+            deadlineInput.value = formattedDeadline;
+        });
+    });
+ </script>
