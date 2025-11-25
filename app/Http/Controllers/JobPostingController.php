@@ -19,9 +19,29 @@ class JobPostingController extends Controller {
         ]);
     }
 
-    public function index() {
-        $jobPostings = JobPosting::with('city')->orderBy('id')->get();
+    public function index(Request $request) {
+        $query = JobPosting::with('city');
+        
+        // Full-text search
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
 
+            $words = explode(' ', trim($searchTerm));
+            $prefixSearch = implode(':* & ', $words) . ':*';
+
+            $query->whereRaw(
+                "tsvectors @@ to_tsquery('english', ?)",
+                [$prefixSearch]
+            )->selectRaw(
+                "*, ts_rank(tsvectors, to_tsquery('english', ?)) as rank",
+                [$prefixSearch]
+            )->orderBy('rank', 'desc');
+        } else {
+            $query->orderBy('id');
+        }
+        
+        $jobPostings = $query->get();
+        
         return view('pages.job_postings', [
             'job_postings' => $jobPostings
         ]);
