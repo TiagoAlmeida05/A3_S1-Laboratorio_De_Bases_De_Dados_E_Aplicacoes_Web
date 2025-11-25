@@ -81,7 +81,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/admin/content/{id}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
     Route::get('/admin/pages', [AdminController::class, 'editPages'])->name('admin.pages');
     Route::patch('/admin/content/{id}/reopen', [AdminController::class, 'reopenReport'])->name('admin.reports.reopen');
-=======
 });
 
 Route::get('/recruiter-dashboard', function () {
