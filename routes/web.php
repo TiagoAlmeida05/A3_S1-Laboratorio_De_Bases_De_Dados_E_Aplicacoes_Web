@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\LogoutController;
 
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\JobSeekerController;
+use App\Http\Controllers\CompanyController;
 
 // Home
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
@@ -62,3 +63,5 @@ Route::middleware('auth')->controller(JobPostingController::class)->group(functi
 Route::middleware(['auth'])->group(function () {
     Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
 });
+
+Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');

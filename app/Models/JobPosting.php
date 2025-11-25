@@ -22,5 +22,8 @@ class JobPosting extends Model {
     public function city(): BelongsTo {
         return $this->belongsTo(City::class);
     }
-
+    public function recruiter()
+    {
+        return $this->belongsTo(Recruiter::class, 'recruiter_id', 'registered_user_id');
+    }
 }
