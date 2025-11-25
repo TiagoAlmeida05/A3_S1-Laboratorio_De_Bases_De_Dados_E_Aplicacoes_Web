@@ -28,9 +28,6 @@ class JobSeeker extends Model
     {
         return $this->belongsTo(User::class, 'registered_user_id');
     }
-    protected $table = 'job_seeker';
-    protected $primaryKey = 'registered_user_id';
-    public $incrementing = false;
 
     public function registeredUser()
     {
