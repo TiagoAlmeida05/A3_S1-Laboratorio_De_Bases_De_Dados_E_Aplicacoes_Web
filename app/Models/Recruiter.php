@@ -31,4 +31,8 @@ class Recruiter extends Model
          return $this->belongsTo(Department::class, 'department_id');
     }
 
+    public function job_postings() {
+        return $this->hasMany(JobPosting::class, 'recruiter_id');
+    }
+
 }
