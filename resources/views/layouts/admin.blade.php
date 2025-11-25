@@ -47,6 +47,7 @@
         <nav>
             <a href="{{ route('admin.jobs') }}">Job Postings Management</a>
             <a href="{{ route('admin.content') }}">Content Management</a>
+            <a href="{{ route('admin.pages') }}">Pages</a>
         </nav>
 
         <form action="{{ route('logout') }}" method="POST">

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\JobPosting;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Report;
+use App\Models\WebsiteContent;
 
 class AdminController extends Controller
 {
@@ -53,5 +54,27 @@ class AdminController extends Controller
         $report->save();
 
         return redirect()->route('admin.content')->with('success', 'Report reopened.');
+    }
+
+    //US58
+    public function editPages() {
+        $pages = WebsiteContent::orderBy('id', 'asc')->get();
+        return view('admin.pages.index', ['pages' => $pages]);
+    }
+
+    public function showPageForm($id) {
+        $page = WebsiteContent::findOrFail($id);
+        return view('admin.pages.edit', ['page' => $page]);
+    }
+
+    public function updatePage(Request $request, $id) {
+        $page = WebsiteContent::findOrFail($id);
+        
+        $page->content = $request->input('content');
+        $page->last_edited_by = Auth::id(); // Regista que foste tu
+        
+        $page->save();
+
+        return redirect()->route('admin.pages')->with('success', 'Página atualizada com sucesso!');
     }
 }
