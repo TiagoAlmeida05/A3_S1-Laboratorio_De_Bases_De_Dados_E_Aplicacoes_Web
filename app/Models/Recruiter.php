@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Department;
 
 class Recruiter extends Model
 {
@@ -27,6 +28,11 @@ class Recruiter extends Model
 
     public function department() 
     {
-         return $this->belongsTo(Department::class);
+         return $this->belongsTo(Department::class, 'department_id');
     }
+
+    public function job_postings() {
+        return $this->hasMany(JobPosting::class, 'recruiter_id');
+    }
+
 }

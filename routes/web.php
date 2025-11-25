@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\AdminController;      // <--- Teu (US56)
 use App\Http\Controllers\JobSeekerController;  // <--- Dela (US19)
+use App\Http\Controllers\RecruiterController;
 
 // Home
 Route::redirect('/', '/login');
@@ -71,15 +72,22 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// --- ÁREA DE ADMINISTRAÇÃO (Vindo da tua branch - US56) ---
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs'); 
     Route::patch('/admin/jobs/{id}/approve', [AdminController::class, 'approveJob'])->name('admin.jobs.approve');
     Route::delete('/admin/jobs/{id}', [AdminController::class, 'deleteJob'])->name('admin.jobs.delete');
-    
-    // Podes adicionar aqui as rotas US57 e US58 se já as tiveres feito
     Route::get('/admin/content', [AdminController::class, 'manageContent'])->name('admin.content');
     Route::patch('/admin/content/{id}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
     Route::get('/admin/pages', [AdminController::class, 'editPages'])->name('admin.pages');
+    Route::patch('/admin/content/{id}/reopen', [AdminController::class, 'reopenReport'])->name('admin.reports.reopen');
+=======
+});
+
+Route::get('/recruiter-dashboard', function () {
+    
+});
+
+Route::middleware('user-role:recruiter')->controller(RecruiterController::class)->group(function () {
+    Route::get('/recruiter-dashboard', 'index')->name('recruiter-dashboard.index');
 });
