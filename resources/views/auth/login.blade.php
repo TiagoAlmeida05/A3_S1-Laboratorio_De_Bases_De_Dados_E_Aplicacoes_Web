@@ -6,11 +6,11 @@
         {{ session('success') }}
     </div>
 @endif
-<form method="POST" action="{{ route('login') }}">
+<form style="padding: 3rem; max-width: 30rem; border-color: #4856e7ff;" method="POST" action="{{ route('login') }}">
     @csrf
 
     <label for="email">E-mail</label>
-    <input
+    <input class="input-group mb-3"
         id="email"
         name="email"
         type="email"
@@ -27,7 +27,7 @@
     @enderror
 
     <label for="password" >Password</label>
-    <input
+    <input class="input-group mb-3"
         id="password"
         name="password"
         type="password"
@@ -45,8 +45,10 @@
         Remember me
     </label>
 
-    <button type="submit">Login</button>
-    <a class="button button-outline" href="{{ route('register') }}">Register</a>
+    <div class="col">
+        <button type="submit" class="btn btn-primary" style="background-color: #1c4eb1eb;">Login</button>
+        <a class="btn btn-primary" style="background-color: #1c4eb1eb;" href="{{ route('register') }}">Register</a>
+    </div>
 
     @if (session('status'))
         <p class="success" role="status">{{ session('status') }}</p>

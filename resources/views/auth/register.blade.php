@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<form method="POST" action="{{ route('register') }}">
+<form method="POST" style="padding: 3rem; max-width: 30rem; border-color: #4856e7ff;" action="{{ route('register') }}">
     @csrf
 
     <label for="name">Name</label>
-    <input
+    <input class="input-group mb-3"
         id="name"
         type="text"
         name="name"
@@ -18,8 +18,8 @@
       <span id="name-error" class="error" role="alert">{{ $message }}</span>
     @enderror
 
-    <label for="email">E-Mail Address</label>
-    <input
+    <label for="email">E-mail address</label>
+    <input class="input-group mb-3"
         id="email"
         type="email"
         name="email"
@@ -33,7 +33,7 @@
     @enderror
 
     <label for="password">Password</label>
-    <input
+    <input class="input-group mb-3"
         id="password"
         type="password"
         name="password"
@@ -44,8 +44,8 @@
       <span id="password-error" class="error" role="alert">{{ $message }}</span>
     @enderror
 
-    <label for="password-confirm">Confirm Password</label>
-    <input
+    <label for="password-confirm">Confirm password</label>
+    <input class="input-group mb-3"
         id="password-confirm"
         type="password"
         name="password_confirmation"
@@ -53,7 +53,7 @@
         autocomplete="new-password"
     >
 
-    <button type="submit">Register</button>
-    <a class="button button-outline" href="{{ route('login') }}">Login</a>
+    <button type="submit" class="btn btn-primary" style="background-color: #1c4eb1eb;">Register</button>
+    <a class="btn btn-primary" style="background-color: #1c4eb1eb;" href="{{ route('login') }}">Login</a>
 </form>
 @endsection

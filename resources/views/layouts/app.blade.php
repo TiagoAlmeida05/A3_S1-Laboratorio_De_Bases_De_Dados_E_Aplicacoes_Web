@@ -48,7 +48,7 @@
                     <a class="button" href="{{ url('/logout') }}"> Logout </a> 
                     <a href="{{ $profileUrl }}" class="user-profile-link">{{ Auth::user()->name }}</a>
                 @else
-                    <a class="button" href="{{ url('/login') }}">Login</a>
+                    <a class="btn btn-primary" style="background-color: #1c4eb1eb;"  href="{{ url('/login') }}">Login</a>
                 @endauth
             </header>
 
