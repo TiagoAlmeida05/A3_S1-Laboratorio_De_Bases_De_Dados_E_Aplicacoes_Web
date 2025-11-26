@@ -15,6 +15,7 @@ use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\AdminController;      // <--- Teu (US56)
 use App\Http\Controllers\JobSeekerController;  // <--- Dela (US19)
 use App\Http\Controllers\RecruiterController;
+use App\Http\Controllers\CompanyController;
 
 // Home
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
@@ -94,3 +95,7 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
 });
 
 Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
+
+Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
+Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit')->middleware('auth');
+Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')->middleware('auth');

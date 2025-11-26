@@ -1,19 +1,19 @@
 @extends('layouts.app')
-
 @section('title', $company->name . ' | ' . config('app.name'))
-
 @section('content')
 <div class="container mx-auto p-4">
     {{-- Company Header --}}
-    <div class="flex items-center mb-4">
-        @if($company->logo)
-            <img src="{{ asset('storage/' . $company->logo) }}" alt="{{ $company->name }} Logo" class="w-24 h-24 rounded-full mr-4">
-        @else
-            <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mr-4">
-                <span class="text-gray-500 text-3xl font-bold">{{ substr($company->name, 0, 1) }}</span>
-            </div>
-        @endif
-        <h1 class="text-2xl font-bold">{{ $company->name }}</h1>
+    <div class="flex items-center mb-4 justify-between">
+        <div class="flex items-center">
+            @if($company->logo)
+                <img src="{{ asset('storage/' . $company->logo) }}" alt="{{ $company->name }} Logo" class="w-24 h-24 rounded-full mr-4">
+            @else
+                <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+                    <span class="text-gray-500 text-3xl font-bold">{{ substr($company->name, 0, 1) }}</span>
+                </div>
+            @endif
+            <h1 class="text-2xl font-bold">{{ $company->name }}</h1>
+        </div>
     </div>
 
     {{-- About Us --}}
@@ -94,7 +94,7 @@
             @foreach($company->jobPostings as $job)
             <li class="mb-3 pb-3 border-b">
                 <h3 class="font-semibold">
-                    <a href="{{ route('job_postings.show', $job->id) }}" class="text-blue-600 hover:underline text-sm">{{ $job->title }} <a>
+                    <a href="{{ route('job_postings.show', $job->id) }}" class="text-blue-600 hover:underline text-sm">{{ $job->title }}</a>
                 </h3>
                 <p class="text-gray-600">{{ $job->description }}</p>
                 <p class="text-sm text-gray-500">Deadline: {{ \Carbon\Carbon::parse($job->deadline)->format('M d, Y') }}</p>

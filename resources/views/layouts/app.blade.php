@@ -25,6 +25,16 @@
                     <a href="{{ url('/') }}">HireUp!</a></h1>
 
                 @auth
+                    @php
+                        $recruiter = Auth::user()->recruiter;
+                        $isManager = $recruiter && $recruiter->is_company_manager;
+                        $companyId = $isManager ? $recruiter->department->company_id : null;
+                    @endphp
+                    
+                    @if($isManager && $companyId)
+                        <a class="button" href="{{ route('companies.edit', $companyId) }}">Edit Company</a>
+                    @endif
+
                     <a class="button" href="{{ url('/logout') }}"> Logout </a> <span>{{ Auth::user()->name }}</span>
                 @else
                     <a class="button" href="{{ url('/login') }}">Login</a>
