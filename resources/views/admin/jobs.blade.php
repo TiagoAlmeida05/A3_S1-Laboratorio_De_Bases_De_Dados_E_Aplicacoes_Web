@@ -22,13 +22,6 @@
                     </td>
                     <td>
                         <div style="display: flex; gap: 10px;">
-                            @if($job->status !== 'Active')
-                                <form action="{{ route('admin.jobs.approve', $job->id) }}" method="POST">
-                                    @csrf @method('PATCH')
-                                    <button class="button button-outline" style="color:green; border-color:green;">Aprove</button>
-                                </form>
-                            @endif
-
                             <form action="{{ route('admin.jobs.delete', $job->id) }}" method="POST" onsubmit="return confirm('Apagar?');">
                                 @csrf @method('DELETE')
                                 <button class="button button-outline" style="color:red; border-color:red;">Remove</button>
@@ -39,4 +32,7 @@
             @endforeach
         </tbody>
     </table>
+    <div style="margin-top: 20px;">
+        {{ $jobs->links() }}
+    </div>
 @endsection
