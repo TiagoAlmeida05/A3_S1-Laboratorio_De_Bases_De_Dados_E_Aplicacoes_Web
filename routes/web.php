@@ -67,10 +67,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/admin/content/{id}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
     Route::get('/admin/pages', [AdminController::class, 'editPages'])->name('admin.pages');
     Route::patch('/admin/content/{id}/reopen', [AdminController::class, 'reopenReport'])->name('admin.reports.reopen');
+    Route::get('/admin/pages/{id}/edit', [AdminController::class, 'showPageForm'])->name('admin.pages.edit');
+    Route::put('/admin/pages/{id}', [AdminController::class, 'updatePage'])->name('admin.pages.update');
 });
 
 Route::get('/recruiter-dashboard', function () {
-    
 });
 
 Route::middleware('user-role:recruiter')->controller(RecruiterController::class)->group(function () {
@@ -79,8 +80,8 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::post('/job-postings', [JobPostingController::class, 'store'])->name('job_postings.store');
 });
 
-Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
 
+Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit')->middleware('auth');
 Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')->middleware('auth');
