@@ -4,6 +4,7 @@
 
 @section('content')
 <section id="job_posting">
+    <a href="{{ url('/') }}">Go Back</a>
     @auth
         @if($jobSeeker)
             <a class="button" href="{{ route('jobseeker.apply', $job_posting->id) }}">Apply</a>
