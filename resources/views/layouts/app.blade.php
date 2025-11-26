@@ -46,6 +46,15 @@
                     @endif
 
                     <a class="button" href="{{ url('/logout') }}"> Logout </a> 
+                    @php
+                        if (!isset($profileUrl)) {
+                            if (Auth::user()->isAdmin()) {
+                                $profileUrl = route('admin.jobs');
+                            } else {
+                                $profileUrl = url('/');
+                            }
+                        }
+                    @endphp
                     <a href="{{ $profileUrl }}" class="user-profile-link">{{ Auth::user()->name }}</a>
                 @else
                     <a class="btn btn-primary" style="background-color: #1c4eb1eb;"  href="{{ url('/login') }}">Login</a>
@@ -56,5 +65,6 @@
                 @yield('content')
             </section>
         </main>
+        @include('partials.footer')
     </body>
 </html>

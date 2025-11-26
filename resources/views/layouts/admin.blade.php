@@ -11,7 +11,13 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     <style>
-        body { display: flex; min-height: 100vh; margin: 0; font-family: 'Roboto', sans-serif; }
+        body { 
+            display: flex; 
+            min-height: 100vh; 
+            margin: 0; 
+            font-family: 'Roboto', sans-serif; 
+            overflow: hidden;
+        }
         
         #admin-sidebar {
             width: 250px;
@@ -19,6 +25,8 @@
             color: white;
             padding: 20px;
             flex-shrink: 0;
+            height: 100vh;
+            overflow-y: auto;
         }
         #admin-sidebar h3 { color: white; border-bottom: 1px solid #ecf0f1; padding-bottom: 10px; }
         #admin-sidebar a {
@@ -30,7 +38,20 @@
         }
         #admin-sidebar a:hover { color: #3498db; padding-left: 5px; transition: 0.3s; }
         
-        #admin-content { flex-grow: 1; padding: 40px; background-color: #f4f6f7; overflow-y: auto; }
+
+        #right-panel {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        #admin-content { 
+            flex: 1;
+            padding: 40px; 
+            background-color: #f4f6f7; 
+        }
         
         .logout-btn { margin-top: 20px; color: #ea4c3aff !important; cursor: pointer; background: none; border: none; text-align: left; padding: 0; }
     </style>
@@ -52,15 +73,20 @@
         </form>
     </aside>
 
-    <main id="admin-content">
-        @if(session('success'))
-            <div style="background: #d4edda; color: #155724; padding: 10px; margin-bottom: 20px; border: 1px solid #c3e6cb; border-radius: 5px;">
-                {{ session('success') }}
-            </div>
-        @endif
+    <div id="right-panel">
+        
+        <main id="admin-content">
+            @if(session('success'))
+                <div style="background: #d4edda; color: #155724; padding: 10px; margin-bottom: 20px; border: 1px solid #c3e6cb; border-radius: 5px;">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-        @yield('content')
-    </main>
+            @yield('content')
+        </main>
+
+        @include('partials.footer')
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     

@@ -12,15 +12,8 @@ class AdminController extends Controller
 {
     // US56:
     public function manageJobs() {
-        $jobs = JobPosting::orderBy('id', 'asc')->get();
+        $jobs = JobPosting::orderBy('id', 'asc')->paginate(4);
         return view('admin.jobs', ['jobs' => $jobs]);
-    }
-
-    public function approveJob($id) {
-        $job = JobPosting::findOrFail($id);
-        $job->status = 'Active';
-        $job->save();
-        return redirect()->route('admin.jobs')->with('success', 'Job Posting approved!');
     }
 
     public function deleteJob($id) {
