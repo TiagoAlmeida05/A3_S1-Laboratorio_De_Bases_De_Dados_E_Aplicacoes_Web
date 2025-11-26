@@ -35,9 +35,15 @@ class JobPostingPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, JobPosting $jobPosting): bool
-    {
-        return false;
+    public function update(User $user, JobPosting $job_posting): bool {
+        if (!$user->admin) {
+            return $job_posting->status !== 'Closed';
+        }
+        if (!$user->recruiter) {
+            return false;
+        }
+        if ($user->recruiter->registered_user_id !== $job_posting->recruiter) return false;
+        return ($job_posting->status !== 'Closed' && $job_posting->status !== 'Pending');
     }
 
     /**

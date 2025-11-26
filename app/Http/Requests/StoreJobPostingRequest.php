@@ -27,6 +27,7 @@ class StoreJobPostingRequest extends FormRequest
             'min_wage' => 'nullable|integer|min:0',
             'max_wage' => 'nullable|integer|min:0',
             'requirements' => 'nullable|string',
+            'status' => 'required|in:Pending,Active,Expired,Closed',
             'city_id' => 'nullable|integer'
         ];
     }

@@ -11,7 +11,7 @@
                 <p><strong>Status</strong>: {{ $job_posting->status }}</p>
             </div>
             <div class="jp-actions">
-                    <button><strong>Edit</strong></button>
+                    <a href="{{ route('job_postings.edit', $job_posting->id) }}" class="a-as-button" id="edit-job">Edit</a>
                     <button><strong>Delete</strong></button>
             </div>
         </div>
