@@ -18,6 +18,7 @@
             @if($jobSeeker->city)
                 <p><strong>City:</strong> {{ $jobSeeker->city->name }}</p>
             @endif
+            <p><strong>Email:</strong> {{ $jobSeeker->registeredUser->email }}</p>
             @if($jobSeeker->website)
                 <p><strong>Website:</strong> <a href="{{ $jobSeeker->website }}" target="_blank">{{ $jobSeeker->website }}</a></p>
             @endif

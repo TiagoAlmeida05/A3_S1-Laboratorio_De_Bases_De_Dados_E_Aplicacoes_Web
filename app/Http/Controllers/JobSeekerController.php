@@ -55,13 +55,13 @@ class JobSeekerController extends Controller
             'experience' => 'array',
             'experience.*.position_name' => 'nullable|string|max:255',
             'experience.*.employer' => 'nullable|string|max:255',
-            'experience.*.start_date' => 'nullable|date',
-            'experience.*.end_date' => 'nullable|date',
+            'experience.*.start_date' => 'required|date',
+            'experience.*.end_date' => 'required|date',
             'education' => 'array',
             'education.*.name' => 'nullable|string|max:255',
             'education.*.issued_by' => 'nullable|string|max:255',
             'education.*.start_date' => 'nullable|date',
-            'education.*.end_date' => 'nullable|date',
+            'education.*.end_date' => 'required|date',
             'certifications' => 'array',
             'certifications.*.name' => 'nullable|string|max:255',
             'certifications.*.issued_by' => 'nullable|string|max:255',
@@ -107,106 +107,117 @@ class JobSeekerController extends Controller
 
     private function processExperience($jobSeeker, $experience)
     {
-        $existingExperienceIds = [];
-        
+        $existingExperienceIds = $jobSeeker->experienceEntries->pluck('id')->toArray();
+        $submittedIds = [];
+
         foreach ($experience as $expData) {
-            if (isset($expData['id'])) {
+            if (empty($expData['position_name']) || empty($expData['employer']) || empty($expData['start_date']) || empty($expData['end_date'])) {
+                continue;
+            }
+
+            if (isset($expData['id']) && in_array($expData['id'], $existingExperienceIds)) {
                 $exp = ExperienceEntry::find($expData['id']);
-                if ($exp && $exp->job_seeker_id == $jobSeeker->registered_user_id) {
-                    if (!empty($expData['position_name']) && !empty($expData['employer'])) {
-                        $exp->update([
-                            'position_name' => $expData['position_name'],
-                            'employer' => $expData['employer'],
-                            'start_date' => $expData['start_date'],
-                            'end_date' => $expData['end_date']
-                        ]);
-                        $existingExperienceIds[] = $exp->id;
-                    } else {
-                        $exp->delete();
-                    }
-                }
-            } 
-            elseif (!empty($expData['position_name']) && !empty($expData['employer'])) {
+
+                $exp->update([
+                    'position_name' => $expData['position_name'],
+                    'employer'      => $expData['employer'],
+                    'start_date'    => $expData['start_date'],
+                    'end_date'      => $expData['end_date'],
+                ]);
+
+                $submittedIds[] = $exp->id;
+            }
+
+            elseif (!isset($expData['id'])) {
                 $newExp = ExperienceEntry::create([
                     'job_seeker_id' => $jobSeeker->registered_user_id,
                     'position_name' => $expData['position_name'],
-                    'employer' => $expData['employer'],
-                    'start_date' => $expData['start_date'],
-                    'end_date' => $expData['end_date']
+                    'employer'      => $expData['employer'],
+                    'start_date'    => $expData['start_date'],
+                    'end_date'      => $expData['end_date'],
                 ]);
-                $existingExperienceIds[] = $newExp->id;
+
+                $submittedIds[] = $newExp->id;
             }
         }
 
-        $jobSeeker->experienceEntries()->whereNotIn('id', $existingExperienceIds)->delete();
+        if (!empty($submittedIds)) {
+            ExperienceEntry::where('job_seeker_id', $jobSeeker->registered_user_id)->whereNotIn('id', $submittedIds)->delete();
+        }
     }
 
     private function processEducation($jobSeeker, $education)
     {
-        $existingEducationIds = [];
-        
+        $existingIds = $jobSeeker->educationEntries->pluck('id')->toArray();
+        $submittedIds = [];
+
         foreach ($education as $eduData) {
-            if (isset($eduData['id'])) {
+            if (empty($eduData['name']) || empty($eduData['issued_by']) || empty($eduData['end_date'])) {
+                continue;
+            }
+
+            if (isset($eduData['id']) && in_array($eduData['id'], $existingIds)) {
                 $edu = EducationEntry::find($eduData['id']);
-                if ($edu && $edu->job_seeker_id == $jobSeeker->registered_user_id) {
-                    if (!empty($eduData['name']) && !empty($eduData['issued_by'])) {
-                        $edu->update([
-                            'name' => $eduData['name'],
-                            'issued_by' => $eduData['issued_by'],
-                            'start_date' => $eduData['start_date'],
-                            'end_date' => $eduData['end_date']
-                        ]);
-                        $existingEducationIds[] = $edu->id;
-                    } else {
-                        $edu->delete();
-                    }
-                }
-            } 
-            elseif (!empty($eduData['name']) && !empty($eduData['issued_by'])) {
+
+                $edu->update([
+                    'name'          => $eduData['name'],
+                    'issued_by'     => $eduData['issued_by'],
+                    'start_date'    => !empty($eduData['start_date']) ? $eduData['start_date'] : null,
+                    'end_date'      => $eduData['end_date'],
+                ]);
+
+                $submittedIds[] = $edu->id;
+            }
+            elseif (!isset($eduData['id'])) {
                 $newEdu = EducationEntry::create([
                     'job_seeker_id' => $jobSeeker->registered_user_id,
-                    'name' => $eduData['name'],
-                    'issued_by' => $eduData['issued_by'],
-                    'start_date' => $eduData['start_date'],
-                    'end_date' => $eduData['end_date']
+                    'name'          => $eduData['name'],
+                    'issued_by'     => $eduData['issued_by'],
+                    'start_date'    => !empty($eduData['start_date']) ? $eduData['start_date'] : null,
+                    'end_date'      => $eduData['end_date'],
                 ]);
-                $existingEducationIds[] = $newEdu->id;
+
+                $submittedIds[] = $newEdu->id;
             }
         }
 
-        $jobSeeker->educationEntries()->whereNotIn('id', $existingEducationIds)->delete();
+        if (!empty($submittedIds)) {
+            EducationEntry::where('job_seeker_id', $jobSeeker->registered_user_id)->whereNotIn('id', $submittedIds)->delete();
+        }
     }
 
-    private function processCertifications($jobSeeker, $certifications)
+
+     private function processCertifications($jobSeeker, $certifications)
     {
-        $existingCertificationIds = [];
-        
+        $existingIds = $jobSeeker->certifications->pluck('id')->toArray();
+        $submittedIds = [];
+
         foreach ($certifications as $certData) {
-            if (isset($certData['id'])) {
+            if (empty($certData['name'])) {
+                continue;
+            }
+
+            if (isset($certData['id']) && in_array($certData['id'], $existingIds)) {
                 $cert = CertificationEntry::find($certData['id']);
-                if ($cert && $cert->job_seeker_id == $jobSeeker->registered_user_id) {
-                    if (!empty($certData['name']) && !empty($certData['issued_by'])) {
-                        $cert->update([
-                            'name' => $certData['name'],
-                            'issued_by' => $certData['issued_by']
-                        ]);
-                        $existingCertificationIds[] = $cert->id;
-                    } else {
-                        $cert->delete();
-                    }
-                }
-            } 
-            elseif (!empty($certData['name']) && !empty($certData['issued_by'])) {
+                $cert->update([
+                    'name' => $certData['name'],
+                    'issued_by' => $certData['issued_by'] ?? null,
+                ]);
+                $submittedIds[] = $cert->id;
+            }
+            elseif (!isset($certData['id'])) {
                 $newCert = CertificationEntry::create([
                     'job_seeker_id' => $jobSeeker->registered_user_id,
                     'name' => $certData['name'],
-                    'issued_by' => $certData['issued_by']
+                    'issued_by' => $certData['issued_by'] ?? null,
                 ]);
-                $existingCertificationIds[] = $newCert->id;
+                $submittedIds[] = $newCert->id;
             }
         }
 
-        $jobSeeker->certifications()->whereNotIn('id', $existingCertificationIds)->delete();
+        if (!empty($submittedIds)) {
+            CertificationEntry::where('job_seeker_id', $jobSeeker->registered_user_id)->whereNotIn('id', $submittedIds)->delete();
+        }
     }
 
     private function processAwards($jobSeeker, $awards)

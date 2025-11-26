@@ -46,8 +46,11 @@
 
         <div>
             <h2>Contacts</h2>
-            
             <div>
+                <div>
+                    <label>Email</label>
+                    <input type="email" value="{{ $jobSeeker->registeredUser->email }}" disabled>
+                </div>
                 <div>
                     <label>Website</label>
                     <input type="url" name="website" 
@@ -82,26 +85,26 @@
                         <div>
                             <label>Position</label>
                             <input type="text" name="experience[{{ $index }}][position_name]" 
-                                   value="{{ old('experience.' . $index . '.position_name', $exp->position_name) }}"
-                                   placeholder="Position name">
+                                value="{{ old('experience.' . $index . '.position_name', $exp->position_name) }}"
+                                placeholder="Position name">
                         </div>
                         <div>
                             <label>Employer</label>
                             <input type="text" name="experience[{{ $index }}][employer]" 
-                                   value="{{ old('experience.' . $index . '.employer', $exp->employer) }}"
-                                   placeholder="Employer name">
+                                value="{{ old('experience.' . $index . '.employer', $exp->employer) }}"
+                                placeholder="Employer name">
                         </div>
                     </div>
                     <div>
                         <div>
                             <label>Start Date</label>
                             <input type="date" name="experience[{{ $index }}][start_date]" 
-                                   value="{{ old('experience.' . $index . '.start_date', $exp->start_date) }}">
+                                value="{{ old('experience.' . $index . '.start_date', $exp->start_date ? $exp->start_date->format('Y-m-d') : '') }}">
                         </div>
                         <div>
                             <label>End Date</label>
                             <input type="date" name="experience[{{ $index }}][end_date]" 
-                                   value="{{ old('experience.' . $index . '.end_date', $exp->end_date) }}">
+                                value="{{ old('experience.' . $index . '.end_date', $exp->end_date ? $exp->end_date->format('Y-m-d') : '') }}">
                         </div>
                     </div>
                     <input type="hidden" name="experience[{{ $index }}][id]" value="{{ $exp->id }}">
@@ -114,7 +117,7 @@
             </div>
             <button type="button" 
                     id="add-experience-btn">
-                + Add Experience
+                Add Experience
             </button>
         </div>
 
@@ -127,26 +130,26 @@
                         <div>
                             <label>Degree/Course</label>
                             <input type="text" name="education[{{ $index }}][name]" 
-                                   value="{{ old('education.' . $index . '.name', $edu->name) }}"
-                                   placeholder="Degree or course name">
+                                value="{{ old('education.' . $index . '.name', $edu->name) }}"
+                                placeholder="Degree or course name">
                         </div>
                         <div>
                             <label>Institution</label>
                             <input type="text" name="education[{{ $index }}][issued_by]" 
-                                   value="{{ old('education.' . $index . '.issued_by', $edu->issued_by) }}"
-                                   placeholder="Institution name">
+                                value="{{ old('education.' . $index . '.issued_by', $edu->issued_by) }}"
+                                placeholder="Institution name">
                         </div>
                     </div>
                     <div>
                         <div>
                             <label>Start Date</label>
                             <input type="date" name="education[{{ $index }}][start_date]" 
-                                   value="{{ old('education.' . $index . '.start_date', $edu->start_date) }}">
+                                value="{{ old('education.' . $index . '.start_date', $edu->start_date ? $edu->start_date->format('Y-m-d') : '') }}">
                         </div>
                         <div>
                             <label>End Date</label>
                             <input type="date" name="education[{{ $index }}][end_date]" 
-                                   value="{{ old('education.' . $index . '.end_date', $edu->end_date) }}">
+                                value="{{ old('education.' . $index . '.end_date', $edu->end_date ? $edu->end_date->format('Y-m-d') : '') }}">
                         </div>
                     </div>
                     <input type="hidden" name="education[{{ $index }}][id]" value="{{ $edu->id }}">
