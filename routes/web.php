@@ -59,21 +59,18 @@ Route::controller(RegisterController::class)->group(function () {
 });
 
 
-// --- ÁREA DE UTILIZADOR AUTENTICADO (US01, US02, US03, US19) ---
 
 Route::middleware('auth')->group(function () {
-    
-    // Job Postings (Comum aos dois)
     Route::controller(JobPostingController::class)->group(function () {
         Route::get('/job_postings', 'index')->name('job_postings.index');
         Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
     });
 
-    // Job Seeker Profile (Vindo da branch DELA - US19)
     Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
     Route::get('/job-seeker/profile/edit', [JobSeekerController::class, 'edit'])->name('jobseeker.profile.edit');
     Route::put('/job-seeker/profile/update', [JobSeekerController::class, 'update'])->name('jobseeker.profile.update');
-    
+    Route::get('/job-postings/{jobPosting}/apply', [JobSeekerController::class, 'applyForm'])->name('jobseeker.apply');
+
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
