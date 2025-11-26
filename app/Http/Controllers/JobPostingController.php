@@ -33,6 +33,7 @@ class JobPostingController extends Controller {
         $searchTerm = $request->input('search');
 
         $jobsQuery = JobPosting::with('city');
+        $jobSeekers = collect();
 
         if (!empty($searchTerm)) {
             $words = explode(' ', trim($searchTerm));
@@ -50,6 +51,18 @@ class JobPostingController extends Controller {
                 ->whereRaw("tsvectors @@ to_tsquery('english', ?)", [$prefixSearch])
                 ->orderBy('name')
                 ->get();
+
+           $searchWords = explode(' ', $searchTerm);
+            $jobSeekers = \App\Models\JobSeeker::with(['registeredUser', 'city'])->where(function ($query) use ($searchWords) {
+                    foreach ($searchWords as $word) {
+                        $query->orWhereHas('registeredUser', function ($q) use ($word) {
+                            $q->where('name', 'ILIKE', "%{$word}%");
+                        })->orWhere('about_me', 'ILIKE', "%{$word}%")->orWhereHas('tags', function ($q) use ($word) {
+                            $q->where('name', 'ILIKE', "%{$word}%");
+                        });
+                    }
+                })->get();
+
         } else {
             $jobsQuery->orderBy('id');
             $companies = collect();
@@ -60,6 +73,8 @@ class JobPostingController extends Controller {
         return view('pages.job_postings', [
             'job_postings' => $jobPostings,
             'companies' => $companies,
+            'jobSeekers' => $jobSeekers,
+            'searchTerm' => $searchTerm
         ]);
     }
 
