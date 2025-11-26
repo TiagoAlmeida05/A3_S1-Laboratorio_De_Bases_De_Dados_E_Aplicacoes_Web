@@ -20,14 +20,6 @@ Route::get('/job_postings', function() {
     return redirect('/');
 });
 
-Route::middleware('auth')->controller(ItemController::class)->group(function () {
-    Route::post('/api/cards/{card}/items', 'store');
-    Route::patch('/api/items/{item}', 'update');
-    Route::delete('/api/items/{item}', 'destroy');
-});
-
-
-
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login');
     Route::post('/login', 'authenticate');
@@ -42,8 +34,6 @@ Route::controller(RegisterController::class)->group(function () {
     Route::get('/register', 'showRegistrationForm')->name('register');
     Route::post('/register', 'register');
 });
-
-
 
 Route::middleware('auth')->group(function () {
     Route::controller(JobPostingController::class)->group(function () {
@@ -80,8 +70,8 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::post('/job-postings', [JobPostingController::class, 'store'])->name('job_postings.store');
     Route::get('/job-postings/{job_posting}/edit', [JobPostingController::class, 'edit'])->name('job_postings.edit');
     Route::put('/job-postings/{job_posting}', [JobPostingController::class, 'update'])->name('job_postings.update');
+    Route::delete('/job-postings/{job_posting}', [JobPostingController::class, 'delete'])->name('job_postings.delete');
 });
-
 
 Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');

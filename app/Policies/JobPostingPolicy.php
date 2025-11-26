@@ -49,9 +49,14 @@ class JobPostingPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, JobPosting $jobPosting): bool
-    {
-        return false;
+    public function delete(User $user, JobPosting $job_posting): bool {
+        if (!$user->admin) {
+            return true;
+        }
+        if (!$user->recruiter) {
+            return false;
+        }
+        return $user->recruiter->registered_user_id === $job_posting->recruiter;
     }
 
     /**
