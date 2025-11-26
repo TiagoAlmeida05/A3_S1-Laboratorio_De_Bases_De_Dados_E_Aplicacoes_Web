@@ -1,111 +1,463 @@
 @extends('layouts.app')
 
+@section('title', 'Edit Profile - ' . $jobSeeker->registeredUser->name . ' | ' . config('app.name'))
+
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Editar Perfil</h4>
+<section id="edit_job_seeker_profile">
+    <h1>Edit Profile</h1>
+
+    @if(session('success'))
+        <div>
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <form action="{{ route('jobseeker.profile.update') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
+        <div>
+            <h2>Profile Picture</h2>
+            <div>
+                <div>
+                    <img src="" alt="Profile Picture">
                 </div>
-
-                <div class="card-body">
-                    @if(session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('jobseeker.profile.update') }}" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="mb-3">
-                            <label for="profile_photo" class="form-label">Foto de Perfil</label>
-                            <input type="file" class="form-control @error('profile_photo') is-invalid @enderror" 
-                                   id="profile_photo" name="profile_photo" accept="image/*">
-                            @error('profile_photo')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            @if($jobSeeker->profile_photo)
-                                <div class="mt-2">
-                                    <img src="{{ asset('storage/' . $jobSeeker->profile_photo) }}" 
-                                         alt="Current profile photo" class="img-thumbnail" style="max-width: 150px;">
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="about_me" class="form-label">Sobre Mim</label>
-                            <textarea class="form-control @error('about_me') is-invalid @enderror" 
-                                      id="about_me" name="about_me" rows="4" 
-                                      placeholder="Fala um pouco sobre a tua experiência, skills e interesses...">{{ old('about_me', $jobSeeker->about_me) }}</textarea>
-                            @error('about_me')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="website" class="form-label">Website Pessoal</label>
-                            <input type="url" class="form-control @error('website') is-invalid @enderror" 
-                                   id="website" name="website" 
-                                   value="{{ old('website', $jobSeeker->website) }}" 
-                                   placeholder="https://exemplo.com">
-                            @error('website')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="city_id" class="form-label">Localização</label>
-                            <select class="form-control @error('city_id') is-invalid @enderror" 
-                                    id="city_id" name="city_id">
-                                <option value="">Selecionar Cidade</option>
-                                @foreach($cities as $city)
-                                    <option value="{{ $city->id }}" 
-                                        {{ old('city_id', $jobSeeker->city_id) == $city->id ? 'selected' : '' }}>
-                                        {{ $city->name }}, {{ $city->country->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('city_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="cv" class="form-label">Currículo (PDF, DOC, DOCX)</label>
-                            <input type="file" class="form-control @error('cv') is-invalid @enderror" 
-                                   id="cv" name="cv" accept=".pdf,.doc,.docx">
-                            @error('cv')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            @if($jobSeeker->cv)
-                                <div class="mt-2">
-                                    <a href="{{ asset('storage/' . $jobSeeker->cv) }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                        Ver Currículo Atual
-                                    </a>
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" 
-                                   id="show_cv" name="show_cv" value="1"
-                                   {{ old('show_cv', $jobSeeker->show_cv) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="show_cv">
-                                Mostrar currículo publicamente
-                            </label>
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ route('jobseeker.profile', $jobSeeker->registered_user_id) }}" class="btn btn-secondary me-md-2">Cancelar</a>
-                            <button type="submit" class="btn btn-primary">Atualizar Perfil</button>
-                        </div>
-                    </form>
+                <div>
+                    <input type="file" name="profile_photo">
                 </div>
             </div>
         </div>
-    </div>
-</div>
+
+        <div>
+            <h2>About Me</h2>
+            <div>
+                <label>City</label>
+                <select name="city_id">
+                    <option value="">Select a City</option>
+                    @foreach($cities as $city)
+                        <option value="{{ $city->id }}" {{ $jobSeeker->city_id == $city->id ? 'selected' : '' }}>                                {{ $city->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <textarea name="about_me" rows="4" 
+                      placeholder="How do you describe yourself?">{{ old('about_me', $jobSeeker->about_me) }}</textarea>
+        </div>
+
+        <div>
+            <h2>Contacts</h2>
+            <div>
+                <div>
+                    <label>Email</label>
+                    <input type="email" value="{{ $jobSeeker->registeredUser->email }}" disabled>
+                </div>
+                <div>
+                    <label>Website</label>
+                    <input type="url" name="website" 
+                           value="{{ old('website', $jobSeeker->website) }}"
+                           placeholder="https://exemplo.com">
+                </div>
+
+                @if($jobSeeker->cv)
+                    <div>
+                        <a href="{{ asset('storage/'.$jobSeeker->cv) }}">
+                            See current CV
+                        </a>
+                    </div>
+                @endif
+
+                <input type="file" name="cv">
+
+                <div style="margin-top: 16px; display: flex; align-items: center;">
+                    <input type="checkbox" name="show_cv" value="1" 
+                        {{ $jobSeeker->show_cv ? 'checked' : '' }}>
+                    <label>Public CV</label>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h2>Experience</h2>
+            <div id="experience-container">
+                @foreach($jobSeeker->experienceEntries as $index => $exp)
+                <div class="experience-item">
+                    <div>
+                        <div>
+                            <label>Position</label>
+                            <input type="text" name="experience[{{ $index }}][position_name]" 
+                                value="{{ old('experience.' . $index . '.position_name', $exp->position_name) }}"
+                                placeholder="Position name">
+                        </div>
+                        <div>
+                            <label>Employer</label>
+                            <input type="text" name="experience[{{ $index }}][employer]" 
+                                value="{{ old('experience.' . $index . '.employer', $exp->employer) }}"
+                                placeholder="Employer name">
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label>Start Date</label>
+                            <input type="date" name="experience[{{ $index }}][start_date]" 
+                                value="{{ old('experience.' . $index . '.start_date', $exp->start_date ? $exp->start_date->format('Y-m-d') : '') }}">
+                        </div>
+                        <div>
+                            <label>End Date</label>
+                            <input type="date" name="experience[{{ $index }}][end_date]" 
+                                value="{{ old('experience.' . $index . '.end_date', $exp->end_date ? $exp->end_date->format('Y-m-d') : '') }}">
+                        </div>
+                    </div>
+                    <input type="hidden" name="experience[{{ $index }}][id]" value="{{ $exp->id }}">
+                    <button type="button" 
+                            class="remove-experience-btn">
+                        Remove Experience
+                    </button>
+                </div>
+                @endforeach
+            </div>
+            <button type="button" 
+                    id="add-experience-btn">
+                Add Experience
+            </button>
+        </div>
+
+        <div>
+            <h2>Education</h2>
+            <div id="education-container">
+                @foreach($jobSeeker->educationEntries as $index => $edu)
+                <div class="education-item">
+                    <div>
+                        <div>
+                            <label>Degree/Course</label>
+                            <input type="text" name="education[{{ $index }}][name]" 
+                                value="{{ old('education.' . $index . '.name', $edu->name) }}"
+                                placeholder="Degree or course name">
+                        </div>
+                        <div>
+                            <label>Institution</label>
+                            <input type="text" name="education[{{ $index }}][issued_by]" 
+                                value="{{ old('education.' . $index . '.issued_by', $edu->issued_by) }}"
+                                placeholder="Institution name">
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label>Start Date</label>
+                            <input type="date" name="education[{{ $index }}][start_date]" 
+                                value="{{ old('education.' . $index . '.start_date', $edu->start_date ? $edu->start_date->format('Y-m-d') : '') }}">
+                        </div>
+                        <div>
+                            <label>End Date</label>
+                            <input type="date" name="education[{{ $index }}][end_date]" 
+                                value="{{ old('education.' . $index . '.end_date', $edu->end_date ? $edu->end_date->format('Y-m-d') : '') }}">
+                        </div>
+                    </div>
+                    <input type="hidden" name="education[{{ $index }}][id]" value="{{ $edu->id }}">
+                    <button type="button" 
+                            class="remove-education-btn">
+                        Remove Education
+                    </button>
+                </div>
+                @endforeach
+            </div>
+            <button type="button" 
+                    id="add-education-btn">
+                Add Education
+            </button>
+        </div>
+
+        <div>
+            <h2>Certifications</h2>
+            <div id="certifications-container">
+                @foreach($jobSeeker->certifications as $index => $cert)
+                <div class="certification-item">
+                    <div>
+                        <div>
+                            <label>Certification Name</label>
+                            <input type="text" name="certifications[{{ $index }}][name]" 
+                                   value="{{ old('certifications.' . $index . '.name', $cert->name) }}"
+                                   placeholder="Certification name">
+                        </div>
+                        <div>
+                            <label>Issued By</label>
+                            <input type="text" name="certifications[{{ $index }}][issued_by]" 
+                                   value="{{ old('certifications.' . $index . '.issued_by', $cert->issued_by) }}"
+                                   placeholder="Issuing organization">
+                        </div>
+                    </div>
+                    <input type="hidden" name="certifications[{{ $index }}][id]" value="{{ $cert->id }}">
+                    <button type="button" 
+                            class="remove-certification-btn">
+                        Remove Certification
+                    </button>
+                </div>
+                @endforeach
+            </div>
+            <button type="button" 
+                    id="add-certification-btn">
+                Add Certification
+            </button>
+        </div>
+
+
+        <div>
+            <h2>Tags & Skills</h2>
+            <div>
+                @foreach($tags as $tag)
+                    <div style="display: flex; align-items: center;">
+                        <input type="checkbox" name="tags[]" value="{{ $tag->id }}" 
+                               {{ $jobSeeker->tags->contains($tag->id) ? 'checked' : '' }}>
+                        <label>{{ $tag->name }}</label>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <div>
+            <h2>Awards</h2>
+            <div id="awards-container">
+                @foreach($jobSeeker->awards as $index => $award)
+                <div class="award-item">
+                    <div>
+                        <div>
+                            <label>Award Name</label>
+                            <input type="text" name="awards[{{ $index }}][name]" 
+                                   value="{{ old('awards.' . $index . '.name', $award->name) }}"
+                                   placeholder="Award name">
+                            <input type="hidden" name="awards[{{ $index }}][id]" value="{{ $award->id }}">
+                        </div>
+                    </div>
+                    <button type="button" 
+                            class="remove-award-btn">
+                        Remove Award
+                    </button>
+                </div>
+                @endforeach
+            </div>
+            <button type="button" 
+                    id="add-award-btn">
+                Add Award
+            </button>
+        </div>
+
+        <div>
+            <a href="{{ route('jobseeker.profile', $jobSeeker->registered_user_id) }}">
+                Cancel
+            </a>
+            <button type="submit">
+                Save Changes
+            </button>
+        </div>
+    </form>
+</section>
+<script>
+let awardIndex = {{ $jobSeeker->awards->count() }};
+let experienceIndex = {{ $jobSeeker->experienceEntries->count() }};
+let educationIndex = {{ $jobSeeker->educationEntries->count() }};
+let certificationIndex = {{ $jobSeeker->certifications->count() }};
+
+function addAward() {
+    const container = document.getElementById('awards-container');
+    const awardDiv = document.createElement('div');
+    
+    awardDiv.innerHTML = `
+        <div>
+            <div>
+                <label>Award Name</label>
+                <input type="text" name="awards[${awardIndex}][name]" 
+                       placeholder="Award name">
+            </div>
+        </div>
+        <button type="button" 
+                class="remove-award-btn">
+            Remove Award
+        </button>
+    `;
+    
+    container.appendChild(awardDiv);
+    
+    const removeBtn = awardDiv.querySelector('.remove-award-btn');
+    removeBtn.addEventListener('click', function() {
+        removeAward(this);
+    });
+    
+    awardIndex++;
+}
+
+function removeAward(button) {
+    const awardItem = button.closest('.award-item');
+    if (awardItem) {
+        awardItem.remove();
+    }
+}
+
+function addExperience() {
+    const container = document.getElementById('experience-container');
+    const expDiv = document.createElement('div');
+    
+    expDiv.innerHTML = `
+        <div>
+            <div>
+                <label>Position</label>
+                <input type="text" name="experience[${experienceIndex}][position_name]"
+                       placeholder="Position name">
+            </div>
+            <div>
+                <label>Employer</label>
+                <input type="text" name="experience[${experienceIndex}][employer]"
+                       placeholder="Employer name">
+            </div>
+        </div>
+        <div>
+            <div>
+                <label>Start Date</label>
+                <input type="date" name="experience[${experienceIndex}][start_date]" required>
+            </div>
+            <div>
+                <label>End Date</label>
+                <input type="date" name="experience[${experienceIndex}][end_date]" required>
+            </div>
+        </div>
+        <button type="button" 
+                class="remove-experience-btn">
+            Remove Experience
+        </button>
+    `;
+    
+    container.appendChild(expDiv);
+    
+    const removeBtn = expDiv.querySelector('.remove-experience-btn');
+    removeBtn.addEventListener('click', function() {
+        removeExperience(this);
+    });
+    
+    experienceIndex++;
+}
+
+function removeExperience(button) {
+    const expItem = button.closest('.experience-item');
+    if (expItem) {
+        expItem.remove();
+    }
+}
+
+function addEducation() {
+    const container = document.getElementById('education-container');
+    const eduDiv = document.createElement('div');
+    
+    eduDiv.innerHTML = `
+        <div>
+            <div>
+                <label">Degree/Course</label>
+                <input type="text" name="education[${educationIndex}][name]"
+                       placeholder="Degree or course name">
+            </div>
+            <div>
+                <label>Institution</label>
+                <input type="text" name="education[${educationIndex}][issued_by]"
+                       placeholder="Institution name">
+            </div>
+        </div>
+        <div>
+            <div>
+                <label>Start Date</label>
+                <input type="date" name="education[${educationIndex}][start_date]" required>
+            </div>
+            <div>
+                <label>End Date</label>
+                <input type="date" name="education[${educationIndex}][end_date]" required>
+            </div>
+        </div>
+        <button type="button" 
+                class="remove-education-btn">
+            Remove Education
+        </button>
+    `;
+    
+    container.appendChild(eduDiv);
+    
+    const removeBtn = eduDiv.querySelector('.remove-education-btn');
+    removeBtn.addEventListener('click', function() {
+        removeEducation(this);
+    });
+    
+    educationIndex++;
+}
+
+function removeEducation(button) {
+    const eduItem = button.closest('.education-item');
+    if (eduItem) {
+        eduItem.remove();
+    }
+}
+
+function addCertification() {
+    const container = document.getElementById('certifications-container');
+    const certDiv = document.createElement('div');
+    
+    certDiv.innerHTML = `
+        <div>
+            <div>
+                <label>Certification Name</label>
+                <input type="text" name="certifications[${certificationIndex}][name]" 
+                       placeholder="Certification name">
+            </div>
+            <div>
+                <label>Issued By</label>
+                <input type="text" name="certifications[${certificationIndex}][issued_by]"
+                       placeholder="Issuing organization">
+            </div>
+        </div>
+        <button type="button" 
+                class="remove-certification-btn">
+            Remove Certification
+        </button>
+    `;
+    
+    container.appendChild(certDiv);
+    
+    const removeBtn = certDiv.querySelector('.remove-certification-btn');
+    removeBtn.addEventListener('click', function() {
+        removeCertification(this);
+    });
+    
+    certificationIndex++;
+}
+
+function removeCertification(button) {
+    const certItem = button.closest('.certification-item');
+    if (certItem) {
+        certItem.remove();
+    }
+}
+
+document.getElementById('add-award-btn').addEventListener('click', addAward);
+document.getElementById('add-experience-btn').addEventListener('click', addExperience);
+document.getElementById('add-education-btn').addEventListener('click', addEducation);
+document.getElementById('add-certification-btn').addEventListener('click', addCertification);
+
+document.querySelectorAll('.remove-award-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        removeAward(this);
+    });
+});
+
+document.querySelectorAll('.remove-experience-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        removeExperience(this);
+    });
+});
+
+document.querySelectorAll('.remove-education-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        removeEducation(this);
+    });
+});
+
+document.querySelectorAll('.remove-certification-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        removeCertification(this);
+    });
+});
+</script>
 @endsection

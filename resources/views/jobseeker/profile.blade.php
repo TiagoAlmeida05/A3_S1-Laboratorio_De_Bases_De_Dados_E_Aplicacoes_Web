@@ -1,60 +1,102 @@
 @extends('layouts.app')
 
+@section('title', $jobSeeker->registeredUser->name . ' | ' . config('app.name'))
+
 @section('content')
-<div class="container mx-auto p-4">
-    <div class="flex items-center mb-4">
-        <img src="{{ asset($jobSeeker->profile_photo) }}" alt="Profile Photo" class="w-24 h-24 rounded-full mr-4">
-        <h1 class="text-2xl font-bold">{{ $jobSeeker->registeredUser->name }}</h1>
+<section id="job_seeker_profile">
+    @auth
+        @if(Auth::id() == $jobSeeker->registered_user_id)
+            <a class="button" href="{{ route('jobseeker.profile.edit') }}">Edit Profile</a> 
+        @endif
+    @endauth
+
+    <h1>{{ $jobSeeker->registeredUser->name }}</h1>
+    
+    <div>
+        <img src="" alt="Profile Photo">
+        <div>
+            @if($jobSeeker->city)
+                <p><strong>City:</strong> {{ $jobSeeker->city->name }}</p>
+            @endif
+            <p><strong>Email:</strong> {{ $jobSeeker->registeredUser->email }}</p>
+            @if($jobSeeker->website)
+                <p><strong>Website:</strong> <a href="{{ $jobSeeker->website }}" target="_blank">{{ $jobSeeker->website }}</a></p>
+            @endif
+            @if($jobSeeker->cv && $jobSeeker->show_cv)
+                <p><strong>CV:</strong> <a href="{{ asset('storage/'.$jobSeeker->cv) }}" target="_blank">Download CV</a></p>
+            @endif
+        </div>
     </div>
 
-    <div class="mb-4">
-        <h2 class="text-xl font-semibold">About Me</h2>
-        <p>{{ $jobSeeker->about_me }}</p>
+    <div>
+        <h2>About Me</h2>
+        <p>{{ $jobSeeker->about_me ?? '' }}</p>
     </div>
 
-    <div class="mb-4">
-        <h2 class="text-xl font-semibold">Experience</h2>
+    @if($jobSeeker->experienceEntries->count() > 0)
+    <div>
+        <h2>Experience</h2>
         <ul>
             @foreach($jobSeeker->experienceEntries as $exp)
-            <li>{{ $exp->position_name }} at {{ $exp->employer }} ({{ $exp->start_date }} - {{ $exp->end_date }})</li>
+            <li><strong>{{ $exp->position_name }}</strong> at {{ $exp->employer }} ({{ \Carbon\Carbon::parse($exp->start_date)->format('M Y') }} - {{ $exp->end_date ? \Carbon\Carbon::parse($exp->end_date)->format('M Y') : 'Present' }})</li>
             @endforeach
         </ul>
     </div>
+    @endif
 
-    <div class="mb-4">
-        <h2 class="text-xl font-semibold">Education</h2>
+    @if($jobSeeker->educationEntries->count() > 0)
+    <div>
+        <h2>Education</h2>
         <ul>
             @foreach($jobSeeker->educationEntries as $edu)
-            <li>{{ $edu->name }} from {{ $edu->issued_by }} ({{ $edu->start_date ?? 'N/A' }} - {{ $edu->end_date }})</li>
+            <li><strong>{{ $edu->name }}</strong> from {{ $edu->issued_by }} ({{ $edu->start_date ? \Carbon\Carbon::parse($edu->start_date)->format('M Y') : 'N/A' }} - {{ $edu->end_date ? \Carbon\Carbon::parse($edu->end_date)->format('M Y') : 'Present' }})</li>
             @endforeach
         </ul>
     </div>
+    @endif
 
-    <div class="mb-4">
-        <h2 class="text-xl font-semibold">Certifications</h2>
+    @if($jobSeeker->certifications->count() > 0)
+    <div>
+        <h2>Certifications</h2>
         <ul>
             @foreach($jobSeeker->certifications as $cert)
-            <li>{{ $cert->name }} by {{ $cert->issued_by }}</li>
+            <li><strong>{{ $cert->name }}</strong> by {{ $cert->issued_by }}</li>
             @endforeach
         </ul>
     </div>
+    @endif
 
-    <div class="mb-4">
-        <h2 class="text-xl font-semibold">Skills & Tags</h2>
-        <ul class="flex flex-wrap gap-2">
+    @if($jobSeeker->tags->count() > 0)
+    <div>
+        <h2>Skills & Tags</h2>
+        <div>
             @foreach($jobSeeker->tags as $tag)
-            <li class="bg-gray-200 px-2 py-1 rounded">{{ $tag->name }}</li>
+            <span>{{ $tag->name }}</span>
             @endforeach
-        </ul>
+        </div>
     </div>
+    @endif
 
-    <div class="mb-4">
-        <h2 class="text-xl font-semibold">Social Media</h2>
-        <ul class="flex gap-2">
+    @if($jobSeeker->socialMediaProfiles->count() > 0)
+    <div>
+        <h2>Social Media</h2>
+        <div>
             @foreach($jobSeeker->socialMediaProfiles as $sm)
-            <li><a href="{{ $sm->url }}" target="_blank">{{ $sm->socialMediaType->name }}</a></li>
+            <a href="{{ $sm->url }}" target="_blank" style="text-decoration: none;">{{ $sm->socialMediaType->name }}</a>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    @if($jobSeeker->awards->count() > 0)
+    <div>
+        <h2>Awards</h2>
+        <ul>
+            @foreach($jobSeeker->awards as $award)
+            <li><strong>{{ $award->name }}</strong></li>
             @endforeach
         </ul>
     </div>
-</div>
+    @endif
+</section>
 @endsection

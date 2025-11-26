@@ -2,37 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Imports Gerais
 use App\Http\Controllers\ItemController;
 
-// Imports de Autenticação
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
 
-// Imports do Projeto (Juntei os teus e os dela)
 use App\Http\Controllers\JobPostingController;
-use App\Http\Controllers\AdminController;      // <--- Teu (US56)
-use App\Http\Controllers\JobSeekerController;  // <--- Dela (US19)
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\JobSeekerController; 
 use App\Http\Controllers\RecruiterController;
 use App\Http\Controllers\CompanyController;
 
-// Home
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
 Route::get('/job_postings', function() {
     return redirect('/');
 });
 
-/*
-// Cards (boilerplate - podes manter ou apagar)
-Route::middleware('auth')->controller(CardController::class)->group(function () {
-    Route::get('/cards', 'index')->name('cards.index');
-    Route::get('/cards/{card}', 'show')->name('cards.show');
-});
-*/
-
-// Boilerplate do ItemController (vinha no template)
 Route::middleware('auth')->controller(ItemController::class)->group(function () {
     Route::post('/api/cards/{card}/items', 'store');
     Route::patch('/api/items/{item}', 'update');
@@ -40,14 +27,12 @@ Route::middleware('auth')->controller(ItemController::class)->group(function () 
 });
 
 
-// --- AUTENTICAÇÃO ---
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login');
     Route::post('/login', 'authenticate');
 });
 
-// Usei a tua versão do Logout (POST e GET) porque é mais segura
 Route::controller(LogoutController::class)->group(function () {
     Route::post('/logout', 'logout')->name('logout');
     Route::get('/logout', 'logout');
@@ -59,18 +44,18 @@ Route::controller(RegisterController::class)->group(function () {
 });
 
 
-// --- ÁREA DE UTILIZADOR AUTENTICADO (US01, US02, US03, US19) ---
 
 Route::middleware('auth')->group(function () {
-    
-    // Job Postings (Comum aos dois)
     Route::controller(JobPostingController::class)->group(function () {
         Route::get('/job_postings', 'index')->name('job_postings.index');
         Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
     });
 
-    // Job Seeker Profile (Vindo da branch DELA - US19)
     Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
+    Route::get('/job-seeker/profile/edit', [JobSeekerController::class, 'edit'])->name('jobseeker.profile.edit');
+    Route::put('/job-seeker/profile/update', [JobSeekerController::class, 'update'])->name('jobseeker.profile.update');
+    Route::get('/job_postings/{jobPosting}/apply', [JobSeekerController::class, 'applyForm'])->name('jobseeker.apply');
+    Route::post('/job_postings/{jobPosting}/apply', [JobSeekerController::class, 'storeApplication'])->name('jobseeker.apply.store');
 
 });
 
@@ -82,6 +67,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/admin/content/{id}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
     Route::get('/admin/pages', [AdminController::class, 'editPages'])->name('admin.pages');
     Route::patch('/admin/content/{id}/reopen', [AdminController::class, 'reopenReport'])->name('admin.reports.reopen');
+    Route::get('/admin/pages/{id}/edit', [AdminController::class, 'showPageForm'])->name('admin.pages.edit');
+    Route::put('/admin/pages/{id}', [AdminController::class, 'updatePage'])->name('admin.pages.update');
+});
+
+Route::get('/recruiter-dashboard', function () {
 });
 
 Route::middleware('user-role:recruiter')->controller(RecruiterController::class)->group(function () {
@@ -92,8 +82,8 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::put('/job-postings/{job_posting}', [JobPostingController::class, 'update'])->name('job_postings.update');
 });
 
-Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
 
+Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit')->middleware('auth');
 Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')->middleware('auth');

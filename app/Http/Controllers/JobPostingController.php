@@ -16,8 +16,15 @@ class JobPostingController extends Controller {
     public function show(JobPosting $jobPosting): View {
         Gate::authorize('view', $jobPosting);
 
+        $jobSeeker = null;
+        
+        if (auth()->check()) {
+            $jobSeeker = \App\Models\JobSeeker::where('registered_user_id', auth()->id())->first();
+        }
+
         return view('pages.job_posting', [
-            'job_posting' => $jobPosting
+            'job_posting' => $jobPosting,
+            'jobSeeker' => $jobSeeker
         ]);
     }
 
