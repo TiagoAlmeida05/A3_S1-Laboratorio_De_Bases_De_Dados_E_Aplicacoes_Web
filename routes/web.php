@@ -73,8 +73,6 @@ Route::middleware('auth')->group(function () {
 
 });
 
-
-
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs'); 
     Route::patch('/admin/jobs/{id}/approve', [AdminController::class, 'approveJob'])->name('admin.jobs.approve');
@@ -85,12 +83,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/admin/content/{id}/reopen', [AdminController::class, 'reopenReport'])->name('admin.reports.reopen');
 });
 
-Route::get('/recruiter-dashboard', function () {
-    
-});
-
 Route::middleware('user-role:recruiter')->controller(RecruiterController::class)->group(function () {
     Route::get('/recruiter-dashboard', 'index')->name('recruiter-dashboard.index');
+    Route::get('/recruiter-dashboard/new-job-posting', [JobPostingController::class, 'create'])->name('job_postings.create');
+    Route::post('/job-postings', [JobPostingController::class, 'store'])->name('job_postings.store');
 });
 
 Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
