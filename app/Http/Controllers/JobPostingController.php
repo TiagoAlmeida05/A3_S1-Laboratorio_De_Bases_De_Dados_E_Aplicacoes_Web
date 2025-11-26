@@ -21,12 +21,38 @@ class JobPostingController extends Controller {
         ]);
     }
 
-    public function index() {
-        Gate::authorize('viewAny', JobPosting::class);
-        $jobPostings = JobPosting::with('city')->orderBy('id')->get();
+    public function index(Request $request)
+    {
+        $searchTerm = $request->input('search');
+
+        $jobsQuery = JobPosting::with('city');
+
+        if (!empty($searchTerm)) {
+            $words = explode(' ', trim($searchTerm));
+            $prefixSearch = implode(':* & ', $words) . ':*';
+
+            $jobsQuery->whereRaw(
+                "tsvectors @@ to_tsquery('english', ?)",
+                [$prefixSearch]
+            )->selectRaw(
+                "*, ts_rank(tsvectors, to_tsquery('english', ?)) as rank",
+                [$prefixSearch]
+            )->orderBy('rank', 'desc');
+
+            $companies = \App\Models\Company::with('city')
+                ->whereRaw("tsvectors @@ to_tsquery('english', ?)", [$prefixSearch])
+                ->orderBy('name')
+                ->get();
+        } else {
+            $jobsQuery->orderBy('id');
+            $companies = collect();
+        }
+
+        $jobPostings = $jobsQuery->get();
 
         return view('pages.job_postings', [
-            'job_postings' => $jobPostings
+            'job_postings' => $jobPostings,
+            'companies' => $companies,
         ]);
     }
 

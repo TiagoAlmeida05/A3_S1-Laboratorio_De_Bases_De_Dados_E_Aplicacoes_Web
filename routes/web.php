@@ -17,7 +17,11 @@ use App\Http\Controllers\JobSeekerController;  // <--- Dela (US19)
 use App\Http\Controllers\RecruiterController;
 
 // Home
-Route::redirect('/', '/login');
+Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
+
+Route::get('/job_postings', function() {
+    return redirect('/');
+});
 
 /*
 // Cards (boilerplate - podes manter ou apagar)
@@ -84,3 +88,5 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::get('/recruiter-dashboard/new-job-posting', [JobPostingController::class, 'create'])->name('job_postings.create');
     Route::post('/job-postings', [JobPostingController::class, 'store'])->name('job_postings.store');
 });
+
+Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');

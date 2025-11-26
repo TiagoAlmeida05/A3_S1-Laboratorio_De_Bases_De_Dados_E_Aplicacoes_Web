@@ -16,11 +16,35 @@ class Company extends Model {
         'city_id'
     ];
 
-    public function department() {
-        return $this->hasMany(Department::class, 'company_id');
+    public function city()
+    {
+        return $this->belongsTo(City::class);
     }
 
-    public function city() {
-        return $this->belongsTo(City::class, 'city_id');
+    public function departments()
+    {
+        return $this->hasMany(Department::class);
+    }
+
+    public function jobPostings()
+    {
+        return $this->hasManyThrough(
+            JobPosting::class,   
+            Department::class,   
+            'company_id',        
+            'recruiter_id',      
+            'id',                
+            'id'                 
+        );
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'company_tag');
+    }
+
+    public function socialMediaProfiles()
+    {
+        return $this->hasMany(SocialMediaProfile::class);
     }
 }
