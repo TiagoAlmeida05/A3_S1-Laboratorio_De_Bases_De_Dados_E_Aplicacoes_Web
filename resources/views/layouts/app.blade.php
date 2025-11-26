@@ -29,13 +29,24 @@
                         $recruiter = Auth::user()->recruiter;
                         $isManager = $recruiter && $recruiter->is_company_manager;
                         $companyId = $isManager ? $recruiter->department->company_id : null;
+
+                        $user = Auth::user();
+                        $isJobSeeker = $user->jobSeeker !== null;
+                        $isRecruiter = $user->recruiter !== null;
+                        
+                        if ($isJobSeeker) {
+                            $profileUrl = route('jobseeker.profile', $user->jobSeeker->registered_user_id);
+                        } elseif ($isRecruiter) {
+                            $profileUrl = route('recruiter-dashboard.index');
+                        }
                     @endphp
                     
                     @if($isManager && $companyId)
                         <a class="button" href="{{ route('companies.edit', $companyId) }}">Edit Company</a>
                     @endif
 
-                    <a class="button" href="{{ url('/logout') }}"> Logout </a> <span>{{ Auth::user()->name }}</span>
+                    <a class="button" href="{{ url('/logout') }}"> Logout </a> 
+                    <a href="{{ $profileUrl }}" class="user-profile-link">{{ Auth::user()->name }}</a>
                 @else
                     <a class="button" href="{{ url('/login') }}">Login</a>
                 @endauth
