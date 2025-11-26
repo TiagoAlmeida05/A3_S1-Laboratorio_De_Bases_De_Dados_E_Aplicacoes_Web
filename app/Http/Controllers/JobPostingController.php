@@ -57,6 +57,8 @@ class JobPostingController extends Controller {
     }
 
     public function create() {
+        Gate::authorize('create-job-posting');
+
         $cities = City::all();
         return view('job_postings.create', [
             'cities' => $cities
