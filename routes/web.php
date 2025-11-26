@@ -2,37 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Imports Gerais
 use App\Http\Controllers\ItemController;
 
-// Imports de Autenticação
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
 
-// Imports do Projeto (Juntei os teus e os dela)
 use App\Http\Controllers\JobPostingController;
-use App\Http\Controllers\AdminController;      // <--- Teu (US56)
-use App\Http\Controllers\JobSeekerController;  // <--- Dela (US19)
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\JobSeekerController; 
 use App\Http\Controllers\RecruiterController;
 use App\Http\Controllers\CompanyController;
 
-// Home
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
 Route::get('/job_postings', function() {
     return redirect('/');
 });
 
-/*
-// Cards (boilerplate - podes manter ou apagar)
-Route::middleware('auth')->controller(CardController::class)->group(function () {
-    Route::get('/cards', 'index')->name('cards.index');
-    Route::get('/cards/{card}', 'show')->name('cards.show');
-});
-*/
-
-// Boilerplate do ItemController (vinha no template)
 Route::middleware('auth')->controller(ItemController::class)->group(function () {
     Route::post('/api/cards/{card}/items', 'store');
     Route::patch('/api/items/{item}', 'update');
@@ -40,14 +27,12 @@ Route::middleware('auth')->controller(ItemController::class)->group(function () 
 });
 
 
-// --- AUTENTICAÇÃO ---
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login');
     Route::post('/login', 'authenticate');
 });
 
-// Usei a tua versão do Logout (POST e GET) porque é mais segura
 Route::controller(LogoutController::class)->group(function () {
     Route::post('/logout', 'logout')->name('logout');
     Route::get('/logout', 'logout');
@@ -69,7 +54,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
     Route::get('/job-seeker/profile/edit', [JobSeekerController::class, 'edit'])->name('jobseeker.profile.edit');
     Route::put('/job-seeker/profile/update', [JobSeekerController::class, 'update'])->name('jobseeker.profile.update');
-    Route::get('/job-postings/{jobPosting}/apply', [JobSeekerController::class, 'applyForm'])->name('jobseeker.apply');
+    Route::get('/job_postings/{jobPosting}/apply', [JobSeekerController::class, 'applyForm'])->name('jobseeker.apply');
+    Route::post('/job_postings/{jobPosting}/apply', [JobSeekerController::class, 'storeApplication'])->name('jobseeker.apply.store');
 
 });
 

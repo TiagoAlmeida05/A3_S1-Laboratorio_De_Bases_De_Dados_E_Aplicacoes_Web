@@ -11,6 +11,8 @@ use App\Models\ExperienceEntry;
 use App\Models\EducationEntry;
 use App\Models\CertificationEntry;
 use App\Models\AwardEntry;
+use App\Models\Application;
+use App\Models\JobPosting;
 
 class JobSeekerController extends Controller
 {
@@ -246,5 +248,32 @@ class JobSeekerController extends Controller
         }
 
         $jobSeeker->awards()->whereNotIn('id', $existingAwardIds)->delete();
+    }
+
+    public function applyForm($jobPostingId)
+    {
+        $jobPosting = JobPosting::findOrFail($jobPostingId);
+        
+        return view('jobseeker.apply', compact('jobPosting'));
+    }
+
+    public function storeApplication(Request $request, $jobPostingId)
+    {
+        $validated = $request->validate([
+            'cover_letter' => 'required|file|mimes:pdf,doc,docx|max:2048',
+            'recommendation_letter' => 'required|file|mimes:pdf,doc,docx|max:2048',
+        ]);
+
+        Application::create([
+            'job_seeker_id' => auth()->id(),
+            'job_posting_id' => $jobPostingId,
+            'cover_letter' => $validated['cover_letter'],
+            'recommendation_letter' => $validated['recommendation_letter'],
+            'date' => now(),
+            'evaluated' => false,
+            'accepted' => false,
+        ]);
+
+        return redirect()->route('pages.job_posting')->with('success', 'Application submitted successfully!');
     }
 }
