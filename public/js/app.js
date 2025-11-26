@@ -1,7 +1,8 @@
+/*
 /**
  * Attach all event listeners to existing DOM elements.
  * Called once when the page loads.
- */
+
 function addEventListeners() {
   // When an item checkbox is toggled, send an update request
   document.querySelectorAll('article.card li.item input[type=checkbox]')
@@ -29,7 +30,7 @@ function addEventListeners() {
 /**
  * Encode a data object into URL-encoded form data.
  * Example: {a: 1, b: 2} → "a=1&b=2"
- */
+
 function encodeForAjax(data) {
   return data ? new URLSearchParams(data).toString() : null;
 }
@@ -37,7 +38,7 @@ function encodeForAjax(data) {
 /**
  * Send an AJAX request using the Fetch API.
  * Handles CSRF tokens and common headers.
- */
+
 async function sendAjaxRequest(method, url, data, handler) {
   try {
     const response = await fetch(url, {
@@ -66,7 +67,7 @@ async function sendAjaxRequest(method, url, data, handler) {
   
 /**
  * Update the 'done' status of an item when its checkbox is toggled.
- */
+
 function sendItemUpdateRequest() {
   const item = this.closest('li.item');
   const id = item.dataset.id;
@@ -78,7 +79,7 @@ function sendItemUpdateRequest() {
 
 /**
  * Delete an item when the delete link is clicked.
- */
+
 function sendDeleteItemRequest(event) {
   event.preventDefault();
   const id = this.closest('li.item').dataset.id;
@@ -87,7 +88,7 @@ function sendDeleteItemRequest(event) {
   
 /**
  * Create a new item inside a card when the form is submitted.
- */
+
 function sendCreateItemRequest(event) {
   event.preventDefault();
   const cardId = this.closest('article').dataset.id;
@@ -100,7 +101,7 @@ function sendCreateItemRequest(event) {
   
 /**
  * Delete a card when the delete link in its header is clicked.
- */
+
 function sendDeleteCardRequest(event) {
   event.preventDefault();
   const id = this.closest('article').dataset.id;
@@ -109,7 +110,7 @@ function sendDeleteCardRequest(event) {
   
 /**
  * Create a new card when the new card form is submitted.
- */
+
 function sendCreateCardRequest(event) {
   event.preventDefault();
   const name = this.querySelector('input[name=name]').value.trim();
@@ -121,7 +122,7 @@ function sendCreateCardRequest(event) {
   
 /**
  * Handler: update checkbox state after server confirms change.
- */
+
 function itemUpdatedHandler(item) {
   const checkbox = document.querySelector(`li.item[data-id="${item.id}"] input[type=checkbox]`);
   if (checkbox) checkbox.checked = item.done === "true";
@@ -129,7 +130,7 @@ function itemUpdatedHandler(item) {
   
 /**
  * Handler: add a new item to the DOM after server creates it.
- */
+
 function itemAddedHandler(item) {
   const newItem = createItem(item);
   const card = document.querySelector(`article.card[data-id="${item.card_id}"]`);
@@ -144,21 +145,21 @@ function itemAddedHandler(item) {
   
 /**
  * Handler: remove the deleted item from the DOM.
- */
+
 function itemDeletedHandler(item) {
   document.querySelector(`li.item[data-id="${item.id}"]`)?.remove();
 }
   
 /**
  * Handler: remove the deleted card from the DOM.
- */
+
 function cardDeletedHandler(card) {
   document.querySelector(`article.card[data-id="${card.id}"]`)?.remove();
 }
   
 /**
  * Handler: add a new card to the DOM after server creates it.
- */
+
 function cardAddedHandler(card) {
   const newCard = createCard(card);
 
@@ -177,7 +178,7 @@ function cardAddedHandler(card) {
 /**
  * Create a new <article> element representing a card.
  * Includes its header, item list, and "add item" form.
- */
+
 function createCard(card) {
   const article = document.createElement('article');
   article.className = 'card';
@@ -205,7 +206,7 @@ function createCard(card) {
   
 /**
  * Create a new <li> element representing an item inside a card.
- */
+
 function createItem(item) {
   const li = document.createElement('li');
   li.className = 'item';
@@ -228,7 +229,7 @@ function createItem(item) {
 /**
  * Normalize checkboxes to their default state after page load
  * (fixes back/forward navigation restoring wrong state).
- */
+
 function normalizeCheckboxesToServer() {
   document.querySelectorAll('li.item input[type=checkbox]')
     .forEach(cb => cb.checked = cb.defaultChecked);
@@ -241,5 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Also re-run normalization when restoring from bfcache (back/forward navigation)
-window.addEventListener('pageshow', normalizeCheckboxesToServer);
+window.addEventListener('pageshow', normalizeCheckboxesToServer)
+*/
   
