@@ -276,4 +276,25 @@ class JobSeekerController extends Controller
 
         return redirect()->route('pages.job_posting')->with('success', 'Application submitted successfully!');
     }
+
+    public function searchJobSeekers(Request $request)
+    {
+        $search = $request->input('search');
+
+        $jobSeekers = JobSeeker::with(['registeredUser', 'city', 'tags'])->when($search, function ($query, $search) {
+                $searchTerms = explode(' ', $search);
+                
+                $query->where(function ($q) use ($searchTerms) {
+                    foreach ($searchTerms as $term) {
+                        $q->whereHas('registeredUser', function ($userQuery) use ($term) {
+                            $userQuery->where('name', 'LIKE', "%{$term}%");
+                        })->orWhere('about_me', 'LIKE', "%{$term}%")->orWhereHas('tags', function ($tagQuery) use ($term) {
+                            $tagQuery->where('name', 'LIKE', "%{$term}%");
+                        });
+                    }
+                });
+            })->get();
+
+        return view('partials.job_seeker_part', compact('jobSeekers'));
+    }
 }

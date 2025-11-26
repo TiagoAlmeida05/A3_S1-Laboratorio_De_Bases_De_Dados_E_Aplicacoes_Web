@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchForm = document.getElementById('searchForm');
     const jobPostingsContainer = document.getElementById('jobPostingsContainer');
     const companiesContainer = document.getElementById('companiesContainer');
+    const jobSeekerContainer = document.getElementById('jobSeekerContainer');
     const clearSearch = document.getElementById('clearSearch');
 
     let searchTimeout;
@@ -32,6 +33,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('companiesContainer').innerHTML = newCompanies.innerHTML;
                 } else {
                     document.getElementById('companiesContainer').innerHTML = '';
+                }
+
+                const newJobSeekers = doc.querySelector('#jobSeekerContainer');
+                if (newJobSeekers) {
+                    document.getElementById('jobSeekerContainer').innerHTML = newJobSeekers.innerHTML;
+                } else {
+                    document.getElementById('jobSeekerContainer').innerHTML = '';
                 }
 
                 window.history.pushState({}, '', url.toString());

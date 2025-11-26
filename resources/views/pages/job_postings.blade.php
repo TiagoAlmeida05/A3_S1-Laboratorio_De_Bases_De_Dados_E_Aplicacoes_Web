@@ -38,6 +38,30 @@
         @endif
     </div>
 
+    <div id="jobSeekerContainer">
+        @if(request('search') && request('search') !== '')
+            @if($jobSeekers->count() > 0)
+                <div>
+                    <h2>
+                        Job Seekers ({{ $jobSeekers->count() }})
+                    </h2>
+                    <div>
+                        @foreach($jobSeekers as $jobSeeker)
+                            @include('partials.job_seeker_part', ['jobSeeker' => $jobSeeker])
+                        @endforeach
+                    </div>
+                </div>
+            @else
+                <div>
+                    <h2>
+                        Job Seekers ({{ $jobSeekers->count() }})
+                    </h2>
+                    <p>No job seekers found for "{{ request('search') }}"</p>
+                </div>
+            @endif
+        @endif
+    </div>
+
     {{-- Job Postings --}}
     <div id="jobPostingsContainer">
         @if(request('search') && request('search') !== '')
