@@ -27,6 +27,12 @@ class CheckUserRole
                     abort(403);
                 }
                 break;
+            case 'admin':
+                if (!$user->admin) {
+                    abort(403);
+                }
+                break;
+            
                 // DO LATER: we will have to add here the logic for the other user roles (maybe?)
             default:
                 abort(403);

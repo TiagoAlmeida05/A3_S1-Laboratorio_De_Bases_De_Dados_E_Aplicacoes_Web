@@ -63,7 +63,7 @@ class JobPostingController extends Controller {
         ]);
     }
 
-    public function create() {
+    public function create(): View {
         Gate::authorize('create-job-posting');
 
         $cities = City::all();
@@ -73,6 +73,7 @@ class JobPostingController extends Controller {
     }
 
     public function store(StoreJobPostingRequest $request) {
+        Gate::authorize('create-job-posting');
         try {
             $validated = $request->validated();
     
@@ -92,6 +93,40 @@ class JobPostingController extends Controller {
         }
         catch (\Exception $e){
             return back()->with('error', "An error occurred while creating your new job posting. Please try again.");
+        }
+    }
+
+    public function edit (JobPosting $job_posting): View {
+        Gate::authorize('update', $job_posting);
+
+        $cities = City::all();
+        return view('job_postings.edit', [
+            'job_posting' => $job_posting,
+            'cities' => $cities
+        ]);
+    }
+
+    public function update(StoreJobPostingRequest $request, JobPosting $job_posting) {
+        Gate::authorize('update', $job_posting);
+        try {
+            $validated = $request->validated();
+    
+            $job_posting->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'deadline' => $request->deadline,
+                'min_wage' => $request->min_wage,
+                'max_wage' => $request->max_wage,
+                'requirements' => $request->requirements,
+                'status' => $request->status,
+                'recruiter_id' => Auth::user()->recruiter->registered_user_id,
+                'city_id' => $request->city_id
+            ]);
+    
+            return redirect()->route('recruiter-dashboard.index')->with('success', 'Job posting updated successfully! :)');
+        }
+        catch (\Exception $e){
+            return back()->with('error', "An error occurred while editing your job posting. Please try again.");
         }
     }
 }

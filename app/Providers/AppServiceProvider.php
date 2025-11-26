@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
-    protected $policies = []; // DO LATER: add policies!!
+    protected $policies = [
+        \App\Models\JobPosting::class => \App\Policies\JobPostingPolicy::class
+    ]; // DO LATER: add policies!!
     /**
      * Register any application services.
      */

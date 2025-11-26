@@ -78,6 +78,8 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::get('/recruiter-dashboard', 'index')->name('recruiter-dashboard.index');
     Route::get('/recruiter-dashboard/new-job-posting', [JobPostingController::class, 'create'])->name('job_postings.create');
     Route::post('/job-postings', [JobPostingController::class, 'store'])->name('job_postings.store');
+    Route::get('/job-postings/{job_posting}/edit', [JobPostingController::class, 'edit'])->name('job_postings.edit');
+    Route::put('/job-postings/{job_posting}', [JobPostingController::class, 'update'])->name('job_postings.update');
 });
 
 
