@@ -22,18 +22,34 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{ route('jobseeker.apply.store', $jobPosting->id) }}" method="POST">
         @csrf
         <div">
             <h2>Application Details</h2>
             <div class="form-group">
                 <label for="cover_letter">Cover Letter</label>
-                <input type="file" name="Cover Letter">
+                <input type="file" name="Cover Letter" id="cover_letter" accept=".pdf,.doc,.docx">
             </div>
 
             <div class="form-group">
                 <label for="recommendation_letter">Recommendation Letter</label>
-                <input type="file" name="Recommendation Letter">
+                <input type="file" name="Recommendation Letter" id="cover_letter" accept=".pdf,.doc,.docx">
             </div>
         </div>
 

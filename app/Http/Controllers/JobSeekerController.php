@@ -259,22 +259,40 @@ class JobSeekerController extends Controller
 
     public function storeApplication(Request $request, $jobPostingId)
     {
-        $validated = $request->validate([
-            'cover_letter' => 'required|file|mimes:pdf,doc,docx|max:2048',
-            'recommendation_letter' => 'required|file|mimes:pdf,doc,docx|max:2048',
-        ]);
+        try {
+            $validated = $request->validate([
+                'cover_letter' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+                'recommendation_letter' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            ]);
 
-        Application::create([
-            'job_seeker_id' => auth()->id(),
-            'job_posting_id' => $jobPostingId,
-            'cover_letter' => $validated['cover_letter'],
-            'recommendation_letter' => $validated['recommendation_letter'],
-            'date' => now(),
-            'evaluated' => false,
-            'accepted' => false,
-        ]);
+            $applicationData = [
+                'job_seeker_id' => auth()->id(),
+                'job_posting_id' => $jobPostingId,
+                'date' => now(),
+                'evaluated' => false,
+                'accepted' => false,
+            ];
 
-        return redirect()->route('pages.job_posting')->with('success', 'Application submitted successfully!');
+            if ($request->hasFile('cover_letter')) {
+                $applicationData['cover_letter'] = $request->file('cover_letter')->store('cover_letters', 'public');
+            }
+
+            if ($request->hasFile('recommendation_letter')) {
+                $applicationData['recommendation_letter'] = $request->file('recommendation_letter')->store('recommendation_letters', 'public');
+            }
+
+            Application::create($applicationData);
+
+            return redirect()->route('job_postings.show', $jobPostingId)->with('success', 'Application submitted successfully!');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (str_contains($e->getMessage(), 'has already applied to job posting')) {
+                return redirect()->route('job_postings.show', $jobPostingId)
+                    ->with('error', 'You have already applied to this job posting.');
+            }
+            
+            throw $e;
+        }
     }
 
     public function searchJobSeekers(Request $request)
