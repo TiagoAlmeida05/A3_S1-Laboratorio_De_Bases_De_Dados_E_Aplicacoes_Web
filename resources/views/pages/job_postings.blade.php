@@ -4,10 +4,10 @@
 
 <section id="search-section">
     {{-- Search Bar --}}
-    <div class="search-container mb-6">
+    <div class="search-container mb-6" style="margin-bottom: 2rem;">
         <form method="GET" action="{{ route('homepage') }}" id="searchForm">
-            <div class="search-box">
-                <input 
+            <div class="navbar navbar-light bg-light">
+                <input class="form-control mr-sm-2 mx-auto" style="width: 80vw;"
                     type="text" 
                     name="search" 
                     id="searchInput"
