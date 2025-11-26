@@ -69,8 +69,6 @@ Route::middleware('auth')->group(function () {
 
 });
 
-
-
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs'); 
     Route::patch('/admin/jobs/{id}/approve', [AdminController::class, 'approveJob'])->name('admin.jobs.approve');
@@ -79,10 +77,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/admin/content/{id}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
     Route::get('/admin/pages', [AdminController::class, 'editPages'])->name('admin.pages');
     Route::patch('/admin/content/{id}/reopen', [AdminController::class, 'reopenReport'])->name('admin.reports.reopen');
-});
-
-Route::get('/recruiter-dashboard', function () {
-    
 });
 
 Route::middleware('user-role:recruiter')->controller(RecruiterController::class)->group(function () {
