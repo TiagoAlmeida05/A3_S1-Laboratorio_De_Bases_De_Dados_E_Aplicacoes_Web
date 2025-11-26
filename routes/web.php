@@ -15,9 +15,14 @@ use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\AdminController;      // <--- Teu (US56)
 use App\Http\Controllers\JobSeekerController;  // <--- Dela (US19)
 use App\Http\Controllers\RecruiterController;
+use App\Http\Controllers\CompanyController;
 
 // Home
-Route::redirect('/', '/login');
+Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
+
+Route::get('/job_postings', function() {
+    return redirect('/');
+});
 
 /*
 // Cards (boilerplate - podes manter ou apagar)
@@ -71,8 +76,6 @@ Route::middleware('auth')->group(function () {
     
 });
 
-
-
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs'); 
     Route::patch('/admin/jobs/{id}/approve', [AdminController::class, 'approveJob'])->name('admin.jobs.approve');
@@ -89,4 +92,12 @@ Route::get('/recruiter-dashboard', function () {
 
 Route::middleware('user-role:recruiter')->controller(RecruiterController::class)->group(function () {
     Route::get('/recruiter-dashboard', 'index')->name('recruiter-dashboard.index');
+    Route::get('/recruiter-dashboard/new-job-posting', [JobPostingController::class, 'create'])->name('job_postings.create');
+    Route::post('/job-postings', [JobPostingController::class, 'store'])->name('job_postings.store');
 });
+
+Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
+
+Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
+Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit')->middleware('auth');
+Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')->middleware('auth');
