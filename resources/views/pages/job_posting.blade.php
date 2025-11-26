@@ -10,6 +10,18 @@
             <a class="button" href="{{ route('jobseeker.apply', $job_posting->id) }}">Apply</a>
         @endif
     @endauth
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
     <h1>{{ $job_posting->title }}</h1>
     <p>Description:{{ $job_posting->description }}</p>
     <p>Requirements: {{ $job_posting->requirements ?? 'N/A' }}</p>
