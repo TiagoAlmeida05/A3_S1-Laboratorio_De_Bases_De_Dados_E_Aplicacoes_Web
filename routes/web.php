@@ -13,6 +13,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\JobSeekerController; 
 use App\Http\Controllers\RecruiterController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\PageController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
@@ -51,7 +52,6 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs'); 
-    Route::patch('/admin/jobs/{id}/approve', [AdminController::class, 'approveJob'])->name('admin.jobs.approve');
     Route::delete('/admin/jobs/{id}', [AdminController::class, 'deleteJob'])->name('admin.jobs.delete');
     Route::get('/admin/content', [AdminController::class, 'manageContent'])->name('admin.content');
     Route::patch('/admin/content/{id}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
@@ -77,3 +77,7 @@ Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('compani
 Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit')->middleware('auth');
 Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')->middleware('auth');
+
+Route::get('/about-us', [PageController::class, 'about'])->name('page.about');
+Route::get('/terms-of-service', [PageController::class, 'terms'])->name('page.terms');
+Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('page.privacy');
