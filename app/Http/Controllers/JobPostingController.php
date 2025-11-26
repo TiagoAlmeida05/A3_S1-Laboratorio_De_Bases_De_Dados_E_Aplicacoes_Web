@@ -111,7 +111,7 @@ class JobPostingController extends Controller {
         }
     }
 
-    public function edit (JobPosting $job_posting): View {
+    public function edit(JobPosting $job_posting): View {
         Gate::authorize('update', $job_posting);
 
         $cities = City::all();
@@ -142,6 +142,19 @@ class JobPostingController extends Controller {
         }
         catch (\Exception $e){
             return back()->with('error', "An error occurred while editing your job posting. Please try again.");
+        }
+    }
+
+    public function delete($job_posting_id) {
+        try {
+            $job_posting = JobPosting::findOrFail($job_posting_id);
+            Gate::authorize('delete', $job_posting);
+    
+            $job_posting->delete();
+            return redirect()->route('recruiter-dashboard.index')->with('success', 'Job posting deleted successfully! :)');
+        }
+        catch (\Exception $e){
+            return back()->with('error', "An error occurred while deleting your job posting. Please try again.");
         }
     }
 }
