@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
 @section('content')
-    <h1>Gerir Páginas Estáticas (US58)</h1>
+    <h1>Info Pages Management</h1>
 
     <table>
         <thead>
             <tr>
-                <th>Nome da Página</th>
-                <th>Última Edição Por</th>
-                <th>Ação</th>
+                <th>Page Name</th>
+                <th>Last edited by</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -21,8 +21,8 @@
                     </td>
                     
                     <td>
-                        <a href="{{ route('admin.pages.edit', $page->id) }}" class="button button-outline">
-                            Editar Conteúdo
+                        <a href="{{ route('admin.pages.edit', $page->id) }}" class="button" style="background-color: #9b4dca, border-color: #9b4dca; color: white;">
+                            Edit Page
                         </a>
                     </td>
                 </tr>

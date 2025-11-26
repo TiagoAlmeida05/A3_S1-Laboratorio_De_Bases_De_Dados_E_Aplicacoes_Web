@@ -71,10 +71,12 @@ class AdminController extends Controller
         $page = WebsiteContent::findOrFail($id);
         
         $page->content = $request->input('content');
-        $page->last_edited_by = Auth::id(); // Regista que foste tu
+        $page->last_edited_by = Auth::id();
         
         $page->save();
 
-        return redirect()->route('admin.pages')->with('success', 'Página atualizada com sucesso!');
+        return redirect()->route('admin.pages')->with('success', "{$page->name} updated successfully!");
     }
+
+    
 }
