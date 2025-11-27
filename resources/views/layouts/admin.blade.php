@@ -9,52 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/milligram.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-
-    <style>
-        body { 
-            display: flex; 
-            min-height: 100vh; 
-            margin: 0; 
-            font-family: 'Roboto', sans-serif; 
-            overflow: hidden;
-        }
-        
-        #admin-sidebar {
-            width: 250px;
-            background-color: #9b4dca;
-            color: white;
-            padding: 20px;
-            flex-shrink: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        #admin-sidebar h3 { color: white; border-bottom: 1px solid #ecf0f1; padding-bottom: 10px; }
-        #admin-sidebar a {
-            display: block;
-            color: #ecf0f1;
-            text-decoration: none;
-            padding: 10px 0;
-            border-bottom: 1px solid #ecf0f1;
-        }
-        #admin-sidebar a:hover { color: #3498db; padding-left: 5px; transition: 0.3s; }
-        
-
-        #right-panel {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        #admin-content { 
-            flex: 1;
-            padding: 40px; 
-            background-color: #f4f6f7; 
-        }
-        
-        .logout-btn { margin-top: 20px; color: #ea4c3aff !important; cursor: pointer; background: none; border: none; text-align: left; padding: 0; }
-    </style>
 </head>
 <body>
 
@@ -62,9 +16,9 @@
         <h3>Admin</h3>
         
         <nav>
-            <a href="{{ route('admin.jobs') }}">Job Postings Management</a>
-            <a href="{{ route('admin.content') }}">Content Management</a>
-            <a href="{{ route('admin.pages') }}">Info Pages Management</a>
+            <a href="{{ route('admin.jobs') }}" class=button>Job Postings Management</a>
+            <a href="{{ route('admin.content') }}" class=button>Content Management</a>
+            <a href="{{ route('admin.pages') }}" class=button>Info Pages Management</a>
         </nav>
 
         <form action="{{ route('logout') }}" method="POST">
@@ -77,7 +31,7 @@
         
         <main id="admin-content">
             @if(session('success'))
-                <div style="background: #d4edda; color: #155724; padding: 10px; margin-bottom: 20px; border: 1px solid #c3e6cb; border-radius: 5px;">
+                <div>
                     {{ session('success') }}
                 </div>
             @endif
@@ -90,9 +44,3 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-    </script>
-</body>
-</html>

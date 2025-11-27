@@ -17,14 +17,14 @@
                 <tr>
                     <td>{{ $job->id }}</td>
                     <td>{{ $job->title }}</td>
-                    <td style="color: {{ $job->status == 'Active' ? 'green' : 'orange' }}">
+                    <td>
                         {{ $job->status }}
                     </td>
                     <td>
-                        <div style="display: flex; gap: 10px;">
+                        <div>
                             <form action="{{ route('admin.jobs.delete', $job->id) }}" method="POST" onsubmit="return confirm('Apagar?');">
                                 @csrf @method('DELETE')
-                                <button class="button button-outline" style="color:red; border-color:red;">Remove</button>
+                                <button class="button">Remove</button>
                             </form>
                         </div>
                     </td>
@@ -32,7 +32,7 @@
             @endforeach
         </tbody>
     </table>
-    <div style="margin-top: 20px;">
+    <div">
         {{ $jobs->links() }}
     </div>
 @endsection
