@@ -209,7 +209,7 @@ paths:
     get:
       operationId: R202
       summary: 'R202: Search Jobs'
-      description: 'List jobs with search keywords (authenticated index). Access: JSK, RCR, MNG, ADM'
+      description: 'List jobs with search keywords. Access: PUB'
       tags:
         - 'M02: Job Posting'
       parameters:
@@ -272,7 +272,7 @@ paths:
     get:
       operationId: R205
       summary: 'R205: Job Details'
-      description: 'Show job info. Access: JSK, RCR, MNG, ADM'
+      description: 'Show job info. Access: PUB'
       tags:
         - 'M02: Job Posting'
       parameters:
@@ -309,25 +309,6 @@ paths:
                 302Success:
                   description: 'Successful deletion. Redirect to jobs list.'
                   value: '/job_postings'
-
-  /job-postings/{job_posting}/edit:
-    get:
-      operationId: R207
-      summary: 'R207: Edit Job Form'
-      description: 'Provide UI to edit an existing job. Access: RCR'
-      tags:
-        - 'M02: Job Posting'
-      parameters:
-        - in: path
-          name: job_posting
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 'Ok. Show Edit Job UI'
-    
-  /job-postings/{job_posting}:
     put:
       operationId: R208
       summary: 'R208: Update Job Action'
@@ -351,6 +332,34 @@ paths:
                 302Success:
                   description: 'Successful update. Redirect to job details.'
                   value: '/job_postings/{jobPosting}'
+
+  /job-postings/{job_posting}/edit:
+    get:
+      operationId: R207
+      summary: 'R207: Edit Job Form'
+      description: 'Provide UI to edit an existing job. Access: RCR'
+      tags:
+        - 'M02: Job Posting'
+      parameters:
+        - in: path
+          name: job_posting
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Ok. Show Edit Job UI'
+
+  /companies:
+    get:
+      operationId: R209
+      summary: 'R209: Search Companies'
+      description: 'List companies. Access: PUB'
+      tags:
+        - 'M02: Job Posting'
+      responses:
+        '200':
+          description: 'Ok. Show Company List UI'
 
   /job_postings/{jobPosting}/apply:
     post:
