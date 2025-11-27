@@ -4,12 +4,6 @@
 
 @section('content')
 <section id="job_posting">
-    @auth
-        @if($jobSeeker)
-            <a class="button" href="{{ route('jobseeker.apply', $job_posting->id) }}">Apply</a>
-        @endif
-    @endauth
-
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -31,7 +25,14 @@
         <p><strong>Deadline</strong>: {{ \Carbon\Carbon::parse($job_posting->deadline)->format('d-m-Y') }}</p>
     </div>
 
-    <a class="btn btn-primary" style="background-color: #1c4eb1eb;" href="{{ url('/') }}">Go back</a>
+    <div class="jp-buttons d-flex">
+        <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ url('/') }}">Go back</a>
+        @auth
+            @if($jobSeeker)
+                <a class="button btn btn-primary" style="background-color: #3f9236eb;  padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.apply', $job_posting->id) }}">Apply</a>
+            @endif
+        @endauth
+    </div>
 
 </section>
 
