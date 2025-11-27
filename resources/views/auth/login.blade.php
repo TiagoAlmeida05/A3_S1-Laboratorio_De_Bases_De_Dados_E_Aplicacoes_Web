@@ -40,11 +40,6 @@
         </span>
     @enderror
 
-    <label>
-        <input type="checkbox" name="remember" value="1" @checked(old('remember'))>
-        Remember me
-    </label>
-
     <div class="col">
         <button type="submit" class="btn btn-primary" style="background-color: #1c4eb1eb;">Login</button>
         <a class="btn btn-primary" style="background-color: #1c4eb1eb;" href="{{ route('register') }}">Register</a>
