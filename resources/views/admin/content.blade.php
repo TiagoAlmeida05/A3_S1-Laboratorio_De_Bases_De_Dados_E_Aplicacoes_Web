@@ -26,9 +26,9 @@
                     
                     <td>
                         @if($report->solved)
-                            <span style="color:green; font-weight:bold;">Solved</span>
+                            <span">Solved</span>
                         @else
-                            <span style="color:red; font-weight:bold;">Pending</span>
+                            <span>Pending</span>
                         @endif
                     </td>
                     
@@ -36,15 +36,15 @@
                         @if(!$report->solved)
                             <form action="{{ route('admin.reports.solve', $report->id) }}" method="POST">
                                 @csrf @method('PATCH')
-                                <button class="button button-outline" style="color:green; border-color:green;">
+                                <button class="button">
                                     Mark as solved
                                 </button>
                             </form>
                         @else
-                            <span style="color:gray; font-size:0.8em;">Closed by admin #{{ $report->handled_by_id }}</span>
-                            <form action="{{ route('admin.reports.reopen', $report->id) }}" method="POST" style="display:inline;">
+                            <span>Closed by admin #{{ $report->handled_by_id }}</span>
+                            <form action="{{ route('admin.reports.reopen', $report->id) }}" method="POST">
                                 @csrf @method('PATCH')
-                                <button class="button button-outline" style="border-color:red; color:red; font-size:0.9em; padding: 0 10px; height: 30px; line-height: 28px;">
+                                <button class="button">
                                     Reopen
                                 </button>
                             </form>
@@ -54,7 +54,7 @@
             @endforeach
         </tbody>
     </table>
-    <div style="margin-top: 20px;">
+    <div>
         {{ $reports->links() }}
     </div>
 @endsection
