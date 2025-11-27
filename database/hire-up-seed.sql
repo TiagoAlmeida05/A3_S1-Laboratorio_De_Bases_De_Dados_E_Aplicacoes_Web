@@ -14,7 +14,7 @@
 --
 DO $do$
 DECLARE
-  s text := COALESCE(current_setting('app.schema', true), 'hire_up');
+  s text := COALESCE(current_setting('app.schema', true), 'lbaw2552');
 BEGIN
   -- identifiers require dynamic SQL
   EXECUTE format('DROP SCHEMA IF EXISTS %I CASCADE', s);
