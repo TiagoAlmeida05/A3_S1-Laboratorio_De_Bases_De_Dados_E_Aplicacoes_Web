@@ -15,42 +15,42 @@
         </div>
     @endif
     <div class='form-container'>
-        <form method="POST" action="{{ route('job_postings.store') }}">
+        <form style="padding: 3rem; width: 40rem; border-color: #4856e7ff;" method="POST" action="{{ route('job_postings.store') }}">
             @csrf
 
-            <div class="form-element" id="fe-1">
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-1">
                 <label for="title">Title</label>
                 <input class="form-text" id="title" name="title" type="text" placeholder="Insert title." value="{{ old('title') }}" required>
             </div>
 
-            <div class="form-element" id="fe-2">
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-2">
                 <label for="description">Description</label>
                 <textarea class="form-textarea" id="description" name="description" placeholder="Insert description." required>{{ old('description') }}</textarea>
             </div>
 
-            <div class="form-element" id="fe-3">
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-3">
                 <label for="days_to_deadline">Deadline (in days)</label>
                 <input class="form-number" id="days_to_deadline" name="days_to_deadline" type="number" placeholder="Days" value="{{ old('days_to_deadline') }}" required>
             </div>
 
             <input type="hidden" id="deadline" name="deadline">
 
-            <div class="form-element" id="fe-4">
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-4">
                 <label for="min_wage">Minimum wage</label>
                 <input class="form-number" id="min_wage" name="min_wage" type="number" placeholder="Insert minimum wage (optional)." value="{{ old('min_wage') }}">
             </div>
 
-            <div class="form-element" id="fe-5">
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-5">
                 <label for="max_wage">Maximum wage</label>
                 <input class="form-number" id="max_wage" name="max_wage" type="number" placeholder="Insert maximum wage (optional)." value="{{ old('max_wage') }}">
             </div>
 
-            <div class="form-element" id="fe-6">
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-6">
                 <label for="requirements">Job requirements</label>
                 <textarea class="form-textarea" id="requirements" name="requirements" placeholder="Insert job requirements (optional).">{{ old('requirements') }}</textarea>
             </div>
 
-            <div class="form-element" id="fe-7"> <!-- DO LATER: add Country support -->
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-7"> <!-- DO LATER: add Country support -->
                 <label for="city_id">City</label>
                 <select class="form-dropdown" id="city_id" name="city_id">
                     <option value="" disabled>Select city</option>
