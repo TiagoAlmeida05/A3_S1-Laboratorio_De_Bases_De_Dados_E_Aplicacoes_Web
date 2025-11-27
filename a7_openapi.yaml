@@ -310,8 +310,8 @@ paths:
                   description: 'Successful deletion. Redirect to jobs list.'
                   value: '/job_postings'
     put:
-      operationId: R208
-      summary: 'R208: Update Job Action'
+      operationId: R207
+      summary: 'R207: Update Job Action'
       description: 'Process job update. Access: RCR'
       tags:
         - 'M02: Job Posting'
@@ -335,8 +335,8 @@ paths:
 
   /job-postings/{job_posting}/edit:
     get:
-      operationId: R207
-      summary: 'R207: Edit Job Form'
+      operationId: R208
+      summary: 'R208: Edit Job Form'
       description: 'Provide UI to edit an existing job. Access: RCR'
       tags:
         - 'M02: Job Posting'
@@ -431,8 +431,8 @@ paths:
   
   /companies/{company}: 
     get:
-      operationId: R600
-      summary: 'R600: View Company Profile'
+      operationId: R602
+      summary: 'R602: View Company Profile'
       description: 'Show company profile. Access: PUB'
       tags:
         - 'M06: Managers'
@@ -446,8 +446,8 @@ paths:
         '200':
           description: 'Ok. Show Company Profile UI'
     put:
-      operationId: R602
-      summary: 'R602: Update Company Action'
+      operationId: R603
+      summary: 'R603: Update Company Action'
       description: 'Process company info update. Access: MNG'
       tags:
         - 'M06: Managers'
