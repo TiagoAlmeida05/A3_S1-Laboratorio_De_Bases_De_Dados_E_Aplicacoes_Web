@@ -34,6 +34,13 @@
                         @endforeach
                     </div>
                 </div>
+            @else
+                <div>
+                    <h2>
+                        Companies ({{ $companies->count() }})
+                    </h2>
+                    <p>No company found for "{{ request('search') }}"</p>
+                </div>
             @endif
         @endif
     </div>
