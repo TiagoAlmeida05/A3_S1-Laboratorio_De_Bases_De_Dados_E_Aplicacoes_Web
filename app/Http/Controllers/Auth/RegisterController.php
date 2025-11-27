@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 use App\Models\User;
+use App\Models\JobSeeker;
 
 class RegisterController extends Controller
 {
@@ -38,15 +39,26 @@ class RegisterController extends Controller
         // Validate registration input.
         $request->validate([
             'name' => 'required|string|max:250',
-            'email' => 'required|email|max:250|unique:users',
-            'password' => 'required|min:8|confirmed'
-        ]);
+            'email' => 'required|email|max:250|unique:registered_user',
+            'password' => 'required|min:8|confirmed',
+            'birthday' => 'required|date|before:-18 years',],
+            ['birthday.before' => 'Register is only available if you are at least 18 years old.']
+        );
 
-        // Create the new user.
-        User::create([
+        $age = date_diff(date_create($request->birthday), date_create('today'))->y;
+
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'birthday' => $request->birthday,
+            'age' => $age,
+            'status' =>  'Active'
+        ]);
+
+        JobSeeker::create([
+            'registered_user_id' => $user->id,
+            'show_cv' => true,
         ]);
 
         // Attempt login for the newly registered user.
@@ -57,7 +69,7 @@ class RegisterController extends Controller
         $request->session()->regenerate();
 
         // Redirect to cards page with a success message.
-        return redirect()->route('cards.index')
+        return redirect()->route('job_postings.index')
             ->withSuccess('You have successfully registered & logged in!');
     }
 }

@@ -73,7 +73,6 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::delete('/job-postings/{job_posting}', [JobPostingController::class, 'delete'])->name('job_postings.delete');
 });
 
-Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit')->middleware('auth');
 Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')->middleware('auth');
