@@ -131,7 +131,7 @@ paths:
                   description: 'Failed registration. Redirect to register form.'
                   value: '/register'
 
-  /profile/{id}:
+  /job-seeker/{registered_user_id}:
     get:
       operationId: R106
       summary: 'R106: View user profile'
@@ -148,7 +148,7 @@ paths:
         '200':
           description: 'Ok. Show User Profile UI'
 
-  /profile/edit:
+  /job-seeker/profile/edit:
     get:
       operationId: R107
       summary: 'R107: Edit Profile Form'
