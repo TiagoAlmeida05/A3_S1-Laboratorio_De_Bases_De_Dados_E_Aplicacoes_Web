@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 use App\Models\User;
+use App\Models\JobSeeker;
 
 class RegisterController extends Controller
 {
@@ -46,13 +47,18 @@ class RegisterController extends Controller
 
         $age = date_diff(date_create($request->birthday), date_create('today'))->y;
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'birthday' => $request->birthday,
             'age' => $age,
             'status' =>  'Active'
+        ]);
+
+        JobSeeker::create([
+            'registered_user_id' => $user->id,
+            'show_cv' => true,
         ]);
 
         // Attempt login for the newly registered user.
