@@ -4,9 +4,9 @@
 
 @section('content')
 <section id="recruiter-dashboard">
-    <h1>{{ $user->name }}{{Str::endsWith($user->name, 's') ? '\'' : "'s"}} Recruiter Dashboard</h1>
-    <div class="dashboard-create-job">
-        <a href="{{ route('job_postings.create') }}" class="a-as-button">Create new job posting</a>
+    <h2>{{ $user->name }}{{Str::endsWith($user->name, 's') ? '\'' : "'s"}} Recruiter Dashboard</h2>
+    <div class="dashboard-create-job" style="margin: 1rem 0rem;">
+        <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('job_postings.create') }}" class="a-as-button">Create new job posting</a>
     </div>
     <div class='job-postings'>
         <div class='non-closed-jps'>

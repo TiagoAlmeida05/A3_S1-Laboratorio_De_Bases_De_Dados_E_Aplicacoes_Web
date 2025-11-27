@@ -1,6 +1,6 @@
 <article class="job-posting mb-3" data-id="{{ $job_posting->id }}">
     @if($job_posting->status === 'Closed')
-        <div class="rec-job-posting border-light mb-3 container d-flex justify-content-center" style="max-width: 150rem;">
+        <div class="rec-job-posting border-light mb-3 container d-flex flex-column" style="max-width: 150rem;">
             <a href="{{ route('job_postings.show', $job_posting) }}">
                 {{ $job_posting->title }}
             </a>
