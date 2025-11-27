@@ -140,7 +140,7 @@ paths:
         - 'M01: Authentication and User Profile'
       parameters:
         - in: path
-          name: id
+          name: registered_user_id
           schema:
             type: integer
           required: true
@@ -158,7 +158,9 @@ paths:
       responses:
         '200':
           description: 'Ok. Show Edit Profile UI'
-    post:
+  
+  /job-seeker/profile/update:
+    put:
       operationId: R108
       summary: 'R108: Update Profile Action'
       description: 'Processes profile updates. Access: JSK'
@@ -174,9 +176,9 @@ paths:
               examples:
                 302Success:
                   description: 'Successful update. Redirect to profile.'
-                  value: '/profile/{id}'
+                  value: '/job-seeker/{registered_user_id}'
 
-  /seekers:
+  /job-seeker:
     get:
       operationId: R109
       summary: 'R109: Search Job Seekers'
@@ -203,11 +205,11 @@ paths:
         '200':
           description: 'Ok. Show Homepage UI'
 
-  /jobs:
+  /job_postings:
     get:
       operationId: R202
       summary: 'R202: Search Jobs'
-      description: 'List jobs with search keywords. Access: PUB'
+      description: 'List jobs with search keywords (authenticated index). Access: JSK, RCR, MNG, ADM'
       tags:
         - 'M02: Job Posting'
       parameters:
@@ -219,6 +221,8 @@ paths:
       responses:
         '200':
           description: 'Ok. Show Jobs List UI'
+
+  /job-postings:
     post:
       operationId: R203
       summary: 'R203: Create Job Action'
@@ -251,9 +255,9 @@ paths:
               examples:
                 302Success:
                   description: 'Successful creation. Redirect to job details.'
-                  value: '/jobs/{id}'
+                  value: '/job_postings/{jobPosting}'
 
-  /jobs/create:
+  /recruiter-dashboard/new-job-posting:
     get:
       operationId: R204
       summary: 'R204: Create Job Form'
@@ -264,28 +268,36 @@ paths:
         '200':
           description: 'Ok. Show Create Job UI'
 
-  /jobs/{id}:
+  /job_postings/{jobPosting}:
     get:
       operationId: R205
       summary: 'R205: Job Details'
-      description: 'Show job info. Access: PUB'
+      description: 'Show job info. Access: JSK, RCR, MNG, ADM'
       tags:
         - 'M02: Job Posting'
       parameters:
         - in: path
-          name: id
+          name: jobPosting
           required: true
           schema:
             type: integer
       responses:
         '200':
           description: 'Ok. Show Job UI'
+
+  /job-postings/{job_posting}:
     delete:
       operationId: R206
       summary: 'R206: Delete Job Action'
       description: 'Remove a job posting. Access: RCR'
       tags:
         - 'M02: Job Posting'
+      parameters:
+        - in: path
+          name: job_posting
+          required: true
+          schema:
+            type: integer
       responses:
         '302':
           description: 'Redirect after deleting job.'
@@ -296,9 +308,9 @@ paths:
               examples:
                 302Success:
                   description: 'Successful deletion. Redirect to jobs list.'
-                  value: '/jobs'
+                  value: '/job_postings'
 
-  /jobs/{id}/edit:
+  /job-postings/{job_posting}/edit:
     get:
       operationId: R207
       summary: 'R207: Edit Job Form'
@@ -307,19 +319,27 @@ paths:
         - 'M02: Job Posting'
       parameters:
         - in: path
-          name: id
+          name: job_posting
           required: true
           schema:
             type: integer
       responses:
         '200':
           description: 'Ok. Show Edit Job UI'
-    post:
+    
+  /job-postings/{job_posting}:
+    put:
       operationId: R208
       summary: 'R208: Update Job Action'
       description: 'Process job update. Access: RCR'
       tags:
         - 'M02: Job Posting'
+      parameters:
+        - in: path
+          name: job_posting
+          required: true
+          schema:
+            type: integer
       responses:
         '302':
           description: 'Redirect after updating job.'
@@ -330,58 +350,9 @@ paths:
               examples:
                 302Success:
                   description: 'Successful update. Redirect to job details.'
-                  value: '/jobs/{id}'
+                  value: '/job_postings/{jobPosting}'
 
-  /companies:
-    get:
-      operationId: R209
-      summary: 'R209: Search Companies'
-      description: 'List companies. Access: PUB'
-      tags:
-        - 'M02: Job Posting'
-      responses:
-        '200':
-          description: 'Ok. Show Company List UI'
-
-  /api/jobs:
-    get:
-      operationId: R210
-      summary: 'R210: API Job Search'
-      description: 'Returns JSON data for dynamic search. Access: PUB'
-      tags:
-        - 'M02: Job Posting'
-      parameters:
-        - in: query
-          name: q
-          description: Search keyword
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    title:
-                      type: string
-                    company:
-                      type: string
-                  example:
-                    - id: 1
-                      title: Software Engineer
-                      company: TechCorp
-                    - id: 2
-                      title: Product Manager
-                      company: BizSolutions
-
-  /jobs/{id}/apply:
+  /job_postings/{jobPosting}/apply:
     post:
       operationId: R501
       summary: 'R501: Apply to Job'
@@ -390,10 +361,21 @@ paths:
         - 'M05: Job Applications'
       parameters:
         - in: path
-          name: id
+          name: jobPosting
           required: true
           schema:
             type: integer
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                cover_letter:
+                  type: string
+                recommendation_letter:
+                  type: string
       responses:
         '302':
           description: 'Redirect after applying.'
@@ -404,24 +386,68 @@ paths:
               examples:
                 302Success:
                   description: 'Successful application. Redirect to job page.'
-                  value: '/jobs/{id}'
+                  value: '/job_postings/{jobPosting}'
+    get:
+      operationId: R502
+      summary: 'R502: Fill Form to Apply to Job'
+      description: 'Provide UI to submit application for a job. Access: JSK'
+      tags:
+        - 'M05: Job Applications'
+      parameters:
+        - in: path
+          name: jobPosting
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'OK. Show Apply Form UI'
 
-  /company/profile/edit:
+  /companies/{company}/edit:
     get:
       operationId: R601
       summary: 'R601: Edit Company Profile Form'
       description: 'Form to edit company info. Access: MNG'
       tags:
         - 'M06: Managers'
+      parameters:
+        - in: path
+          name: company
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: 'Ok. Show Company Edit UI'
-    post:
+  
+  /companies/{company}: 
+    get:
+      operationId: R600
+      summary: 'R600: View Company Profile'
+      description: 'Show company profile. Access: PUB'
+      tags:
+        - 'M06: Managers'
+      parameters:
+        - in: path
+          name: company
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Ok. Show Company Profile UI'
+    put:
       operationId: R602
       summary: 'R602: Update Company Action'
       description: 'Process company info update. Access: MNG'
       tags:
         - 'M06: Managers'
+      parameters:
+        - in: path
+          name: company
+          required: true
+          schema:
+            type: integer
       responses:
         '302':
           description: 'Redirect after updating company.'
@@ -432,7 +458,7 @@ paths:
               examples:
                 302Success:
                   description: 'Successful update. Redirect to company profile.'
-                  value: '/company/profile'
+                  value: '/companies/{company}'
 
   /admin/jobs:
     get:
@@ -466,3 +492,36 @@ paths:
       responses:
         '200':
           description: 'Ok. Show Pages Edit UI'
+
+  /about-us:
+    get:
+      operationId: R704
+      summary: 'R704: View About Us Page'
+      description: 'Public view of the About Us static page. Access: PUB'
+      tags:
+        - 'M07: User Administration and Static pages'
+      responses:
+        '200':
+          description: 'Ok. Show About Us Page'
+
+  /terms-of-service:
+    get:
+      operationId: R705
+      summary: 'R705: View Terms of Service Page'
+      description: 'Public view of the Terms of Service static page. Access: PUB'
+      tags:
+        - 'M07: User Administration and Static pages'
+      responses:
+        '200':
+          description: 'Ok. Show Terms of Service Page'
+
+  /privacy-policy:
+    get:
+      operationId: R706
+      summary: 'R706: View Privacy Policy Page'
+      description: 'Public view of the Privacy Policy static page. Access: PUB'
+      tags:
+        - 'M07: User Administration and Static pages'
+      responses:
+        '200':
+          description: 'Ok. Show Privacy Policy Page'
