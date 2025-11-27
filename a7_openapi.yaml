@@ -3,11 +3,7 @@ openapi: 3.0.0
 info:
   version: '1.0'
   title: 'HireUp Web API'
-  description: |
-    Web API Specification for HireUp
-    
-    This application uses web routes that respond to both form submissions 
-    and JavaScript fetch/AJAX requests with JSON responses.
+  description: 'Web Resources Specification (A7) for HireUp'
 
 servers:
   - url: http://localhost:8000
@@ -355,6 +351,27 @@ paths:
                 302Success:
                   description: 'Successful update. Redirect to job details.'
                   value: '/job_postings/{jobPosting}'
+  
+  /api:
+    get:
+      summary: 'API Status'
+      description: 'Returns API status'
+      tags:
+        - 'M02: Job Posting'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  version:
+                    type: string
+                  status:
+                    type: string
 
   /job_postings/{jobPosting}/apply:
     post:
