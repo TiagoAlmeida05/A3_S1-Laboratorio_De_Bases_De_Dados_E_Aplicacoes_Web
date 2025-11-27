@@ -9,7 +9,7 @@
         </div>
         <div class="jp-body list-group list-group-flush">
             <p class="jp-content">
-                <p class="list-group-item"><strong>Deadline:</strong>: {{ \Carbon\Carbon::parse($job_posting->deadline)->format('d-m-Y') }}</p>
+                <p class="list-group-item"><strong>Deadline</strong>: {{ \Carbon\Carbon::parse($job_posting->deadline)->format('d-m-Y') }}</p>
                 <p class="list-group-item"><strong>Description</strong>: {{ $job_posting->description }}</p>
             </p>
         </div>
