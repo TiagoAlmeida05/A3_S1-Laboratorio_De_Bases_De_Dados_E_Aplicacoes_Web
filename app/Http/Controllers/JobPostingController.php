@@ -33,26 +33,37 @@ class JobPostingController extends Controller {
         $searchTerm = $request->input('search');
 
         $jobsQuery = JobPosting::with('city');
+        $companies = collect();
         $jobSeekers = collect();
 
         if (!empty($searchTerm)) {
-            $words = explode(' ', trim($searchTerm));
-            $prefixSearch = implode(':* & ', $words) . ':*';
+            if(strlen($searchTerm)){
+                $jobsQuery->where('title', 'ILIKE', "%{searchTerm}%")
+                          ->orderBy('id', 'desc');
 
-            $jobsQuery->whereRaw(
-                "tsvectors @@ to_tsquery('english', ?)",
-                [$prefixSearch]
-            )->selectRaw(
-                "*, ts_rank(tsvectors, to_tsquery('english', ?)) as rank",
-                [$prefixSearch]
-            )->orderBy('rank', 'desc');
+                $companies = \App\Models\Company::with('city')
+                                ->where('name', 'ILIKE', "%{$searchTerm}%")
+                                ->orderBy('name')
+                                ->get();               
+            }else{
+                $words = explode(' ', trim($searchTerm));
+                $prefixSearch = implode(':* & ', $words) . ':*';
 
-            $companies = \App\Models\Company::with('city')
-                ->whereRaw("tsvectors @@ to_tsquery('english', ?)", [$prefixSearch])
-                ->orderBy('name')
-                ->get();
+                $jobsQuery->whereRaw(
+                    "tsvectors @@ to_tsquery('english', ?)",
+                    [$prefixSearch]
+                )->selectRaw(
+                    "*, ts_rank(tsvectors, to_tsquery('english', ?)) as rank",
+                    [$prefixSearch]
+                )->orderBy('rank', 'desc');
 
-           $searchWords = explode(' ', $searchTerm);
+                $companies = \App\Models\Company::with('city')
+                    ->whereRaw("tsvectors @@ to_tsquery('english', ?)", [$prefixSearch])
+                    ->orderBy('name')
+                    ->get();                
+            }
+
+            $searchWords = explode(' ', $searchTerm);
             $jobSeekers = \App\Models\JobSeeker::with(['registeredUser', 'city'])->where(function ($query) use ($searchWords) {
                     foreach ($searchWords as $word) {
                         $query->orWhereHas('registeredUser', function ($q) use ($word) {

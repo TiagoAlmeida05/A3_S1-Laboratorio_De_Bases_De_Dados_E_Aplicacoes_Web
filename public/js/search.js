@@ -1,10 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const searchForm = document.getElementById('searchForm');
-    const jobPostingsContainer = document.getElementById('jobPostingsContainer');
-    const companiesContainer = document.getElementById('companiesContainer');
-    const jobSeekerContainer = document.getElementById('jobSeekerContainer');
-    const clearSearch = document.getElementById('clearSearch');
 
     let searchTimeout;
 
