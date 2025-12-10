@@ -37,7 +37,7 @@ class JobPostingController extends Controller {
         $jobSeekers = collect();
 
         if (!empty($searchTerm)) {
-            if(strlen($searchTerm)){
+            if(strlen($searchTerm < 3)){
                 $jobsQuery->where('title', 'ILIKE', "%{searchTerm}%")
                           ->orderBy('id', 'desc');
 
