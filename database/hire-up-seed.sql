@@ -883,10 +883,82 @@ VALUES
 
 INSERT INTO website_content (name, content, last_edited_by)
 VALUES
-('About Us', 'HireUp! connects job seekers and recruiters through a transparent hiring platform.', 7),
-('Terms of Service', 'All users must comply with HireUp! usage terms and conditions.', 7),
-('Privacy Policy', 'We protect user data under GDPR and relevant data protection laws.', 8);
-
+('About Us', 
+ '[
+    {
+        "heading": "Building the Future of Hiring", 
+        "text": "HireUp! was born from a simple idea: talent is everywhere, but opportunity is not. We started in 2024 with a mission to democratize the recruitment process, removing the barriers between skilled professionals and forward-thinking companies."
+    },
+    {
+        "heading": "Our Philosophy", 
+        "text": "We believe that a resume is just a piece of paper. Real potential lies in skills, passion, and the ability to adapt. That is why our platform focuses on transparent communication and direct connections between recruiters and candidates."
+    },
+    {
+        "heading": "Meet the Team", 
+        "text": "Headquartered in the vibrant tech hub of Porto, our diverse team of engineers, designers, and HR specialists works tirelessly to ensure that every match made on HireUp! is a step towards a better career and a stronger business."
+    }
+ ]', 
+ 7),
+('Terms of Service', 
+ '[
+    {
+        "heading": "1. Acceptance of Terms", 
+        "text": "Welcome to HireUp!. By accessing our website and using our services, you agree to comply with and be bound by the following terms and conditions. If you do not agree to these terms, you should not use this platform."
+    },
+    {
+        "heading": "2. User Accounts", 
+        "text": "To access certain features, you must register for an account. You agree to provide accurate, current, and complete information. You are responsible for safeguarding your password and for all activities that occur under your account."
+    },
+    {
+        "heading": "3. Prohibited Conduct", 
+        "text": "Users agree not to engage in any of the following prohibited activities:\n- Posting false or misleading job opportunities.\n- Harassing, bullying, or discriminating against other users.\n- Using automated bots to scrape data from the platform."
+    },
+    {
+        "heading": "4. Limitation of Liability", 
+        "text": "HireUp! provides the platform on an \"as is\" basis. We do not guarantee that job seekers will find employment or that employers will fill their vacancies."
+    }
+ ]', 
+ 7),
+('Privacy Policy', 
+ '[
+    {
+        "heading": "Data Collection", 
+        "text": "When you use HireUp!, we collect information that helps us provide better services. This includes personal identification data (Name, Email, Phone Number) and professional data (CVs, Work History, Education)."
+    },
+    {
+        "heading": "How We Use Your Data", 
+        "text": "Your data is primarily used to match candidates with relevant job openings. We may also use your contact information to send you notifications about application statuses, platform updates, or security alerts."
+    },
+    {
+        "heading": "Data Protection", 
+        "text": "We implement a variety of security measures to maintain the safety of your personal information. Your data is stored on secure servers and is only accessible by a limited number of persons who have special access rights."
+    },
+    {
+        "heading": "Third-Party Disclosure", 
+        "text": "We do not sell, trade, or otherwise transfer your Personally Identifiable Information to outside parties unless we provide users with advance notice. This does not include website hosting partners who assist us in operating our website."
+    }
+ ]', 
+ 8),
+('FAQ', 
+ '[
+    {
+        "heading": "Is HireUp! free for job seekers?", 
+        "text": "Yes! Creating a profile, uploading your CV, and applying for jobs is completely free for all candidates. We believe money should never be a barrier to finding your dream job."
+    },
+    {
+        "heading": "How do I verify my company profile?", 
+        "text": "To maintain trust, we verify all companies. After creating your account, please upload a business registration document in your settings. Our admin team usually reviews these within 24 hours."
+    },
+    {
+        "heading": "Can I hide my CV from current employers?", 
+        "text": "Absolutely. In your profile privacy settings, you can choose to make your profile \"Private\" or \"Anonymous,\" allowing you to browse and apply without being searchable."
+    },
+    {
+        "heading": "I forgot my password. What do I do?", 
+        "text": "Click on the \"Login\" button and select \"Forgot Password.\" Enter your email address, and we will send you a secure link to reset your credentials."
+    }
+ ]', 
+ 8);
 INSERT INTO job_posting_tag (job_posting_id, tag_id)
 VALUES
 (1, 1),

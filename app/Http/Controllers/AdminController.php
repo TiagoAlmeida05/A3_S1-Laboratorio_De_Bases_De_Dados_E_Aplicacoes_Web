@@ -63,7 +63,31 @@ class AdminController extends Controller
     public function updatePage(Request $request, $id) {
         $page = WebsiteContent::findOrFail($id);
         
-        $page->content = $request->input('content');
+        $request->validate([
+            'headings' => 'array',
+            'headings.*' => 'nullable|string',
+            'texts' => 'array',
+            'texts.*' => 'nullable|string',
+        ]);
+
+        $contentBlocks = [];
+        $headings = $request->input('headings', []);
+        $texts = $request->input('texts', []);
+
+        if (!empty($headings)) {
+            foreach ($headings as $index => $heading) {
+                $text = $texts[$index] ?? '';
+                
+                if (!empty(trim($heading)) || !empty(trim($text))) {
+                    $contentBlocks[] = [
+                        'heading' => $heading,
+                        'text' => $text
+                    ];
+                }
+            }
+        }
+
+        $page->content = json_encode($contentBlocks);;
         $page->last_edited_by = Auth::id();
         
         $page->save();

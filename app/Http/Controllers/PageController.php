@@ -7,36 +7,31 @@ use App\Models\WebsiteContent;
 
 class PageController extends Controller
 {
-    public function about()
+    private function getPage($name)
     {
-        $page = WebsiteContent::where('name', 'About Us')->first();
+        $page = WebsiteContent::where('name', $name)->first();
 
         if (!$page) {
             abort(404, 'ERROR 404. NOT FOUND');
         }
+        return $page;
+    }
 
-        return view('pages.show', compact('page'));
+    public function about()
+    {
+        return view('pages.show', ['page' => $this->getPage('About Us')]);
     }
 
     public function terms()
     {
-        $page = WebsiteContent::where('name', 'Terms of Service')->first();
-
-        if (!$page) {
-            abort(404);
-        }
-
-        return view('pages.show', compact('page'));
-    }
+        return view('pages.show', ['page' => $this->getPage('Terms of Service')]);    }
 
     public function privacy()
     {
-        $page = WebsiteContent::where('name', 'Privacy Policy')->first();
+        return view('pages.show', ['page' => $this->getPage('Privacy Policy')]);
+    }
 
-        if (!$page) {
-            abort(404);
-        }
-
-        return view('pages.show', compact('page'));
+    public function faq(){
+        return view('pages.show', ['page' => $this->getPage('FAQ')]);
     }
 }
