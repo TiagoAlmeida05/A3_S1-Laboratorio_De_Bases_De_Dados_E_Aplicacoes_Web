@@ -1,8 +1,13 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
+use App\Models\JobPosting;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+Schedule::call(function () {
+    $today = now()->setTimezone('Europe/Lisbon')->startOfDay();
+
+    JobPosting::where('status', 'Active')
+                ->where('deadline', '<', $today)
+                ->update(['status' => 'Expired']);
+
+})->hourly()->timezone('Europe/Lisbon');

@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\DB;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Runs database/thingy-seed.sql as-is.
-     * The SQL reads current_setting('app.schema', true) and defaults to 'thingy'.
+     * Runs database/hire-up-seed.sql as-is.
+     * The SQL reads current_setting('app.schema', true) and defaults to 'hire_up'.
      */
     public function run(): void
     {
@@ -30,6 +30,6 @@ class DatabaseSeeder extends Seeder
         DB::unprepared($sql);
 
         // Show a message in the Artisan console
-        $this->command?->info('Database seeded using schema: ' . ($schema ?? 'thingy (default)'));
+        $this->command?->info('Database seeded using schema: ' . ($schema ?? 'lbaw2552 (default)'));
     }
 }

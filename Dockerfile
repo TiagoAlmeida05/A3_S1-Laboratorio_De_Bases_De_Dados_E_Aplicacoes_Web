@@ -61,3 +61,9 @@ EXPOSE 80
 
 # Entrypoint: run php-fpm in background + nginx in foreground
 CMD ["/docker_run.sh"]
+
+# Install cron
+RUN apt-get update && apt-get install -y cron
+
+# Start command
+CMD sh /docker_run.sh
