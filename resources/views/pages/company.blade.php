@@ -16,6 +16,15 @@
         </div>
     </div>
 
+    <div class="mb-4">
+        <h2 class="text-xl font-semibold">Company statistics</h2>
+        <div>
+                <p><strong>Total company job postings</strong>: {{ $companyStatistics['total_company_job_postings'] }}</p>
+                <p><strong>Total applications</strong>: {{ $companyStatistics['total_company_applications'] }}</p>
+                <p><strong>Total accepted applications</strong>: {{ $companyStatistics['total_company_accepted_applications'] }}</p>
+        </div>
+    </div>
+
     {{-- About Us --}}
     @if($company->about_us)
     <div class="mb-4">

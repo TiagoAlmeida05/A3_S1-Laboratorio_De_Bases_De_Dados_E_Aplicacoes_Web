@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Company;
+use App\Models\JobPosting;
+use App\Models\Application;
 use App\Models\City;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Gate;
@@ -21,7 +23,9 @@ class CompanyController extends Controller
             'socialMediaProfiles.socialMediaType'
         ])->findOrFail($company_id);
 
-        return view('pages.company', compact('company'));
+        $companyStatistics = $company->getCompanyStatistics();
+
+        return view('pages.company', compact('company', 'companyStatistics'));
     }
 
     public function edit($company_id)
