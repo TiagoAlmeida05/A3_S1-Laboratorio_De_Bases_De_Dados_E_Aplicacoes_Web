@@ -34,6 +34,9 @@
             @endforelse
         </div>
     </div>
+    <div class="dashboard-see-statistics" style="margin: 1rem 0rem;">
+        <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('recruiter-dashboard.statistics') }}" class="a-as-button">My statistics</a>
+    </div>
 </section>
 
 @endsection

@@ -48,7 +48,7 @@
 
     <div>
         <a href="{{ route('jobseeker.profile', $application->jobSeeker->registered_user_id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">View applicant profile</a>
-        <a href="{{ route('job_postings.manage-applications', $application->jobPosting->id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">All applications</a>
+        <a href="{{ route('job_postings.view-applications-closed-job', $application->jobPosting->id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">All applications</a>
     </div>
 </section>
 @endsection

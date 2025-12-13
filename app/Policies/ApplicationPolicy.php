@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\Application;
-use App\Models\JobPosting;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -23,19 +22,11 @@ class ApplicationPolicy
     public function view(User $user, Application $application): bool {
         if ($user->admin) return true;
 
-        if ($user->jobSeeker && $application->job_seeker_id === $user->id) return true;
+        if ($user->jobSeeker && $application->jobSeeker->registered_user_id === $user->id) return true;
 
         if ($user->recruiter) return $application->jobPosting->recruiter_id === $user->id;
 
         return false;
-    }
-
-    public function manageApplications(User $user, JobPosting $job_posting): bool {
-        if ($user->admin) return true;
-
-        if (!$user->recruiter) return false;
-
-        return $job_posting->recruiter_id === $user->id;
     }
 
     /**
