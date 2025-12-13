@@ -19,14 +19,22 @@ class JobPostingController extends Controller {
         Gate::authorize('view', $jobPosting);
 
         $jobSeeker = null;
+        $hasApplied = false;
         
         if (auth()->check()) {
             $jobSeeker = \App\Models\JobSeeker::where('registered_user_id', auth()->id())->first();
+
+            if ($jobSeeker) {
+                $hasApplied = Application::where('job_seeker_id', $jobSeeker->registered_user_id)
+                    ->where('job_posting_id', $jobPosting->id)
+                    ->exists();
+            }
         }
 
         return view('pages.job_posting', [
             'job_posting' => $jobPosting,
-            'jobSeeker' => $jobSeeker
+            'jobSeeker' => $jobSeeker,
+            'hasApplied' => $hasApplied
         ]);
     }
 
