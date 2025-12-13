@@ -29,7 +29,11 @@
         <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ url('/') }}">Go back</a>
         @auth
             @if($jobSeeker)
-                <a class="button btn btn-primary" style="background-color: #3f9236eb;  padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.apply', $job_posting->id) }}">Apply</a>
+                @if($hasApplied)
+                    <button style="background-color: gray" disabled>Applied</button>
+                @else
+                    <a class="button btn btn-primary" style="background-color: #3f9236eb;  padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.apply', $job_posting->id) }}">Apply</a>
+                @endif
             @endif
         @endauth
     </div>
