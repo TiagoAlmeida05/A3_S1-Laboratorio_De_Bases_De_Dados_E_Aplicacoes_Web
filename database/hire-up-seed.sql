@@ -14,7 +14,7 @@
 --
 DO $do$
 DECLARE
-  s text := COALESCE(current_setting('app.schema', true), 'lbaw2552');
+  s text := COALESCE(current_setting('app.schema', true), 'hire_up');
 BEGIN
   -- identifiers require dynamic SQL
   EXECUTE format('DROP SCHEMA IF EXISTS %I CASCADE', s);
@@ -783,19 +783,26 @@ VALUES
 
 INSERT INTO job_posting (title, description, creation_date, deadline, min_wage, max_wage, requirements, status, recruiter_id, city_id)
 VALUES
-('Frontend Developer', 'Develop and maintain UI components.','2025-03-27',  '2025-04-06', 2000, 3000, 'React, CSS, HTML', 'Closed', 2, 1),
-('Data Analyst', 'Analyze company data for insights.', '2025-08-19', '2025-08-29', 1800, 2800, 'SQL, Python, Excel', 'Closed', 1, 2),
-('Project Manager', 'Coordinate multiple software projects.', '2025-11-04', '2025-11-18', 2500, 4000, 'Agile, Scrum, Jira', 'Active', 9, 3),
-('Backend Developer', 'Design RESTful APIs and databases.', '2025-11-05', '2025-11-10', 2200, 3500, 'Node.js, PostgreSQL, Docker', 'Pending', 1, 1),
-('Marketing Assistant', 'Support campaign management.', '2025-06-28', '2025-07-03', 1500, 2200, 'SEO, content creation', 'Closed', 2, 3);
+('Frontend Developer', 'Develop and maintain UI components.','2025-12-01',  '2025-12-11', 2000, 3000, 'React, CSS, HTML', 'Closed', 2, 1),
+('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2025-12-03', 1800, 2800, 'SQL, Python, Excel', 'Closed', 1, 2),
+('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-02-03', 1800, 2800, 'SQL, Python, Excel', 'Active', 1, 2),
+('Project Manager', 'Coordinate multiple software projects.', '2025-12-06', '2026-01-06', 2500, 4000, 'Agile, Scrum, Jira', 'Active', 9, 3),
+('Backend Developer', 'Design RESTful APIs and databases.', '2025-12-12', '2026-02-04', 2200, 3500, 'Node.js, PostgreSQL, Docker', 'Pending', 1, 1),
+('Marketing Assistant', 'Support campaign management.', '2025-11-28', '2026-03-27', 1500, 2200, 'SEO, content creation', 'Active', 2, 3),
+('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-12-12', 1800, 2800, 'SQL, Python, Excel', 'Expired', 1, 2),
+('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-03-18', 1800, 2800, 'SQL, Python, Excel', 'Active', 1, 2);
 
 INSERT INTO application (cover_letter, date, recommendation_letter, evaluated, accepted, job_seeker_id, job_posting_id)
 VALUES
 ('I am very interested in this position.', '2025-03-27', NULL, TRUE, TRUE, 3, 1),
 ('Looking forward to joining your team.', '2025-04-03',  NULL, TRUE, FALSE, 4, 1),
-('Excited to contribute my data analysis skills.', '2025-11-04', NULL, FALSE, FALSE, 5, 3),
+('Excited to contribute my data analysis skills.', '2025-11-04', NULL, FALSE, FALSE, 5, 4),
 ('Passionate about HR operations.', '2025-08-25', NULL, TRUE, TRUE, 6, 2),
-('Marketing enthusiast with campaign experience.', '2025-07-01', NULL, TRUE, TRUE, 6, 5);
+('Marketing enthusiast with campaign experience.', '2025-07-01', NULL, TRUE, TRUE, 6, 6),
+('Let me work at your company.', '2025-12-12', NULL, FALSE, FALSE, 6, 3),
+('Let me work at your company.', '2025-12-12', NULL, FALSE, FALSE, 5, 3),
+('Let me work at your company.', '2025-12-12', NULL, FALSE, FALSE, 4, 3),
+('Let me work at your company.', '2025-12-12', NULL, FALSE, FALSE, 3, 3);
 
 INSERT INTO bookmark (job_seeker_id, job_posting_id)
 VALUES

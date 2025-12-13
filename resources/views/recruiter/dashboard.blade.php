@@ -9,13 +9,29 @@
         <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('job_postings.create') }}" class="a-as-button">Create new job posting</a>
     </div>
     <div class='job-postings'>
-        <div class='non-closed-jps'>
+        <div class='active-pending-jps'>
             <h3>Your opened job postings</h3>
-            @each('recruiter.non_closed_jp_partial', $job_postings, 'job_posting')
+            @forelse ($job_postings->whereIn('status', ['Active', 'Pending']) as $job_posting)                
+                @include('recruiter.active_pending_jp_partial')
+            @empty
+                <p>You don't currently have any active or pending job postings.</p>
+            @endforelse
+        </div>
+        <div class='expired-jps'>
+            <h3>Your expired job postings</h3>
+            @forelse ($job_postings->where('status', 'Expired') as $job_posting)
+                @include('recruiter.expired_jp_partial')
+            @empty
+                <p>You don't currently have any expired job postings.</p>
+            @endforelse
         </div>
         <div class='closed-jps'>
             <h3>Your closed job postings</h3>
-            @each('recruiter.closed_jp_partial', $job_postings, 'job_posting')
+            @forelse ($job_postings->where('status', 'Closed') as $job_posting)
+                @include('recruiter.closed_jp_partial')
+            @empty
+                <p>You don't currently have any closed job postings.</p>
+            @endforelse
         </div>
     </div>
 </section>

@@ -151,14 +151,36 @@ class JobPostingController extends Controller {
     
             return redirect()->route('recruiter-dashboard.index')->with('success', 'Job posting updated successfully! :)');
         }
-        catch (\Exception $e){
+        catch(\Exception $e) {
             return back()->with('error', "An error occurred while editing your job posting. Please try again.");
+        }
+    }
+
+    public function selectApplicants(JobPosting $job_posting) {
+        Gate::authorize('update', $job_posting);
+        
+        return redirect()->route('recruiter-dashboard.index'); // Another user story! TO DO!!!!
+    }
+
+    public function close(JobPosting $job_posting) {
+        Gate::authorize('close', $job_posting);
+    
+        try {
+            $job_posting->update([
+                'status' => 'Closed',
+                'deadline' => now()->setTimezone('Europe/Lisbon')->toDateString()
+            ]);
+
+            return redirect()->route('recruiter-dashboard.index')->with('success', 'Job posting closed successfully! :)');
+        }
+        catch(\Exception $e) {
+            return back()->with('error', "An error occurred while closing your job posting. Please try again.");
         }
     }
 
     public function delete($job_posting_id) {
         try {
-            $job_posting = JobPosting::findOrFail($job_posting_id);
+            $job_posting = JobPosting::withCount('applications')->findOrFail($job_posting_id);
             Gate::authorize('delete', $job_posting);
     
             $job_posting->delete();

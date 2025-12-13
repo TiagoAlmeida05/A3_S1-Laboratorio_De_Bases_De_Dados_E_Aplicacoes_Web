@@ -34,4 +34,8 @@ class JobPosting extends Model {
     public function recruiter(): BelongsTo {
         return $this->belongsTo(Recruiter::class, 'recruiter_id', 'registered_user_id');
     }
+
+    public function applications() {
+        return $this->hasMany(Application::class, 'job_posting_id');
+    }
 }

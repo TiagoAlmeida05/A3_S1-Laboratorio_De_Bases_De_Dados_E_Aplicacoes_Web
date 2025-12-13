@@ -24,6 +24,19 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+
+# Add cron job into cronfile
+echo "* * * * * cd /var/www && php artisan schedule:run >> /dev/null 2>&1" >> cronfile
+
+# Install cron job
+crontab cronfile
+
+# Remove temporary file
+rm cronfile
+
+# Start cron
+cron
+
 # Start PHP-FPM in background
 php-fpm -D
 
