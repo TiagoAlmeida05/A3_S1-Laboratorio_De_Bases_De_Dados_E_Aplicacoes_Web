@@ -788,7 +788,9 @@ VALUES
 ('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-02-03', 1800, 2800, 'SQL, Python, Excel', 'Active', 1, 2),
 ('Project Manager', 'Coordinate multiple software projects.', '2025-12-06', '2026-01-06', 2500, 4000, 'Agile, Scrum, Jira', 'Active', 9, 3),
 ('Backend Developer', 'Design RESTful APIs and databases.', '2025-12-12', '2026-02-04', 2200, 3500, 'Node.js, PostgreSQL, Docker', 'Pending', 1, 1),
-('Marketing Assistant', 'Support campaign management.', '2025-11-28', '2026-03-27', 1500, 2200, 'SEO, content creation', 'Active', 2, 3);
+('Marketing Assistant', 'Support campaign management.', '2025-11-28', '2026-03-27', 1500, 2200, 'SEO, content creation', 'Active', 2, 3),
+('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-12-12', 1800, 2800, 'SQL, Python, Excel', 'Expired', 1, 2),
+('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-03-18', 1800, 2800, 'SQL, Python, Excel', 'Active', 1, 2);
 
 INSERT INTO application (cover_letter, date, recommendation_letter, evaluated, accepted, job_seeker_id, job_posting_id)
 VALUES

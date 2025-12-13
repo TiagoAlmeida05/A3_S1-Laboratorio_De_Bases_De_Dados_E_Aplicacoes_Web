@@ -4,10 +4,7 @@
             {{ $job_posting->title }}
         </a>
         <div class="jp-creation-date">
-            <p><strong>Creation date</strong>: {{ \Carbon\Carbon::parse($job_posting->creation_date)->format('d-m-Y') }}</p>
-        </div>
-        <div class="jp-status">
-            <p><strong>Status</strong>: {{ $job_posting->status }}</p>
+            <p><strong>Closed on</strong>: {{ \Carbon\Carbon::parse($job_posting->deadline)->format('d-m-Y') }}</p>
         </div>
     </div>
 </article>

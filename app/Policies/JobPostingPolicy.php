@@ -36,30 +36,39 @@ class JobPostingPolicy
      * Determine whether the user can update the model.
      */
     public function update(User $user, JobPosting $job_posting): bool {
-        if (!$user->admin) {
-            return $job_posting->status !== 'Closed';
-        }
-        if (!$user->recruiter) {
-            return false;
-        }
-        if ($user->recruiter->registered_user_id !== $job_posting->recruiter) return false;
-        return ($job_posting->status !== 'Closed' && $job_posting->status !== 'Pending');
+        if ($user->admin) return $job_posting->status !== 'Closed';
+
+        if (!$user->recruiter) return false;
+
+        if ($job_posting->recruiter_id === $user->id) return $job_posting->status !== 'Closed';
+        return false;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, JobPosting $job_posting): bool {
-        if ($user->admin) {
-            return true;
-        }
-        if (!$user->recruiter) {
-            return false;
-        }
-        if ($user->recruiter->registered_user_id !== $job_posting->recruiter) {
-            return false;
-        }
-        return in_array($job_posting->status, ['Active', 'Pending']) && $job_posting->applications_count === 0;
+        if ($user->admin) return true;
+
+        if (!$user->recruiter) return false;
+
+        if ($job_posting->recruiter_id !== $user->id) return false;
+
+        if ($job_posting->status === 'Pending') return true;
+
+        if (in_array($job_posting->status, ['Active', 'Expired'])) return $job_posting->applications_count === 0;
+
+        return false;
+    }
+
+    public function close(User $user, JobPosting $job_posting): bool {
+        if ($user->admin) return $job_posting->status !== 'Closed';
+        
+        if (!$user->recruiter) return false;
+
+        if ($job_posting->recruiter_id !== $user->id) return false;
+
+        return in_array($job_posting->status, ['Active', 'Expired']);
     }
 
     /**
