@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Application;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class RecruiterController extends Controller {
     public function index(): View {
-        // DO LATER: Add logic to fetch recruiter dashboard stuff --> active job postings and inactive job postings (I think)
         $user = Auth::user();
         $recruiter = $user->recruiter;
         $job_postings = $recruiter->job_postings()->withCount('applications')->orderBy('creation_date', 'desc')->get();
@@ -16,6 +15,71 @@ class RecruiterController extends Controller {
         return view('recruiter.dashboard', [
             'user' => $user,
             'job_postings' => $job_postings
+        ]);
+    }
+
+    public function statistics(): View {
+        $user = Auth::user();
+        $recruiter = $user->recruiter;
+        $oneMonthAgo = now()->setTimezone('Europe/Lisbon')->subMonth();
+        
+        $allJobPostings = $recruiter->job_postings()->withCount('applications')->get();
+        
+        // ~~ Total job counts (non-deleted): all jobs, active, pending, expired, and closed ~~
+        $totalJobs = $allJobPostings->count();
+        $totalActiveJobs = $allJobPostings->where('status', 'Active')->count();
+        $totalPendingJobs = $allJobPostings->where('status', 'Pending')->count();
+        $totalExpiredJobs = $allJobPostings->where('status', 'Expired')->count();
+        $totalClosedJobs = $allJobPostings->where('status', 'Closed')->count();
+        
+        // ~~ Total application counts ~~
+        $allApplications = Application::whereIn('job_posting_id', $allJobPostings->pluck('id'))->get();
+        
+        $totalApplications = $allApplications->count();
+        $totalAcceptances = $allApplications->where('accepted', true)->count();
+        $acceptanceRate = $totalApplications > 0 ? round(($totalAcceptances / $totalApplications) * 100, 2) : 0;
+        
+        // ~~ Data from the past month (based on day, not on number of days before today, so from today/month - 1 to today/month)
+        $newJobsCreatedThisMonth = $recruiter->job_postings()
+            ->where('creation_date', '>=', $oneMonthAgo)
+            ->get();
+        
+        $totalJobsCreatedThisMonth = $newJobsCreatedThisMonth->count();
+        $activeJobsCreatedThisPastMonth = $newJobsCreatedThisMonth->where('status', 'Active')->count();
+        $pendingJobsCreatedThisPastMonth = $newJobsCreatedThisMonth->where('status', 'Pending')->count();
+        $expiredJobsCreatedThisPastMonth = $newJobsCreatedThisMonth->where('status', 'Expired')->count();
+        $closedJobsCreatedThisPastMonth = $newJobsCreatedThisMonth->where('status', 'Closed')->count();
+        
+        $applicationsSubmittedThisPastMonth = Application::whereIn('job_posting_id', $allJobPostings->pluck('id'))
+            ->where('date', '>=', $oneMonthAgo)
+            ->get();
+        
+        $totalApplicationsSubmittedThisPastMonth = $applicationsSubmittedThisPastMonth->count();
+        $acceptancesForApplicationsSubmittedThisMonth = $applicationsSubmittedThisPastMonth->where('accepted', true)->count();
+        
+        $currentlyActiveJobs = $allJobPostings->where('status', 'Active');
+        $currentlyExpiredJobs = $allJobPostings->where('status', 'Expired');
+        
+        return view('recruiter.statistics', [
+            'user' => $user,
+            'recruiter' => $recruiter,
+            'totalJobs' => $totalJobs,
+            'totalActiveJobs' => $totalActiveJobs,
+            'totalPendingJobs' => $totalPendingJobs,
+            'totalExpiredJobs' => $totalExpiredJobs,
+            'totalClosedJobs' => $totalClosedJobs,
+            'totalApplications' => $totalApplications,
+            'totalAcceptances' => $totalAcceptances,
+            'acceptanceRate' => $acceptanceRate,
+            'totalJobsCreatedThisMonth' => $totalJobsCreatedThisMonth,
+            'activeJobsCreatedThisPastMonth' => $activeJobsCreatedThisPastMonth,
+            'pendingJobsCreatedThisPastMonth' => $pendingJobsCreatedThisPastMonth,
+            'expiredJobsCreatedThisPastMonth' => $expiredJobsCreatedThisPastMonth,
+            'closedJobsCreatedThisPastMonth' => $closedJobsCreatedThisPastMonth,
+            'totalApplicationsSubmittedThisPastMonth' => $totalApplicationsSubmittedThisPastMonth,
+            'acceptancesForApplicationsSubmittedThisMonth' => $acceptancesForApplicationsSubmittedThisMonth,
+            'currentlyActiveJobs' => $currentlyActiveJobs,
+            'currentlyExpiredJobs' => $currentlyExpiredJobs,
         ]);
     }
 }

@@ -1,33 +1,14 @@
---
--- Schema selection
---
--- This script can be executed directly in psql/pgAdmin, or from PHP/Laravel.
--- It reads the session setting `app.schema` to decide which schema to target.
---  * If `app.schema` is set (e.g. in Laravel with DB::statement('SET app.schema TO ?')),
---    that schema will be used.
---  * If not set, it falls back to the default schema name "thingy".
---
-
---
--- Schema (re)creation
--- The DO block is needed because identifiers (schema names) cannot be parameterized.
---
 DO $do$
 DECLARE
   s text := COALESCE(current_setting('app.schema', true), 'hire_up');
 BEGIN
-  -- identifiers require dynamic SQL
   EXECUTE format('DROP SCHEMA IF EXISTS %I CASCADE', s);
   EXECUTE format('CREATE SCHEMA IF NOT EXISTS %I', s);
 
-  -- set search_path for the rest of the script
   PERFORM set_config('search_path', format('%I, public', s), false);
 END
 $do$ LANGUAGE plpgsql;
 
---
--- Create tables.
---
 CREATE TYPE notification_type_name AS ENUM ('PlatformAlert', 'Message', 'BookmarkDeadline', 'ApplicationStatus', 'NewJobPosting');
 CREATE TYPE job_posting_status AS ENUM('Pending', 'Active', 'Expired', 'Closed');
 CREATE TYPE account_status AS ENUM('Active', 'Suspended', 'Deleted');
