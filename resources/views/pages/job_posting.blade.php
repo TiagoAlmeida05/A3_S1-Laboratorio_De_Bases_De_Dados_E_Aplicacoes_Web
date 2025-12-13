@@ -17,6 +17,8 @@
     @endif
     <div class="d-flex flex-column" style="margin-bottom: 1rem;">
         <h2 class="align-self-center" style="margin: 2rem 0rem;">{{ $job_posting->title }}</h2>
+        <p><strong>Company</strong>: {{ $job_posting->company->name }}</p>
+        <p><strong>Department</strong>: {{ $job_posting->department->name ?? 'N/A' }}</p>
         <p><strong>Description</strong>: {{ $job_posting->description }}</p>
         <p><strong>Requirements</strong>:  {{ $job_posting->requirements ?? 'N/A' }}</p>
         <p><strong>City</strong>: {{ $job_posting->city->name ?? 'N/A' }}</p>

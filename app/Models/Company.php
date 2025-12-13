@@ -21,9 +21,8 @@ class Company extends Model {
         return $this->belongsTo(City::class);
     }
 
-    public function departments()
-    {
-        return $this->hasMany(Department::class);
+    public function departments() {
+        return $this->hasMany(Department::class, 'company_id', 'id');
     }
 
     public function jobPostings()
@@ -46,5 +45,27 @@ class Company extends Model {
     public function socialMediaProfiles()
     {
         return $this->hasMany(SocialMediaProfile::class);
+    }
+
+    
+    public function getCompanyJobPostings() {
+        $departmentIDs = $this->departments()->pluck('id');
+        
+        return JobPosting::whereHas('recruiter', function($query) use ($departmentIDs) {
+            $query->whereIn('department_id', $departmentIDs);
+        });
+    }
+
+    public function getCompanyStatistics() {
+        $companyJobPostings = $this->getCompanyJobPostings();
+        $companyJobPostingIDs = $companyJobPostings->pluck('id');
+        
+        $applications = Application::whereIn('job_posting_id', $companyJobPostingIDs)->get();
+        
+        return [
+            'total_company_job_postings' => $companyJobPostings->count(),
+            'total_company_applications' => $applications->count(),
+            'total_company_accepted_applications' => $applications->where('accepted', true)->count(),
+        ];
     }
 }

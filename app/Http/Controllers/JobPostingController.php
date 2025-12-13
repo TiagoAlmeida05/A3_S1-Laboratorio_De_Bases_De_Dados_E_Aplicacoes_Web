@@ -16,6 +16,7 @@ use App\Models\City;
 
 class JobPostingController extends Controller {
     public function show(JobPosting $jobPosting): View {
+        $jobPosting->load('recruiter.department.company', 'city');
         Gate::authorize('view', $jobPosting);
 
         $jobSeeker = null;
