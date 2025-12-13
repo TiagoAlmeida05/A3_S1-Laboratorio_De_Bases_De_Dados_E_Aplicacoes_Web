@@ -1,0 +1,61 @@
+@extends('layouts.app')
+
+@section('title', 'Application Details | ' . config('app.name'))
+
+@section('content')
+<section id="view-application">
+    <h2>Application details</h2>
+    <p><strong>Job posting</strong>: <a href="{{ route('job_postings.show', $application->jobPosting->id) }}">{{ $application->jobPosting->title }}</a></p>
+
+    <div>
+        <h3>Applicant information</h3>
+        <p><strong>Name</strong>: <a href="{{ route('jobseeker.profile', $application->jobSeeker->registered_user_id) }}">{{ $application->jobSeeker->registeredUser->name }}</a></p>
+        <p><strong>E-mail</strong>: {{ $application->jobSeeker->registeredUser->email }}</p>
+        @if($application->jobSeeker->website)
+            <p><strong>Website</strong>: <a href="{{ $application->jobSeeker->website }}" target="_blank">{{ $application->jobSeeker->website }}</a></p>
+        @endif
+    </div>
+
+    <div>
+        <h3>Application details</h3>
+        <p><strong>Application date</strong>: {{ $application->date->format('d-m-Y @ H:i') }}</p>
+        <p><strong>Status</strong>:
+            @if($application->evaluated)
+                @if($application->accepted)
+                    <span>Accepted</span>
+                @else
+                    <span>Rejected</span>
+                @endif
+            @else
+                <span>Pending evaluation</span>
+            @endif
+        </p>
+    </div>
+
+    @if($application->cover_letter)
+        <div>
+            <h3>Cover letter</h3>
+            <p>{{ $application->cover_letter }}</p>
+        </div>
+    @endif
+
+    @if($application->recommendation_letter)
+        <div>
+            <h3>Recommendation letter</h3>
+            <p>{{ $application->recommendation_letter }}</p>
+        </div>
+    @endif
+
+    @if($application->jobSeeker->show_cv && $application->jobSeeker->cv)
+        <div>
+            <h3>CV</h3>
+            <p>Download CV</p> <!-- TO DO: FIX THIS!!! -->
+        </div>
+    @endif
+
+    <div>
+        <a href="{{ route('jobseeker.profile', $application->jobSeeker->registered_user_id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">View applicant profile</a>
+        <a href="{{ route('job_postings.manage-applications', $application->jobPosting->id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">All applications</a>
+    </div>
+</section>
+@endsection

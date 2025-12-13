@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreJobPostingRequest;
+use App\Http\Requests\SubmitApplicationSelectionRequest;
 use Illuminate\Http\Request;
 
 use Illuminate\View\View;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 use App\Models\JobPosting;
+use App\Models\Application;
 use App\Models\City;
 
 class JobPostingController extends Controller {
@@ -156,10 +158,59 @@ class JobPostingController extends Controller {
         }
     }
 
-    public function selectApplicants(JobPosting $job_posting) {
-        Gate::authorize('update', $job_posting);
+    public function manageApplications(JobPosting $job_posting, Request $request) {
+        Gate::authorize('close', $job_posting);
         
-        return redirect()->route('recruiter-dashboard.index'); // Another user story! TO DO!!!!
+        $applications = $job_posting->applications()
+            ->with(['jobSeeker.registeredUser'])
+            ->orderBy('date', 'desc')
+            ->get();
+        
+        return view('recruiter.manage_applications', [
+            'job_posting' => $job_posting,
+            'applications' => $applications,
+            'selectMode' => $request->boolean('selectMode'),
+        ]);
+    }
+
+    public function viewApplication(Application $application) {
+        Gate::authorize('view', $application);
+        
+        $application->load(['jobSeeker.registeredUser', 'jobSeeker.city', 'jobPosting']);
+        
+        return view('applications.view-application', [
+            'application' => $application
+        ]);
+    }
+
+    public function submitApplicationSelection(SubmitApplicationSelectionRequest $request, JobPosting $job_posting) {
+        Gate::authorize('close', $job_posting);
+        
+        try {
+            $validated = $request->validated();
+            $selectedIds = $validated['selected_applications'] ?? [];
+                    
+            $job_posting->applications()->update([
+                'evaluated' => true,
+                'accepted' => false
+            ]);
+            
+            if (!empty($selectedIds)) {
+                Application::whereIn('id', $selectedIds)->update([
+                    'accepted' => true
+                ]);
+            }
+            
+            $job_posting->update([
+                'status' => 'Closed',
+                'deadline' => now()->setTimezone('Europe/Lisbon')->toDateString()
+            ]);
+            
+            return redirect()->route('recruiter-dashboard.index')->with('success', 'Applications evaluated and selected, and job posting closed successfully!');
+        }
+        catch (\Exception $e) {
+            return back()->with('error', 'An error occurred while processing your selection. Please try again.');
+        }
     }
 
     public function close(JobPosting $job_posting) {

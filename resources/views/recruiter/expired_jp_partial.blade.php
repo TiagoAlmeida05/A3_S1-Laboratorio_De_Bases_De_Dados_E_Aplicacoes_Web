@@ -12,15 +12,8 @@
         <div class="jp-actions d-flex">
             @if($job_posting->applications_count > 0)
                 @can('close', $job_posting)
-                    <a href="{{ route('job_postings.select-applicants', $job_posting->id) }}" class="button btn btn-primary" sstyle="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">Select applicants and close</a>
-                @endcan
-
-                @can('close', $job_posting)
-                    <form id="close-{{ $job_posting->id }}-job" method="POST" action="{{ route('job_postings.close', $job_posting->id) }}">
-                        @csrf
-                        @method('PATCH')
-                        <button type="button" class="close-button button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" data-id="{{ $job_posting->id }}">Close</button>
-                    </form>
+                    <a href="{{ route('job_postings.manage-applications', $job_posting->id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" >See applications</a>
+                    <a href="{{ route('job_postings.manage-applications', [$job_posting->id, 'selectMode' => 1]) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem; padding: 0.5rem 0.4rem;">Select applicants and close</a>
                 @endcan
             @else
                 @can('close', $job_posting)
