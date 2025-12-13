@@ -32,6 +32,14 @@ class JobPostingPolicy
         return false;
     }
 
+    public function viewApplicationsOfClosedJobs(User $user, JobPosting $job_posting): bool {
+        if ($user->admin) return true;
+        
+        if (!$user->recruiter) return false;
+        
+        return $job_posting->recruiter_id === $user->id;
+    }
+
     /**
      * Determine whether the user can update the model.
      */

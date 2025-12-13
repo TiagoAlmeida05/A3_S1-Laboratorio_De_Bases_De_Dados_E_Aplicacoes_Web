@@ -173,13 +173,35 @@ class JobPostingController extends Controller {
         ]);
     }
 
-    public function viewApplication(Application $application) {
+    public function viewApplication(Application $application) {       
+        $application->load(['jobSeeker.registeredUser', 'jobPosting']);
         Gate::authorize('view', $application);
-        
-        $application->load(['jobSeeker.registeredUser', 'jobSeeker.city', 'jobPosting']);
         
         return view('applications.view-application', [
             'application' => $application
+        ]);
+    }
+
+    public function viewApplicationOfClosedJob(Application $application) {   
+        $application->load(['jobSeeker.registeredUser', 'jobPosting']);
+        Gate::authorize('view', $application);
+
+        return view('applications.view-application-closed-job', [
+            'application' => $application
+        ]);
+    }
+
+    public function viewApplicationsOfClosedJobs(JobPosting $job_posting) {
+        Gate::authorize('viewApplicationsOfClosedJobs', $job_posting);
+        
+        $applications = $job_posting->applications()
+            ->with(['jobSeeker.registeredUser'])
+            ->orderBy('date', 'desc')
+            ->get();
+        
+        return view('applications.view-applications-closed-job', [
+            'job_posting' => $job_posting,
+            'applications' => $applications
         ]);
     }
 

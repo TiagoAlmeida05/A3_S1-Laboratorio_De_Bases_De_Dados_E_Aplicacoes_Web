@@ -73,7 +73,8 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::get('/job-postings/{job_posting}/select-applicants', [JobPostingController::class, 'selectApplicants'])->name('job_postings.select-applicants');
     Route::get('/job-postings/{job_posting}/applications', [JobPostingController::class, 'manageApplications'])->name('job_postings.manage-applications');
     Route::get('/applications/{application}', [JobPostingController::class, 'viewApplication'])->name('applications.view-application');
-    Route::post('/job-postings/{job_posting}/applications/submit-application-selection', [JobPostingController::class, 'submitApplicationSelection'])->name('job_postings.submit-application-selection');
+    Route::get('/job-postings/{job_posting}/view-applications-closed-job', [JobPostingController::class, 'viewApplicationsOfClosedJobs'])->name('job_postings.view-applications-closed-job');
+    Route::get('/applications/{application}/closed-job', [JobPostingController::class, 'viewApplicationOfClosedJob'])->name('job_postings.view-application-closed-job');    Route::post('/job-postings/{job_posting}/applications/submit-application-selection', [JobPostingController::class, 'submitApplicationSelection'])->name('job_postings.submit-application-selection');
     Route::patch('/job-postings/{job_posting}/close', [JobPostingController::class, 'close'])->name('job_postings.close');
     Route::delete('/job-postings/{job_posting}', [JobPostingController::class, 'delete'])->name('job_postings.delete');
 });
