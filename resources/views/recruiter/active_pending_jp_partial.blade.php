@@ -33,7 +33,8 @@
             @if($job_posting->status === 'Active')
                 @if($job_posting->applications_count > 0)
                     @can('close', $job_posting)
-                        <a href="{{ route('job_postings.select-applicants', $job_posting->id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">Select applicants and close</a>
+                        <a href="{{ route('job_postings.manage-applications', $job_posting->id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" >See applications</a>
+                        <a href="{{ route('job_postings.manage-applications', [$job_posting->id, 'selectMode' => 1]) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem; padding: 0.5rem 0.4rem;">Select applicants and close</a>
                     @endcan
                 @else
                     @can('close', $job_posting)

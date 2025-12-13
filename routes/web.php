@@ -71,6 +71,9 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::get('/job-postings/{job_posting}/edit', [JobPostingController::class, 'edit'])->name('job_postings.edit');
     Route::put('/job-postings/{job_posting}', [JobPostingController::class, 'update'])->name('job_postings.update');
     Route::get('/job-postings/{job_posting}/select-applicants', [JobPostingController::class, 'selectApplicants'])->name('job_postings.select-applicants');
+    Route::get('/job-postings/{job_posting}/applications', [JobPostingController::class, 'manageApplications'])->name('job_postings.manage-applications');
+    Route::get('/applications/{application}', [JobPostingController::class, 'viewApplication'])->name('applications.view-application');
+    Route::post('/job-postings/{job_posting}/applications/submit-application-selection', [JobPostingController::class, 'submitApplicationSelection'])->name('job_postings.submit-application-selection');
     Route::patch('/job-postings/{job_posting}/close', [JobPostingController::class, 'close'])->name('job_postings.close');
     Route::delete('/job-postings/{job_posting}', [JobPostingController::class, 'delete'])->name('job_postings.delete');
 });

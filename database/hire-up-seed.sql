@@ -785,7 +785,7 @@ INSERT INTO job_posting (title, description, creation_date, deadline, min_wage, 
 VALUES
 ('Frontend Developer', 'Develop and maintain UI components.','2025-12-01',  '2025-12-11', 2000, 3000, 'React, CSS, HTML', 'Closed', 2, 1),
 ('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2025-12-03', 1800, 2800, 'SQL, Python, Excel', 'Closed', 1, 2),
-('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-02-03', 1800, 2800, 'SQL, Python, Excel', 'Active', 1, 2),
+('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-03-03', 1800, 2800, 'SQL, Python, Excel', 'Expired', 1, 2),
 ('Project Manager', 'Coordinate multiple software projects.', '2025-12-06', '2026-01-06', 2500, 4000, 'Agile, Scrum, Jira', 'Active', 9, 3),
 ('Backend Developer', 'Design RESTful APIs and databases.', '2025-12-12', '2026-02-04', 2200, 3500, 'Node.js, PostgreSQL, Docker', 'Pending', 1, 1),
 ('Marketing Assistant', 'Support campaign management.', '2025-11-28', '2026-03-27', 1500, 2200, 'SEO, content creation', 'Active', 2, 3),
@@ -806,8 +806,8 @@ VALUES
 
 INSERT INTO bookmark (job_seeker_id, job_posting_id)
 VALUES
-(5, 3),
-(4, 3);
+(5, 8),
+(4, 8);
 
 INSERT INTO notification_subscription (registered_user_id, notification_type_id, is_enabled)
 SELECT 
@@ -997,7 +997,7 @@ VALUES
 
 INSERT INTO bookmark_notification (notification_id, job_seeker_id, job_posting_id)
 VALUES
-(4, 4, 3);
+(4, 4, 8);
 
 INSERT INTO job_posting_notification (notification_id, job_posting_id)
 VALUES
