@@ -26,7 +26,7 @@
     </div>
 
     <div class="jp-buttons d-flex">
-        <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ url('/') }}">Go back</a>
+        <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="javascript:history.back()">Go back</a>
         @auth
             @if($jobSeeker)
                 @if($hasApplied)
