@@ -26,8 +26,7 @@ class Recruiter extends Model
         return $this->belongsTo(User::class, 'registered_user_id');
     }
 
-    public function department() 
-    {
+    public function department() {
         return $this->belongsTo(Department::class, 'department_id');
     }
 

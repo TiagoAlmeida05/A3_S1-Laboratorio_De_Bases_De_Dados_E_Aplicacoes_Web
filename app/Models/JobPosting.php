@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class JobPosting extends Model {
     protected $table = 'job_posting';
@@ -33,6 +34,24 @@ class JobPosting extends Model {
 
     public function recruiter(): BelongsTo {
         return $this->belongsTo(Recruiter::class, 'recruiter_id', 'registered_user_id');
+    }
+
+    public function company() {
+        return $this->hasOneThrough(Company::class, Recruiter::class,
+            'registered_user_id',
+            'id',
+            'recruiter_id',
+            'department_id'
+        )->join('department', 'department.company_id', '=', 'company.id');
+    }
+
+    public function department(): HasOneThrough {
+        return $this->hasOneThrough(Department::class, Recruiter::class,
+            'registered_user_id',
+            'id',
+            'recruiter_id',
+            'department_id'
+        );
     }
 
     public function applications() {
