@@ -61,6 +61,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/pages/{id}', [AdminController::class, 'updatePage'])->name('admin.pages.update');
     Route::get('/admin/users', [AdminController::class, 'manageUsers'])->name('admin.users');
     Route::patch('/admin/users/{id}/block', [AdminController::class, 'blockUser'])->name('admin.users.block');
+    Route::get('/admin/companies', [AdminController::class, 'manageCompanies'])->name('admin.companies');
+    Route::get('/admin/companies/{id}/edit', [AdminController::class, 'editCompany'])->name('admin.companies.edit');
+    Route::put('/admin/companies/{id}', [AdminController::class, 'updateCompany'])->name('admin.companies.update');
 });
 
 Route::get('/recruiter-dashboard', function () {

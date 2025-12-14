@@ -19,6 +19,8 @@
             <a href="{{ route('admin.jobs') }}" class=button>Job Postings Management</a>
             <a href="{{ route('admin.content') }}" class=button>Content Management</a>
             <a href="{{ route('admin.pages') }}" class=button>Info Pages Management</a>
+            <a href="{{ route('admin.users') }}" class=button>User Management</a>
+            <a href="{{ route('admin.companies') }}" class=button>Company Management</a>
         </nav>
 
         <form action="{{ route('logout') }}" method="POST">

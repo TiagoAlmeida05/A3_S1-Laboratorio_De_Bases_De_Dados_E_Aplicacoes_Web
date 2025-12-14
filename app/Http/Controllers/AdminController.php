@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Report;
 use App\Models\WebsiteContent;
 use App\Models\User;
+use App\Models\Company;
+use App\Models\City;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -122,4 +125,41 @@ class AdminController extends Controller
 
         return back()->with('success', $msg);
     }    
+
+    //FR042-company
+    public function manageCompanies() {
+        $companies = Company::orderBy('id', 'asc')->paginate(10);
+        return view('admin.company_management', ['companies' => $companies]);
+    }
+
+    public function editCompany($id) {
+        $company = Company::findOrFail($id);
+        $cities = City::with('country')->orderBy('name')->get();
+        
+        return view('admin.companies.edit', ['company' => $company, 'cities' => $cities]);
+    }
+
+    public function updateCompany(Request $request, $id) {
+        $company = Company::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'website' => 'nullable|url|max:255',
+            'about_us' => 'nullable|string',
+            'city_id' => 'nullable|exists:city,id',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('logo')) {
+            // Apagar antigo se existir
+            if ($company->logo) {
+                Storage::disk('public')->delete($company->logo);
+            }
+            $validated['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        $company->update($validated);
+
+        return redirect()->route('admin.companies')->with('success', 'Company successfully updated.');
+    }
 }
