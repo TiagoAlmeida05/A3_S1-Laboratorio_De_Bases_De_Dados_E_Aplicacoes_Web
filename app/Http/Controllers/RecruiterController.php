@@ -5,16 +5,36 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use App\Models\JobPosting;
 
 class RecruiterController extends Controller {
-    public function index(): View {
+    public function index(Request $request): View {
         $user = Auth::user();
         $recruiter = $user->recruiter;
-        $job_postings = $recruiter->job_postings()->withCount('applications')->orderBy('creation_date', 'desc')->get();
+
+        $viewMode = $request->get('view', 'personal');
+
+        if($viewMode === 'company' && $recruiter->is_company_manager){
+            $job_postings = JobPosting::forCompany($recruiter->department->company_id)
+                ->with(['recruiter.department'])
+                ->withCount('applications')
+                ->orderBy('creation_date', 'desc')
+                ->get();
+        }else{
+             $job_postings = $recruiter->job_postings()
+                ->with(['recruiter.department'])
+                ->withCount('applications')
+                ->orderBy('creation_date', 'desc')
+                ->get();
+            
+            $viewMode = 'personal';
+        }
 
         return view('recruiter.dashboard', [
             'user' => $user,
-            'job_postings' => $job_postings
+            'job_postings' => $job_postings,
+            'viewMode' => $viewMode
         ]);
     }
 

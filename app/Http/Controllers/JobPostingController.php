@@ -133,7 +133,10 @@ class JobPostingController extends Controller {
         Gate::authorize('create-job-posting');
         try {
             $validated = $request->validated();
-    
+            
+            $isManager = Auth::user()->recruiter->is_company_manager;
+            $initialStatus = $isManager ? 'Active' : 'Pending';
+
             JobPosting::create([
                 'title' => $request->title,
                 'description' => $request->description,
@@ -141,12 +144,16 @@ class JobPostingController extends Controller {
                 'min_wage' => $request->min_wage,
                 'max_wage' => $request->max_wage,
                 'requirements' => $request->requirements,
-                'status' => 'Pending',
+                'status' => $initialStatus,
                 'recruiter_id' => Auth::user()->recruiter->registered_user_id,
                 'city_id' => $request->city_id
             ]);
-    
-            return redirect()->route('recruiter-dashboard.index')->with('success', 'New job posting created successfully! :)');
+            
+            $message = $isManager
+                ? 'Job posting created and published!'
+                : 'Job posting created! It is now pending approval by your manager.';
+
+            return redirect()->route('recruiter-dashboard.index')->with('success', $message);
         }
         catch (\Exception $e){
             return back()->with('error', "An error occurred while creating your new job posting. Please try again.");
@@ -176,7 +183,6 @@ class JobPostingController extends Controller {
                 'max_wage' => $request->max_wage,
                 'requirements' => $request->requirements,
                 'status' => $request->status,
-                'recruiter_id' => Auth::user()->recruiter->registered_user_id,
                 'city_id' => $request->city_id
             ]);
     
@@ -254,7 +260,6 @@ class JobPostingController extends Controller {
             
             $job_posting->update([
                 'status' => 'Closed',
-                'deadline' => now()->setTimezone('Europe/Lisbon')->toDateString()
             ]);
             
             return redirect()->route('recruiter-dashboard.index')->with('success', 'Applications evaluated and selected, and job posting closed successfully!');
@@ -268,14 +273,12 @@ class JobPostingController extends Controller {
         Gate::authorize('close', $job_posting);
     
         try {
-            $job_posting->update([
-                'status' => 'Closed',
-                'deadline' => now()->setTimezone('Europe/Lisbon')->toDateString()
-            ]);
-
+            $job_posting->status = 'Closed';
+            $job_posting->save();
             return redirect()->route('recruiter-dashboard.index')->with('success', 'Job posting closed successfully! :)');
         }
         catch(\Exception $e) {
+            dd($e->getMessage());
             return back()->with('error', "An error occurred while closing your job posting. Please try again.");
         }
     }
@@ -291,5 +294,16 @@ class JobPostingController extends Controller {
         catch (\Exception $e){
             return back()->with('error', "An error occurred while deleting your job posting. Please try again.");
         }
+    }
+
+    public function approve(JobPosting $job_posting){
+        Gate::authorize('update', $job_posting);
+
+        if(!Auth::user()->recruiter->is_company_manager){
+            abort(403, 'Unauthorized');
+        }
+        $job_posting->update(['status' => 'Active']);
+
+        return back()->with('success', 'Job posting approved successfully!');
     }
 }

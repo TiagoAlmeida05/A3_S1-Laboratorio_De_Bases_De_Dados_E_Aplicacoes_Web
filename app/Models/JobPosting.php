@@ -62,4 +62,11 @@ class JobPosting extends Model {
     public function tags(): BelongsToMany {
         return $this->belongsToMany(Tag::class, 'job_posting_tag');
     }
+
+    public function scopeForCompany($query, $companyId)
+    {
+        return $query->whereHas('recruiter.department', function ($q) use ($companyId){
+            $q->where('company_id', $companyId);
+        });
+    }
 }

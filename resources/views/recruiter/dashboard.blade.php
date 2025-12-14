@@ -5,6 +5,34 @@
 @section('content')
 <section id="recruiter-dashboard">
     <h2>{{ $user->name }}{{Str::endsWith($user->name, 's') ? '\'' : "'s"}} Recruiter Dashboard</h2>
+    {{-- MANAGER TABS --}}
+    @if(Auth::user()->recruiter->is_company_manager)
+        <div class="mb-4" style="margin-top: 20px; border-bottom: 1px solid #ddd;">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" style="display: flex; gap: 1rem; list-style: none; padding: 0;">               
+                {{-- TAB 1: MY JOBS --}}
+                <li class="mr-2">
+                    {{-- Check request('view') instead of $viewMode --}}
+                    <a href="{{ route('recruiter-dashboard.index', ['view' => 'personal']) }}" 
+                       style="text-decoration: none; padding: 10px; 
+                              border-bottom: 2px solid {{ request('view', 'personal') === 'personal' ? '#1c4eb1' : 'transparent' }}; 
+                              color: {{ request('view', 'personal') === 'personal' ? '#1c4eb1' : '#666' }}; 
+                              font-weight: {{ request('view', 'personal') === 'personal' ? 'bold' : 'normal' }};">
+                        My Job Postings
+                    </a>
+                </li>
+                {{-- TAB 2: COMPANY JOBS --}}
+                <li class="mr-2">
+                    <a href="{{ route('recruiter-dashboard.index', ['view' => 'company']) }}" 
+                       style="text-decoration: none; padding: 10px; 
+                              border-bottom: 2px solid {{ request('view') === 'company' ? '#1c4eb1' : 'transparent' }}; 
+                              color: {{ request('view') === 'company' ? '#1c4eb1' : '#666' }}; 
+                              font-weight: {{ request('view') === 'company' ? 'bold' : 'normal' }};">
+                        All Company Jobs
+                    </a>
+                </li>
+            </ul>
+        </div>
+    @endif
     <div class="dashboard-create-job" style="margin: 1rem 0rem;">
         <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('job_postings.create') }}" class="a-as-button">Create new job posting</a>
     </div>

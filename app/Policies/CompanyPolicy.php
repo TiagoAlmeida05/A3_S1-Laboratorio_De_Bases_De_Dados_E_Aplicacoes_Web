@@ -12,6 +12,10 @@ class CompanyPolicy
 
     public function update(User $user, Company $company)
     {
+        if($user->isAdmin()){
+            return true;
+        }
+
         $recruiter = $user->recruiter;
         
         if (!$recruiter || !$recruiter->is_company_manager) {

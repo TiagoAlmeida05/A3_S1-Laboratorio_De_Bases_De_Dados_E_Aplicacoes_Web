@@ -20,6 +20,9 @@ class Recruiter extends Model
         'is_company_manager',
         'department_id',
     ];
+    protected $casts = [
+        'is_company_manager' => 'boolean',
+    ];
 
     public function user()
     {
