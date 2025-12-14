@@ -43,12 +43,16 @@ class JobPostingController extends Controller {
     {
         $searchTerm = $request->input('search');
 
-        $jobsQuery = JobPosting::with('city');
+        $allCities = \App\Models\City::orderBy('name')->get();
+        $allCompanies = \App\Models\Company::orderBy('name')->get();
+        $allTags = \App\Models\Tag::orderBy('name')->get();
+
+        $jobsQuery = JobPosting::with('city')->where('status', 'Active');
         $companies = collect();
         $jobSeekers = collect();
 
         if (!empty($searchTerm)) {
-            if(strlen($searchTerm < 3)){
+            if(strlen($searchTerm) < 3){
                 $jobsQuery->where('title', 'ILIKE', "%{searchTerm}%")
                           ->orderBy('id', 'desc');
 
@@ -87,7 +91,20 @@ class JobPostingController extends Controller {
 
         } else {
             $jobsQuery->orderBy('id');
-            $companies = collect();
+        }
+
+        if ($request->filled('region')) {
+            $jobsQuery->where('city_id', $request->input('region'));
+        }
+        if ($request->filled('company')) {
+            $jobsQuery->whereHas('recruiter.department.company', function($q) use ($request) {
+                $q->where('id', $request->input('company'));
+            });
+        }
+        if ($request->filled('field')) {
+            $jobsQuery->whereHas('tags', function($q) use ($request) {
+                $q->where('id', $request->input('field'));
+            });
         }
 
         $jobPostings = $jobsQuery->get();
@@ -96,7 +113,10 @@ class JobPostingController extends Controller {
             'job_postings' => $jobPostings,
             'companies' => $companies,
             'jobSeekers' => $jobSeekers,
-            'searchTerm' => $searchTerm
+            'searchTerm' => $searchTerm,
+            'filterCities' => $allCities,
+            'filterCompanies' => $allCompanies,
+            'filterTags' => $allTags,
         ]);
     }
 

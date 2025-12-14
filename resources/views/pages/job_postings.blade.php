@@ -3,7 +3,7 @@
 @section('content')
 
 <section id="search-section">
-    {{-- Search Bar --}}
+    {{-- Search Bar & Filters--}}
     <div class="search-container mb-6" style="margin-bottom: 2rem;">
         <form method="GET" action="{{ route('homepage') }}" id="searchForm">
             <div class="navbar navbar-light bg-light">
@@ -17,6 +17,44 @@
                     autocomplete="off"
                 >
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                {{-- Field (Tags) Filter --}}
+                <select name="field" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
+                    <option value="">All Fields/Tags</option>
+                    @foreach($filterTags as $tag)
+                        <option value="{{ $tag->id }}" {{ request('field') == $tag->id ? 'selected' : '' }}>
+                            {{ $tag->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                {{-- Company Filter --}}
+                <select name="company" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
+                    <option value="">All Companies</option>
+                    @foreach($filterCompanies as $company)
+                        <option value="{{ $company->id }}" {{ request('company') == $company->id ? 'selected' : '' }}>
+                            {{ $company->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                {{-- Region (City) Filter --}}
+                <select name="region" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
+                    <option value="">All Regions</option>
+                    @foreach($filterCities as $city)
+                        <option value="{{ $city->id }}" {{ request('region') == $city->id ? 'selected' : '' }}>
+                            {{ $city->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            {{-- Reset Filters Button (Optional but helpful) --}}
+            @if(request('search') || request('field') || request('company') || request('region'))
+                <div class="mt-3 text-right">
+                    <a href="{{ route('homepage') }}" class="text-sm text-red-500 hover:underline">Clear all filters</a>
+                </div>
+            @endif
         </form>
     </div>
 

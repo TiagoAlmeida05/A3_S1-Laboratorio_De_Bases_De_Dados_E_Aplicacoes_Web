@@ -764,12 +764,12 @@ VALUES
 
 INSERT INTO job_posting (title, description, creation_date, deadline, min_wage, max_wage, requirements, status, recruiter_id, city_id)
 VALUES
-('Frontend Developer', 'Develop and maintain UI components.','2025-12-01',  '2025-12-11', 2000, 3000, 'React, CSS, HTML', 'Closed', 1, 1),
+('Frontend Developer', 'Develop and maintain UI components.','2025-12-01',  '2025-12-11', 2000, 3000, 'React, CSS, HTML', 'Closed', 2, 1),
 ('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2025-12-03', 1800, 2800, 'SQL, Python, Excel', 'Closed', 1, 2),
 ('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-03-03', 1800, 2800, 'SQL, Python, Excel', 'Expired', 1, 2),
 ('Project Manager', 'Coordinate multiple software projects.', '2025-12-06', '2026-01-06', 2500, 4000, 'Agile, Scrum, Jira', 'Active', 9, 3),
 ('Backend Developer', 'Design RESTful APIs and databases.', '2025-12-12', '2026-02-04', 2200, 3500, 'Node.js, PostgreSQL, Docker', 'Pending', 1, 1),
-('Marketing Assistant', 'Support campaign management.', '2025-11-28', '2026-03-27', 1500, 2200, 'SEO, content creation', 'Active', 1, 3),
+('Marketing Assistant', 'Support campaign management.', '2025-11-28', '2026-03-27', 1500, 2200, 'SEO, content creation', 'Active', 2, 3),
 ('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-12-12', 1800, 2800, 'SQL, Python, Excel', 'Expired', 1, 2),
 ('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-03-18', 1800, 2800, 'SQL, Python, Excel', 'Active', 1, 2);
 

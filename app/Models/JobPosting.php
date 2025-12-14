@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class JobPosting extends Model {
     protected $table = 'job_posting';
@@ -56,5 +57,9 @@ class JobPosting extends Model {
 
     public function applications() {
         return $this->hasMany(Application::class, 'job_posting_id');
+    }
+
+    public function tags(): BelongsToMany {
+        return $this->belongsToMany(Tag::class, 'job_posting_tag');
     }
 }
