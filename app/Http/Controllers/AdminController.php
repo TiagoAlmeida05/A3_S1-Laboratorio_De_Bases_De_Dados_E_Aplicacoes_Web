@@ -7,6 +7,7 @@ use App\Models\JobPosting;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Report;
 use App\Models\WebsiteContent;
+use App\Models\User;
 
 class AdminController extends Controller
 {
@@ -95,5 +96,30 @@ class AdminController extends Controller
         return redirect()->route('admin.pages')->with('success', "{$page->name} updated successfully!");
     }
 
-    
+    //US59
+    public function manageUsers(Request $request) {
+        $query = User::query();
+        $users = $query->orderBy('id', 'asc')->paginate(5);
+        return view('admin.users', ['users' => $users]);
+    }
+
+    public function blockUser($id) {
+        $user = User::findOrFail($id);
+
+        if ($user->isAdmin()) {
+            return back()->with('error', 'Unable to block admins');
+        }
+
+        if ($user->status === 'Suspended') {
+            $user->status = 'Active';
+            $msg = 'User successfully unblocked!';
+        } else {
+            $user->status = 'Suspended';
+            $msg = 'User successfully blocked!';
+        }
+
+        $user->save();
+
+        return back()->with('success', $msg);
+    }    
 }
