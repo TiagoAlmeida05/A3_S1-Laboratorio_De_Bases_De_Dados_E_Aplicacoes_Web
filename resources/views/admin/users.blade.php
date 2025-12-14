@@ -2,7 +2,7 @@
 
 @section('content')
     <h1>User Management</h1>
-    
+
     <table>
         <thead>
             <tr>
@@ -49,6 +49,17 @@
                                         </button>
                                     @endif
                                 </form>
+                                @if($user->status !== 'Deleted')
+                                    <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                        @csrf 
+                                        @method('DELETE')
+                                        <button class="button button-outline">
+                                            Delete
+                                        </button>
+                                    </form>
+                                @else
+                                    <span>Deleted</span>
+                                @endif
                             </div>
                         @else
                             <span>Administrator</span>

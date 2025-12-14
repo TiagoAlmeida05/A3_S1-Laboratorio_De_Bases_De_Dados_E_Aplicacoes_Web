@@ -122,4 +122,18 @@ class AdminController extends Controller
 
         return back()->with('success', $msg);
     }    
+
+    // US60: Apagar Utilizador (Soft Delete)
+    public function deleteUser($id) {
+        $user = \App\Models\User::findOrFail($id);
+
+        if ($user->isAdmin()) {
+            return back()->with('error', 'You cannot delete an admin´s account!');
+        }
+
+        $user->status = 'Deleted';
+        $user->save();
+
+        return back()->with('success', 'User account deleted successfully!');
+    }
 }
