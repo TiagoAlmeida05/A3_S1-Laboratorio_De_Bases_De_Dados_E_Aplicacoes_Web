@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\JobSeeker;
 use App\Models\Tag;
@@ -296,6 +297,96 @@ class JobSeekerController extends Controller
             
             throw $e;
         }
+    }
+
+    public function applications()
+    {
+        $applications = Application::with(['jobPosting.company', 'jobPosting.city'])
+            ->where('job_seeker_id', Auth::id())
+            ->orderBy('date', 'desc')
+            ->paginate(10);
+            
+        return view('jobseeker.applications', compact('applications'));
+    }
+
+    public function editApplication($applicationId)
+    {
+        $application = Application::with(['jobPosting'])
+            ->where('job_seeker_id', Auth::id())
+            ->findOrFail($applicationId);
+            
+        return view('jobseeker.application-edit', compact('application'));
+    }
+
+    public function updateApplication(Request $request, $applicationId)
+    {
+        $application = Application::where('job_seeker_id', Auth::id())
+            ->findOrFail($applicationId);
+        
+        $validated = $request->validate([
+            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'cover_letter' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'recommendation_letter' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+        ]);
+        
+        if ($request->hasFile('cv')) {
+            $validated['cv'] = $request->file('cv')->store('application_cvs', 'public');
+        }
+        
+        if ($request->hasFile('cover_letter')) {
+            $validated['cover_letter'] = $request->file('cover_letter')->store('cover_letters', 'public');
+        }
+        
+        if ($request->hasFile('recommendation_letter')) {
+            $validated['recommendation_letter'] = $request->file('recommendation_letter')->store('recommendation_letters', 'public');
+        }
+        
+        $application->update($validated);
+        
+        return redirect()->route('jobseeker.applications')
+            ->with('success', 'Application updated successfully!');
+    }
+
+    public function deleteApplicationFile($applicationId, $fileType)
+    {
+        $application = Application::where('job_seeker_id', Auth::id())
+            ->findOrFail($applicationId);
+        
+        if ($fileType === 'cv' && $application->cv) {
+            Storage::disk('public')->delete($application->cv);
+            $application->cv = null;
+        } elseif ($fileType === 'cover_letter' && $application->cover_letter) {
+            Storage::disk('public')->delete($application->cover_letter);
+            $application->cover_letter = null;
+        } elseif ($fileType === 'recommendation_letter' && $application->recommendation_letter) {
+            Storage::disk('public')->delete($application->recommendation_letter);
+            $application->recommendation_letter = null;
+        }
+        
+        $application->save();
+        
+        return back()->with('success', 'File deleted successfully!');
+    }
+
+    public function cancelApplication($applicationId)
+    {
+        $application = Application::where('job_seeker_id', Auth::id())
+            ->findOrFail($applicationId);
+            
+        if ($application->cv) {
+            Storage::disk('public')->delete($application->cv);
+        }
+        if ($application->cover_letter) {
+            Storage::disk('public')->delete($application->cover_letter);
+        }
+        if ($application->recommendation_letter) {
+            Storage::disk('public')->delete($application->recommendation_letter);
+        }
+        
+        $application->delete();
+        
+        return redirect()->route('jobseeker.applications')
+            ->with('success', 'Application cancelled successfully!');
     }
 
     public function searchJobSeekers(Request $request)

@@ -42,12 +42,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
     });
 
-    Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
+    Route::get('/job-seeker/applications', [JobSeekerController::class, 'applications'])->name('jobseeker.applications');
     Route::get('/job-seeker/profile/edit', [JobSeekerController::class, 'edit'])->name('jobseeker.profile.edit');
+    Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
     Route::put('/job-seeker/profile/update', [JobSeekerController::class, 'update'])->name('jobseeker.profile.update');
     Route::get('/job_postings/{jobPosting}/apply', [JobSeekerController::class, 'applyForm'])->name('jobseeker.apply');
     Route::post('/job_postings/{jobPosting}/apply', [JobSeekerController::class, 'storeApplication'])->name('jobseeker.apply.store');
-
+    Route::get('/applications/{application}/edit', [JobSeekerController::class, 'editApplication'])->name('applications.edit');
+    Route::put('/applications/{application}', [JobSeekerController::class, 'updateApplication'])->name('applications.update');
+    Route::delete('/applications/{application}/files/{fileType}', [JobSeekerController::class, 'deleteApplicationFile'])->name('applications.files.delete');
+    Route::delete('/applications/{application}/cancel', [JobSeekerController::class, 'cancelApplication'])->name('applications.cancel');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
