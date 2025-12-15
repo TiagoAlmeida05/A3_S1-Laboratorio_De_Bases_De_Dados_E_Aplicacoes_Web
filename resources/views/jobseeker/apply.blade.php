@@ -54,7 +54,7 @@
 
             <div class="form-group">
                 <label for="recommendation_letter">Recommendation Letter</label>
-                <input type="file" name="recomendation_letter" id="cover_letter" accept=".pdf,.doc,.docx">
+                <input type="file" name="recommendation_letter" id="recommendation_letter" accept=".pdf,.doc,.docx">
             </div>
         </div>
 
