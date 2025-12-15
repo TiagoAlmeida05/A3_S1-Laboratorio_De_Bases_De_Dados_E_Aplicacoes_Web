@@ -16,16 +16,13 @@
         @csrf
         @method('PUT')
 
-        <div>
-            <h2>Profile Picture</h2>
-            <div>
-                <div>
-                    <img src="" alt="Profile Picture">
-                </div>
-                <div>
-                    <input type="file" name="profile_photo">
-                </div>
-            </div>
+        <div class="mb-3">
+            <label class="form-label">Profile Picture</label>
+            <input name="profile_photo" type="file" class="form-control">
+
+            @if ($jobSeeker->profile_photo)
+                <img src="{{ asset('storage/' . $jobSeeker->profile_photo) }}" class="mt-2 rounded shadow-sm" width="120">
+            @endif
         </div>
 
         <div>

@@ -44,7 +44,7 @@ class JobSeekerController extends Controller
 
     public function update(Request $request)
     {
-        $jobSeeker = JobSeeker::findOrFail(Auth::id());
+        $jobSeeker = JobSeeker::where('registered_user_id', Auth::id())->firstOrFail();
         $validated = $request->validate([
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'about_me' => 'nullable|string|max:1000',
@@ -71,9 +71,8 @@ class JobSeekerController extends Controller
             'awards.*.name' => 'nullable|string|max:255'
         ]);
 
-        if ($request->hasFile('profile_photo')) {
-            $path = $request->file('profile_photo')->store('profile-photos', 'public');
-            $validated['profile_photo'] = $path;
+         if ($request->hasFile('profile_photo')){
+            $validated['profile_photo'] = $request->file('profile_photo')->store('profile_photos', 'public');
         }
 
         if ($request->hasFile('cv')) {
