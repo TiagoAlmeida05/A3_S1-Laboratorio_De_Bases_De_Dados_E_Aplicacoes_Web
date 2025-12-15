@@ -34,7 +34,7 @@
                 @if($application->cv)
                     <div class="mt-2">
                         <p>Current CV: 
-                            <a href="{{ asset('storage/' . $jobSeeker->cv) }}">View CV</a>
+                            <a href="{{ asset('storage/' . $application->cv) }}">View CV</a>
                         </p>
                     </div>
                 @endif
@@ -55,7 +55,7 @@
             </div>
 
             <div>
-                <label class="form-label">Recommendation Letter (Optional)</label>
+                <label class="form-label">Recommendation Letter</label>
                 <input name="recommendation_letter" type="file" class="form-control" accept=".pdf,.doc,.docx">
                 
                 @if($application->recommendation_letter)
@@ -68,10 +68,20 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-between">
+        <div>
             <a href="{{ route('jobseeker.applications') }}">Back to Applications</a>
             <button>Save Changes</button>
         </div>
+
+        @if($errors->any())
+            <div>
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </form>
 </section>
 @endsection
