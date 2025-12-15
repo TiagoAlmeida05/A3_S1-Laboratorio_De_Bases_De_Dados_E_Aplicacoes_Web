@@ -259,8 +259,9 @@ class JobSeekerController extends Controller
     {
         try {
             $validated = $request->validate([
-                'cover_letter' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-                'recommendation_letter' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+                'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+                'cover_letter' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+                'recommendation_letter' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             ]);
 
             $applicationData = [
@@ -270,6 +271,10 @@ class JobSeekerController extends Controller
                 'evaluated' => false,
                 'accepted' => false,
             ];
+
+            if ($request->hasFile('cv')) {
+                $applicationData['cv'] = $request->file('cv')->store('application_cvs', 'public');
+            }
 
             if ($request->hasFile('cover_letter')) {
                 $applicationData['cover_letter'] = $request->file('cover_letter')->store('cover_letters', 'public');
