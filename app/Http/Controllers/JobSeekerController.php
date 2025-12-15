@@ -50,7 +50,7 @@ class JobSeekerController extends Controller
             'about_me' => 'nullable|string|max:1000',
             'website' => 'nullable|url|max:255',
             'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'show_cv' => 'boolean',
+            'show_cv' => 'required|boolean',
             'city_id' => 'nullable|exists:city,id',
             'tags' => 'array',
             'tags.*' => 'exists:tag,id',
@@ -71,13 +71,12 @@ class JobSeekerController extends Controller
             'awards.*.name' => 'nullable|string|max:255'
         ]);
 
-         if ($request->hasFile('profile_photo')){
+        if ($request->hasFile('profile_photo')){
             $validated['profile_photo'] = $request->file('profile_photo')->store('profile_photos', 'public');
         }
 
         if ($request->hasFile('cv')) {
-            $path = $request->file('cv')->store('cvs', 'public');
-            $validated['cv'] = $path;
+            $validated['cv'] = $request->file('cv')->store('cvs', 'public');
         }
 
         $jobSeeker->update($validated);
