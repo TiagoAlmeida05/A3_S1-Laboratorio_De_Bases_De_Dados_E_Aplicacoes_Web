@@ -44,7 +44,7 @@
             <h2>Application Details</h2>
             <div class="form-group">
                 <label for="cv">CV</label>
-                <input type="file" name="cv" id="cv" accept=".pdf,.doc,.docx" class="form-control">
+                <input type="file" name="cv" id="cv" accept=".pdf,.doc,.docx">
             </div>
 
             <div class="form-group">

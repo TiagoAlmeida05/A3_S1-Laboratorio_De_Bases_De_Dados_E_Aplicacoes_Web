@@ -55,14 +55,18 @@
                            placeholder="https://exemplo.com">
                 </div>
 
-                @if ($jobSeeker->cv)
-                    <p>
-                        Current CV:
-                        <a href="{{ asset('storage/' . $jobSeeker->cv) }}" target="_blank">
-                            View CV
-                        </a>
-                    </p>
-                @endif
+                <div>
+                    <label class="form-label">CV (Curriculum Vitae)</label>
+                    <input name="cv" type="file" class="form-control" accept=".pdf,.doc,.docx">
+                    @if ($jobSeeker->cv)
+                        <p>
+                            Current CV:
+                            <a href="{{ asset('storage/' . $jobSeeker->cv) }}" target="_blank">
+                                View CV
+                            </a>
+                        </p>
+                    @endif
+                </div>
 
                 <input type="hidden" name="show_cv" value="0">
 
