@@ -13,6 +13,11 @@
     <div class="d-flex flex-column" style="margin-bottom: 1rem;">
         <h2 class="align-self-center" style="margin: 2rem 0rem;">{{ $jobSeeker->registeredUser->name }}</h2>
         <div>
+            @if ($jobSeeker->profile_photo)
+                <img src="{{ asset('storage/' . $jobSeeker->profile_photo) }}" width="150" class="mb-3 rounded shadow-sm">
+            @else
+                <p>No profile picture uploaded.</p>
+            @endif
             <div style="margin: 1rem 0rem;">
                 @if($jobSeeker->city)
                     <p><strong>City:</strong> {{ $jobSeeker->city->name }}</p>
