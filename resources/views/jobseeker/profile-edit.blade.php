@@ -55,19 +55,20 @@
                            placeholder="https://exemplo.com">
                 </div>
 
-                @if($jobSeeker->cv)
-                    <div>
-                        <a href="{{ asset('storage/'.$jobSeeker->cv) }}">
-                            See current CV
+                @if ($jobSeeker->cv)
+                    <p>
+                        Current CV:
+                        <a href="{{ asset('storage/' . $jobSeeker->cv) }}" target="_blank">
+                            View CV
                         </a>
-                    </div>
+                    </p>
                 @endif
 
-                <input type="file" name="cv">
+                <input type="hidden" name="show_cv" value="0">
 
                 <div style="margin-top: 16px; display: flex; align-items: center;">
-                    <input type="checkbox" name="show_cv" value="1" 
-                        {{ $jobSeeker->show_cv ? 'checked' : '' }}>
+                    <input type="checkbox" name="show_cv" value="1"
+                        {{ old('show_cv', $jobSeeker->show_cv) ? 'checked' : '' }}>
                     <label>Public CV</label>
                 </div>
             </div>

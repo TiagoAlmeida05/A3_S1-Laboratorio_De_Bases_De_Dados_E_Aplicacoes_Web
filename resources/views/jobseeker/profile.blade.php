@@ -27,7 +27,7 @@
                     <p><strong>Website:</strong> <a href="{{ $jobSeeker->website }}" target="_blank">{{ $jobSeeker->website }}</a></p>
                 @endif
                 @if($jobSeeker->cv && $jobSeeker->show_cv)
-                    <p><strong>CV:</strong> <a href="{{ asset('storage/'.$jobSeeker->cv) }}" target="_blank">Download CV</a></p>
+                    <p><strong>CV:</strong> <a href="{{ asset('storage/'.$jobSeeker->cv) }}" target="_blank">View CV</a></p>
                 @endif
             </div>
         </div>
