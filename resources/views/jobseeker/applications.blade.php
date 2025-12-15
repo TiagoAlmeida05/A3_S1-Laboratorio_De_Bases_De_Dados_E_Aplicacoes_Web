@@ -44,11 +44,6 @@
                     <p><strong>Applied on:</strong> {{ $application->date->format('d/m/Y H:i') }}</p>
                     
                     <div class="application-files">
-                        @if($application->cv)
-                            <span>
-                                <a href="{{ asset('storage/' . $application->cv) }}" target="_blank">CV</a>
-                            </span>
-                        @endif
                         @if($application->cover_letter)
                             <span>
                                 <a href="{{ asset('storage/' . $application->cover_letter) }}" target="_blank">Cover Letter</a>

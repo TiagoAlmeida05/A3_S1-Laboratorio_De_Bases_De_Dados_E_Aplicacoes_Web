@@ -25,23 +25,8 @@
         
         <div>
             <h3>Application Documents</h3>
-            
-            <!-- CV -->
-            <div class="mb-3">
-                <label class="form-label">CV</label>
-                <input name="cv" type="file" class="form-control" accept=".pdf,.doc,.docx">
-                
-                @if($application->cv)
-                    <div class="mt-2">
-                        <p>Current CV: 
-                            <a href="{{ asset('storage/' . $application->cv) }}">View CV</a>
-                        </p>
-                    </div>
-                @endif
-            </div>
 
-            <!-- Cover Letter -->
-            <div class="mb-3">
+            <div>
                 <label class="form-label">Cover Letter</label>
                 <input name="cover_letter" type="file" class="form-control" accept=".pdf,.doc,.docx">
                 

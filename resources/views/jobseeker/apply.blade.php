@@ -43,11 +43,6 @@
         <div">
             <h2>Application Details</h2>
             <div class="form-group">
-                <label for="cv">CV</label>
-                <input type="file" name="cv" id="cv" accept=".pdf,.doc,.docx">
-            </div>
-
-            <div class="form-group">
                 <label for="cover_letter">Cover Letter</label>
                 <input type="file" name="cover_letter" id="cover_letter" accept=".pdf,.doc,.docx">
             </div>
