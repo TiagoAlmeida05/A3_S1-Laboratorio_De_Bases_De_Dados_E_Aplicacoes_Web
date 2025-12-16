@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/applications/{application}', [JobSeekerController::class, 'updateApplication'])->name('applications.update');
     Route::delete('/applications/{application}/files/{fileType}', [JobSeekerController::class, 'deleteApplicationFile'])->name('applications.files.delete');
     Route::delete('/applications/{application}/cancel', [JobSeekerController::class, 'cancelApplication'])->name('applications.cancel');
+    Route::delete('/jobseeker/profile', [JobSeekerController::class, 'destroy'])->name('jobseeker.profile.destroy');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -84,6 +85,7 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::get('/recruiter-dashboard', 'index')->name('recruiter-dashboard.index');
     Route::get('/recruiter-dashboard/new-job-posting', [JobPostingController::class, 'create'])->name('job_postings.create');
     Route::get('/recruiter-dashboard/statistics', [RecruiterController::class, 'statistics'])->name('recruiter-dashboard.statistics');
+    Route::delete('/recruiter/dashboard', [RecruiterController::class, 'destroy'])->name('recruiter.dashboard.destroy');
     Route::post('/job-postings', [JobPostingController::class, 'store'])->name('job_postings.store');
     Route::get('/job-postings/{job_posting}/edit', [JobPostingController::class, 'edit'])->name('job_postings.edit');
     Route::put('/job-postings/{job_posting}', [JobPostingController::class, 'update'])->name('job_postings.update');

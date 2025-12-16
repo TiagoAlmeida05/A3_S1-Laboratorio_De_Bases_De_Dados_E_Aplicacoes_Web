@@ -408,4 +408,53 @@ class JobSeekerController extends Controller
 
         return view('partials.job_seeker_part', compact('jobSeekers'));
     }
+
+    public function destroy(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user->isJobSeeker()) {
+            return redirect('/')->with('error', 'Apenas candidatos podem usar esta rota.');
+        }
+
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        \DB::transaction(function () use ($user) {
+            
+            $jobSeeker = $user->jobSeeker;
+            if ($jobSeeker) {
+                if ($jobSeeker->cv) Storage::disk('public')->delete($jobSeeker->cv);
+                if ($jobSeeker->profile_photo) Storage::disk('public')->delete($jobSeeker->profile_photo);
+
+                $jobSeeker->cv = null;
+                $jobSeeker->profile_photo = null;
+                $jobSeeker->about_me = null;
+                $jobSeeker->website = null;
+                $jobSeeker->show_cv = false;
+                $jobSeeker->city_id = null;
+                $jobSeeker->save();
+                $jobSeeker->experienceEntries()->delete();
+                
+                $jobSeeker->educationEntries()->delete();     
+                $jobSeeker->certifications()->delete();       
+                $jobSeeker->awards()->delete();           
+                $jobSeeker->socialMediaProfiles()->delete(); 
+                $jobSeeker->tags()->detach();     
+            }
+
+            $user->name = 'Deleted User ' . $user->id;
+            $user->email = 'deleted_' . $user->id . '@hireup.com';
+            $user->password = \Illuminate\Support\Facades\Hash::make(uniqid());
+            $user->status = 'Deleted';
+            $user->save();
+        });
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Your account was successfully deleted.');
+    }
 }
