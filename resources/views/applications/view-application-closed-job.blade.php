@@ -14,6 +14,9 @@
         @if($application->jobSeeker->website)
             <p><strong>Website</strong>: <a href="{{ $application->jobSeeker->website }}" target="_blank">{{ $application->jobSeeker->website }}</a></p>
         @endif
+        @if($application->jobSeeker->cv && $application->jobSeeker->show_cv)
+            <p><strong>CV:</strong> <a href="{{ asset('storage/' . $application->jobSeeker->cv) }}" target="_blank">View CV</a></p>
+        @endif
     </div>
 
     <div>
@@ -35,14 +38,14 @@
     @if($application->cover_letter)
         <div>
             <h3>Cover letter</h3>
-            <p>{{ $application->cover_letter }}</p>
+            <a href="{{ asset('storage/' . $application->cover_letter) }}" target="_blank">See Cover Letter</a>
         </div>
     @endif
 
     @if($application->recommendation_letter)
         <div>
             <h3>Recommendation letter</h3>
-            <p>{{ $application->recommendation_letter }}</p>
+            <a href="{{ asset('storage/' . $application->recommendation_letter) }}" target="_blank">See Recommendation Letter</a>
         </div>
     @endif
 
