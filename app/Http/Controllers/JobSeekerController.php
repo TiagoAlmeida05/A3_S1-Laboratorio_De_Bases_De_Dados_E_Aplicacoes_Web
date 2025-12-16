@@ -385,8 +385,7 @@ class JobSeekerController extends Controller
         
         $application->delete();
         
-        return redirect()->route('jobseeker.applications')
-            ->with('success', 'Application cancelled successfully!');
+        return redirect()->route('jobseeker.applications')->with('success', 'Application cancelled successfully!');
     }
 
     public function searchJobSeekers(Request $request)

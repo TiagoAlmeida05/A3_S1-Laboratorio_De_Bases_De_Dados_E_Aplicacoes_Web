@@ -14,6 +14,7 @@ use App\Http\Controllers\JobSeekerController;
 use App\Http\Controllers\RecruiterController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\BookmarkController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
@@ -41,7 +42,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/job_postings', 'index')->name('job_postings.index');
         Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
     });
-
+        
+    Route::post('/job-postings/{id}/bookmark', [BookmarkController::class, 'store'])    ->name('bookmarks.store');
+    Route::delete('/job-postings/{id}/bookmark', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+    Route::get('/my-bookmarks', [BookmarkController::class, 'index'])->name('jobseeker.bookmarks');
     Route::get('/job-seeker/applications', [JobSeekerController::class, 'applications'])->name('jobseeker.applications');
     Route::get('/job-seeker/profile/edit', [JobSeekerController::class, 'edit'])->name('jobseeker.profile.edit');
     Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');

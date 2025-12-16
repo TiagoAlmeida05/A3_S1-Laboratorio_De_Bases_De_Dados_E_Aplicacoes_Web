@@ -7,7 +7,7 @@
     <h1>Edit Profile</h1>
 
     @if(session('success'))
-        <div>
+        <div class="alert alert-success">
             {{ session('success') }}
         </div>
     @endif

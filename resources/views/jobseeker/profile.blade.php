@@ -8,6 +8,7 @@
         @if(Auth::id() == $jobSeeker->registered_user_id)
             <a class="button button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.profile.edit') }}">Edit profile</a>
             <a class="button btn btn-secondary" style="padding: 0.5rem 1rem;" href="{{ route('jobseeker.applications') }}">My Applications</a> 
+            <a class="button btn btn-secondary" style="padding: 0.5rem 1rem;" href="{{ route('jobseeker.bookmarks') }}">My Bookmarks</a> 
         @endif
     @endauth
 

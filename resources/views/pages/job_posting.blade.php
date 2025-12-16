@@ -4,6 +4,25 @@
 
 @section('content')
 <section id="job_posting">
+    @if(auth()->check() && auth()->user()->jobSeeker)
+        @php
+            $isBookmarked = \DB::table('bookmark')->where('job_seeker_id', auth()->id())->where('job_posting_id', $job_posting->id)->where('is_active', true)->exists();
+        @endphp
+
+        @if($isBookmarked)
+            <form method="POST" action="{{ route('bookmarks.destroy', $job_posting->id) }}">
+                @csrf
+                @method('DELETE')
+                <button>Remove Bookmark</button>
+            </form>
+        @else
+            <form method="POST" action="{{ route('bookmarks.store', $job_posting->id) }}">
+                @csrf
+                <button>Bookmark Job</button>
+            </form>
+        @endif
+    @endif
+
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -15,6 +34,7 @@
             {{ session('error') }}
         </div>
     @endif
+    
     <div class="d-flex flex-column" style="margin-bottom: 1rem;">
         <h2 class="align-self-center" style="margin: 2rem 0rem;">{{ $job_posting->title }}</h2>
         <p><strong>Company</strong>: {{ $job_posting->recruiter->department->company->name ?? 'N/A' }}</p>

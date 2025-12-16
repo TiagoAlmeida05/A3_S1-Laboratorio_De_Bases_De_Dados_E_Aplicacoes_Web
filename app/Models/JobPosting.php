@@ -62,4 +62,16 @@ class JobPosting extends Model {
     public function tags(): BelongsToMany {
         return $this->belongsToMany(Tag::class, 'job_posting_tag');
     }
+
+    public function bookmarkedBy()
+    {
+        return $this->belongsToMany(
+            JobSeeker::class,
+            'bookmark',
+            'job_posting_id',
+            'job_seeker_id'
+        )
+        ->withPivot(['date_added', 'is_active']);
+    }
+
 }
