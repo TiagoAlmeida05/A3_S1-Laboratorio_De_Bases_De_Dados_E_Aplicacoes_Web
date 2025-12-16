@@ -251,6 +251,32 @@
             </button>
         </div>
     </form>
+
+    <hr>
+    <div>
+        <h2>Delete Account</h2>
+        <p>Once you delete your account, your personal data will be deleted. This action is irreversible.</p>
+        
+        <form action="{{ route('jobseeker.profile.destroy') }}" method="POST">
+            @csrf
+            @method('DELETE')
+
+            <div>
+                <label for="password_delete">Confirm Password to delete:</label>
+                <input type="password" id="password_delete" name="password" required>
+                
+                @error('password')
+                    <div style="color: red;">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+            
+            <button type="submit" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                Delete Account
+            </button>
+        </form>
+    </div>
 </section>
 <script>
 let awardIndex = {{ $jobSeeker->awards->count() }};

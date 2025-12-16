@@ -54,7 +54,7 @@
                             </form>
 
                             {{-- Botão Apagar --}}
-                            <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this Job Seeker?');">
+                            <form action="{{ route('admin.job_seeker.delete', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this Job Seeker?');">
                                 @csrf @method('DELETE')
                                 <button class="button button-outline">
                                     Delete
