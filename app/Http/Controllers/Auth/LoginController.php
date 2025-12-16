@@ -41,7 +41,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records or deleted account.',
+            'email' => 'The provided credentials do not match our records or deleted/blocked account.',
         ])->onlyInput('email');
     }
 }

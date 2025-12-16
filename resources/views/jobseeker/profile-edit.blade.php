@@ -255,7 +255,7 @@
     <hr>
     <div>
         <h2>Delete Account</h2>
-        <p>Once you delete your account, your personal data will be anonymized. This action is irreversible.</p>
+        <p>Once you delete your account, your personal data will be deleted. This action is irreversible.</p>
         
         <form action="{{ route('jobseeker.profile.destroy') }}" method="POST">
             @csrf

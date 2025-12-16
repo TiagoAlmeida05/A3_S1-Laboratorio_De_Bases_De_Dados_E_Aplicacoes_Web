@@ -69,13 +69,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/pages/{id}/edit', [AdminController::class, 'showPageForm'])->name('admin.pages.edit');
     Route::put('/admin/pages/{id}', [AdminController::class, 'updatePage'])->name('admin.pages.update');
     Route::patch('/admin/users/{id}/block', [AdminController::class, 'blockUser'])->name('admin.users.block');
-    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
     Route::get('/admin/companies', [AdminController::class, 'manageCompanies'])->name('admin.companies');
     Route::get('/admin/companies/{id}/edit', [AdminController::class, 'editCompany'])->name('admin.companies.edit');
     Route::put('/admin/companies/{id}', [AdminController::class, 'updateCompany'])->name('admin.companies.update');
     Route::get('/admin/job-seekers', [AdminController::class, 'manageJobSeekers'])->name('admin.job_seekers');
     Route::get('/admin/job-seekers/{id}/edit', [AdminController::class, 'editJobSeeker'])->name('admin.job_seekers.edit');
     Route::put('/admin/job-seekers/{id}', [AdminController::class, 'updateJobSeeker'])->name('admin.job_seekers.update');
+    Route::delete('/admin/job-seekers/{id}', [AdminController::class, 'deleteJobSeeker'])->name('admin.job_seeker.delete');
+    Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
+    Route::delete('/admin/settings', [AdminController::class, 'destroy'])->name('admin.profile.destroy');
 });
 
 Route::get('/recruiter-dashboard', function () {

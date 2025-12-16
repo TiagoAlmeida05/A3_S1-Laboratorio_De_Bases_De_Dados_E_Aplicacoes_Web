@@ -13,6 +13,9 @@ use App\Models\City;
 use Illuminate\Support\Facades\Storage;
 use App\Models\JobSeeker;
 use App\Models\Tag;
+use App\Models\Administrator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -193,6 +196,45 @@ class AdminController extends Controller
         return back()->with('success', $msg);
     }    
 
+    public function deleteJobSeeker($id) {
+        $user = User::findOrFail($id);
+
+        DB::transaction(function () use ($user) {
+            
+            $jobSeeker = $user->jobSeeker;
+
+            if ($jobSeeker->cv) {
+                Storage::disk('public')->delete($jobSeeker->cv);
+            }
+            if ($jobSeeker->profile_photo) {
+                Storage::disk('public')->delete($jobSeeker->profile_photo);
+            }
+            
+            $jobSeeker->cv = null;
+            $jobSeeker->profile_photo = null;
+            $jobSeeker->about_me = null;
+            $jobSeeker->website = null;
+            $jobSeeker->show_cv = false;
+            $jobSeeker->city_id = null;
+            $jobSeeker->save();
+
+            $jobSeeker->experienceEntries()->delete();
+            $jobSeeker->educationEntries()->delete();
+            $jobSeeker->certifications()->delete(); 
+            $jobSeeker->awards()->delete();
+            $jobSeeker->socialMediaProfiles()->delete();
+            $jobSeeker->tags()->detach();
+
+            $user->name = 'Deleted User ' . $user->id;
+            $user->email = 'deleted_' . $user->id . '@hireup.com';
+            $user->password = Hash::make(uniqid());
+            $user->status = 'Deleted';
+            $user->save();
+        });
+
+        return redirect()->back()->with('success', 'Job Seeker account successfully deleted.');
+    }
+
     //FR042-company
     public function manageCompanies() {
         $companies = Company::orderBy('id', 'asc')->paginate(10);
@@ -228,5 +270,47 @@ class AdminController extends Controller
         $company->update($validated);
 
         return redirect()->route('admin.companies')->with('success', 'Company successfully updated.');
+    }
+
+    public function settings()
+    {
+        $user = Auth::user();
+        return view('admin.settings', compact('user'));
+    }
+
+    public function destroy(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user->isAdmin()) {
+            return redirect('/')->with('error', 'Unauthorized.');
+        }
+
+        $activeAdmins = Administrator::whereHas('user', function ($query) {
+            $query->where('status', 'Active');
+        })->count();
+
+        if ($activeAdmins <= 1) {
+            return back()->with('error', 'You cannot delete the only remaining active administrator account.');
+        }
+
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        DB::transaction(function () use ($user) {
+            $user->name = 'Deleted Admin ' . $user->id;
+            $user->email = 'deleted_admin_' . $user->id . '@hireup.com';
+            $user->password = Hash::make(uniqid());
+            $user->status = 'Deleted';
+            
+            $user->save();
+        });
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Administrator account successfully deleted.');
     }
 }
