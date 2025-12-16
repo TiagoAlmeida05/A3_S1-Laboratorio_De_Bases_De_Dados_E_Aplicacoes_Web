@@ -73,4 +73,15 @@ class JobSeeker extends Model
     {
         return $this->hasMany(SocialMediaProfile::class, 'job_seeker_id');
     }
+
+    public function bookmarks()
+    {
+        return $this->belongsToMany(
+            JobPosting::class,
+            'bookmark',
+            'job_seeker_id',
+            'job_posting_id'
+        )
+        ->withPivot(['date_added', 'is_active']);
+    }
 }
