@@ -6,13 +6,20 @@
 <section id="job_seeker_profile">
     @auth
         @if(Auth::id() == $jobSeeker->registered_user_id)
-            <a class="button button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.profile.edit') }}">Edit profile</a> 
+            <a class="button button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.profile.edit') }}">Edit profile</a>
+            <a class="button btn btn-secondary" style="padding: 0.5rem 1rem;" href="{{ route('jobseeker.applications') }}">My Applications</a> 
+            <a class="button btn btn-secondary" style="padding: 0.5rem 1rem;" href="{{ route('jobseeker.bookmarks') }}">My Bookmarks</a> 
         @endif
     @endauth
 
     <div class="d-flex flex-column" style="margin-bottom: 1rem;">
         <h2 class="align-self-center" style="margin: 2rem 0rem;">{{ $jobSeeker->registeredUser->name }}</h2>
         <div>
+            @if ($jobSeeker->profile_photo)
+                <img src="{{ asset('storage/' . $jobSeeker->profile_photo) }}" width="150" class="mb-3 rounded shadow-sm">
+            @else
+                <p>No profile picture uploaded.</p>
+            @endif
             <div style="margin: 1rem 0rem;">
                 @if($jobSeeker->city)
                     <p><strong>City:</strong> {{ $jobSeeker->city->name }}</p>
@@ -22,7 +29,7 @@
                     <p><strong>Website:</strong> <a href="{{ $jobSeeker->website }}" target="_blank">{{ $jobSeeker->website }}</a></p>
                 @endif
                 @if($jobSeeker->cv && $jobSeeker->show_cv)
-                    <p><strong>CV:</strong> <a href="{{ asset('storage/'.$jobSeeker->cv) }}" target="_blank">Download CV</a></p>
+                    <p><strong>CV:</strong> <a href="{{ asset('storage/'.$jobSeeker->cv) }}" target="_blank">View CV</a></p>
                 @endif
             </div>
         </div>

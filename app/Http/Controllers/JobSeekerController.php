@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\JobSeeker;
 use App\Models\Tag;
@@ -44,13 +45,13 @@ class JobSeekerController extends Controller
 
     public function update(Request $request)
     {
-        $jobSeeker = JobSeeker::findOrFail(Auth::id());
+        $jobSeeker = JobSeeker::where('registered_user_id', Auth::id())->firstOrFail();
         $validated = $request->validate([
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'about_me' => 'nullable|string|max:1000',
             'website' => 'nullable|url|max:255',
             'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'show_cv' => 'boolean',
+            'show_cv' => 'required|boolean',
             'city_id' => 'nullable|exists:city,id',
             'tags' => 'array',
             'tags.*' => 'exists:tag,id',
@@ -71,14 +72,12 @@ class JobSeekerController extends Controller
             'awards.*.name' => 'nullable|string|max:255'
         ]);
 
-        if ($request->hasFile('profile_photo')) {
-            $path = $request->file('profile_photo')->store('profile-photos', 'public');
-            $validated['profile_photo'] = $path;
+        if ($request->hasFile('profile_photo')){
+            $validated['profile_photo'] = $request->file('profile_photo')->store('profile_photos', 'public');
         }
 
         if ($request->hasFile('cv')) {
-            $path = $request->file('cv')->store('cvs', 'public');
-            $validated['cv'] = $path;
+            $validated['cv'] = $request->file('cv')->store('cvs', 'public');
         }
 
         $jobSeeker->update($validated);
@@ -261,8 +260,9 @@ class JobSeekerController extends Controller
     {
         try {
             $validated = $request->validate([
-                'cover_letter' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-                'recommendation_letter' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+                'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+                'cover_letter' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+                'recommendation_letter' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             ]);
 
             $applicationData = [
@@ -272,6 +272,10 @@ class JobSeekerController extends Controller
                 'evaluated' => false,
                 'accepted' => false,
             ];
+
+            if ($request->hasFile('cv')) {
+                $applicationData['cv'] = $request->file('cv')->store('application_cvs', 'public');
+            }
 
             if ($request->hasFile('cover_letter')) {
                 $applicationData['cover_letter'] = $request->file('cover_letter')->store('cover_letters', 'public');
@@ -295,6 +299,95 @@ class JobSeekerController extends Controller
         }
     }
 
+    public function applications()
+    {
+        $applications = Application::with(['jobPosting.company', 'jobPosting.city'])
+            ->where('job_seeker_id', Auth::id())
+            ->orderBy('date', 'desc')
+            ->paginate(10);
+            
+        return view('jobseeker.applications', compact('applications'));
+    }
+
+    public function editApplication($applicationId)
+    {
+        $application = Application::with(['jobPosting'])
+            ->where('job_seeker_id', Auth::id())
+            ->findOrFail($applicationId);
+            
+        return view('jobseeker.application-edit', compact('application'));
+    }
+
+    public function updateApplication(Request $request, $applicationId)
+    {
+        $application = Application::where('job_seeker_id', Auth::id())
+            ->findOrFail($applicationId);
+        
+        $validated = $request->validate([
+            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'cover_letter' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'recommendation_letter' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+        ]);
+        
+        if ($request->hasFile('cv')) {
+            $validated['cv'] = $request->file('cv')->store('application_cvs', 'public');
+        }
+        
+        if ($request->hasFile('cover_letter')) {
+            $validated['cover_letter'] = $request->file('cover_letter')->store('cover_letters', 'public');
+        }
+        
+        if ($request->hasFile('recommendation_letter')) {
+            $validated['recommendation_letter'] = $request->file('recommendation_letter')->store('recommendation_letters', 'public');
+        }
+        
+        $application->update($validated);
+        
+        return redirect()->route('jobseeker.applications')
+            ->with('success', 'Application updated successfully!');
+    }
+
+    public function deleteApplicationFile($applicationId, $fileType)
+    {
+        $application = Application::where('job_seeker_id', Auth::id())
+            ->findOrFail($applicationId);
+        
+        if ($fileType === 'cv' && $application->cv) {
+            Storage::disk('public')->delete($application->cv);
+            $application->cv = null;
+        } elseif ($fileType === 'cover_letter' && $application->cover_letter) {
+            Storage::disk('public')->delete($application->cover_letter);
+            $application->cover_letter = null;
+        } elseif ($fileType === 'recommendation_letter' && $application->recommendation_letter) {
+            Storage::disk('public')->delete($application->recommendation_letter);
+            $application->recommendation_letter = null;
+        }
+        
+        $application->save();
+        
+        return back()->with('success', 'File deleted successfully!');
+    }
+
+    public function cancelApplication($applicationId)
+    {
+        $application = Application::where('job_seeker_id', Auth::id())
+            ->findOrFail($applicationId);
+            
+        if ($application->cv) {
+            Storage::disk('public')->delete($application->cv);
+        }
+        if ($application->cover_letter) {
+            Storage::disk('public')->delete($application->cover_letter);
+        }
+        if ($application->recommendation_letter) {
+            Storage::disk('public')->delete($application->recommendation_letter);
+        }
+        
+        $application->delete();
+        
+        return redirect()->route('jobseeker.applications')->with('success', 'Application cancelled successfully!');
+    }
+
     public function searchJobSeekers(Request $request)
     {
         $search = $request->input('search');
@@ -314,5 +407,54 @@ class JobSeekerController extends Controller
             })->get();
 
         return view('partials.job_seeker_part', compact('jobSeekers'));
+    }
+
+    public function destroy(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user->isJobSeeker()) {
+            return redirect('/')->with('error', 'Apenas candidatos podem usar esta rota.');
+        }
+
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        \DB::transaction(function () use ($user) {
+            
+            $jobSeeker = $user->jobSeeker;
+            if ($jobSeeker) {
+                if ($jobSeeker->cv) Storage::disk('public')->delete($jobSeeker->cv);
+                if ($jobSeeker->profile_photo) Storage::disk('public')->delete($jobSeeker->profile_photo);
+
+                $jobSeeker->cv = null;
+                $jobSeeker->profile_photo = null;
+                $jobSeeker->about_me = null;
+                $jobSeeker->website = null;
+                $jobSeeker->show_cv = false;
+                $jobSeeker->city_id = null;
+                $jobSeeker->save();
+                $jobSeeker->experienceEntries()->delete();
+                
+                $jobSeeker->educationEntries()->delete();     
+                $jobSeeker->certifications()->delete();       
+                $jobSeeker->awards()->delete();           
+                $jobSeeker->socialMediaProfiles()->delete(); 
+                $jobSeeker->tags()->detach();     
+            }
+
+            $user->name = 'Deleted User ' . $user->id;
+            $user->email = 'deleted_' . $user->id . '@hireup.com';
+            $user->password = \Illuminate\Support\Facades\Hash::make(uniqid());
+            $user->status = 'Deleted';
+            $user->save();
+        });
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Your account was successfully deleted.');
     }
 }

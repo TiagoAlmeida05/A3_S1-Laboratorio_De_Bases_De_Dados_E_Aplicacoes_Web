@@ -65,6 +65,32 @@
     <div class="dashboard-see-statistics" style="margin: 1rem 0rem;">
         <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('recruiter-dashboard.statistics') }}" class="a-as-button">My statistics</a>
     </div>
+
+    <hr>
+    <div class="delete-account-container">
+        <h2>Delete Account</h2>
+        <p>
+            <strong>Warning:</strong> Deleting your account is permanent. 
+            All your <strong>Active</strong> and <strong>Pending</strong> job postings will be automatically <strong>Closed</strong>. 
+            Your personal data will be anonymized, but the job history will remain associated with the company.
+        </p>
+        
+        <form action="{{ route('recruiter.dashboard.destroy') }}" method="POST">
+            @csrf
+            @method('DELETE')
+
+            <div class="form-group">
+                <label for="password_delete">Confirm Password to delete:</label>
+                <input type="password" id="password_delete" name="password" required class="form-control">
+            </div>
+            
+            <button type="submit" 
+                    class="btn btn-danger" 
+                    onclick="return confirm('Are you sure? This will close all your active jobs and delete your account.');">
+                Delete Account
+            </button>
+        </form>
+    </div>
 </section>
 
 @endsection
