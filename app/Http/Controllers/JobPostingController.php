@@ -266,6 +266,8 @@ class JobPostingController extends Controller {
                 'accepted' => false
             ]);
             
+            $acceptedApplications = collect();
+
             if (!empty($selectedIds)) {
                 $acceptedApplications = Application::whereIn('id', $selectedIds)
                     ->with('jobPosting')
@@ -277,8 +279,31 @@ class JobPostingController extends Controller {
                 ]);
             }
 
+            $rejectedApplications = $job_posting->applications()
+                ->whereNotIn('id', $selectedIds)
+                ->with('jobPosting')
+                ->get();
+
             foreach($acceptedApplications as $app){
                 $message = "Congratulations! Your application for '{$app->jobPosting->title}' has been accepted.";
+
+                $notifId = \DB::table('notification')->insertGetId([
+                    'content' => $message,
+                    'notification_type_id' => 4,
+                    'registered_user_id' => $app->job_seeker_id,
+                    'issue_date' => now(),
+                ]);
+
+                \DB::table('application_notification')->insert([
+                    'notification_id' => $notifId,
+                    'application_id' => $app->id
+                ]);
+
+                event(new PlatformAlert($message, $app->job_seeker_id, $notifId));
+            }
+
+            foreach($rejectedApplications as $app){
+                $message = "Thank you for your interest. Unfortunately, your application for '{$app->jobPosting->title}' was not selected at this time.";
 
                 $notifId = \DB::table('notification')->insertGetId([
                     'content' => $message,

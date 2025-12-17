@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
-    // US56:
+    
     public function manageJobs() {
         $jobs = JobPosting::orderBy('id', 'asc')->paginate(4);
         return view('admin.jobs', ['jobs' => $jobs]);
@@ -31,7 +31,7 @@ class AdminController extends Controller
         return redirect()->route('admin.jobs')->with('success', 'Job Posting removed!');
     }
 
-    //US57
+    
     public function manageContent() {
         $reports = Report::orderBy('solved', 'asc')->orderBy('id', 'asc')->paginate(4);
         
@@ -58,7 +58,6 @@ class AdminController extends Controller
         return redirect()->route('admin.content')->with('success', 'Report reopened.');
     }
 
-    //US58
     public function editPages() {
         $pages = WebsiteContent::orderBy('id', 'asc')->get();
         return view('admin.pages.index', ['pages' => $pages]);
@@ -100,6 +99,26 @@ class AdminController extends Controller
         $page->last_edited_by = Auth::id();
         
         $page->save();
+
+        $allUserIds = \App\Models\RegisteredUser::pluck('id');
+        $adminId = Auth::id();
+        $message = "System Update: The '{$page->name}' page has been updated.";
+
+        foreach ($allUserIds as $userId){
+            $notifId = DB::table('notification')->insertGetId([
+                'content' => $message,
+                'notification_type_id' => 1,
+                'registered_user_id' => $userId,
+                'issue_date' => now(),
+            ]);
+
+            DB::table('notification_by_admin')->insert([
+                'notification_id' => $notifId,
+                'admin_id' => $adminId
+            ]);
+
+            event(new \App\Events\PlatformAlert($message, $userId, $notifId));
+        }
 
         return redirect()->route('admin.pages')->with('success', "{$page->name} updated successfully!");
     }

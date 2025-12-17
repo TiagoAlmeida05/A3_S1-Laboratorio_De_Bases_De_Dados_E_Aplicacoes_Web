@@ -15,11 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function loadNotifications() {
-    const list = document.getElementById('notificationList');
-    const badge = document.getElementById('notificationBadge')
-    
-    if(badge) badge.style.display = 'none';
-    axios.post('/notifications/mark-all-read').catch(err => console.error(err));
+    const list = document.getElementById('notificationList');    
 
     try {
         const response = await axios.get('/notifications/fetch');
@@ -61,8 +57,21 @@ window.markItemAsRead = function(id, element){
         div.classList.remove('unread');
         div.classList.add('read');
 
+        const remainingUnreadCount = document.querySelectorAll('#notificationList .notification-item.unread').length;
+        const badge = document.getElementById('notificationBadge');
+
+        if(badge){
+            if(remainingUnreadCount === 0){
+                badge.style.display = 'none';
+                console.log("All items read.Badge hidden.")
+            }else{
+                badge.style.display = 'block';
+                console.log(`Remaining unread: ${remainingUnreadCount}`);
+            }
+        }
+
         axios.post(`/notifications/${id}/mark-as-read`)
-            .catch(err => console.error("Failed to mark read", err))
+            .catch(err => console.error("Failed to mark read", err));
     }
 }
 

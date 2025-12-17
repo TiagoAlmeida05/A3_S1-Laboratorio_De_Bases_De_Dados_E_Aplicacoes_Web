@@ -42,12 +42,12 @@ Route::middleware('auth')->group(function () {
     Route::controller(JobPostingController::class)->group(function () {
         Route::get('/job_postings', 'index')->name('job_postings.index');
         Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
-        Route::get('/notifications/fetch', [NotificationController::class, 'getUserNotifications']);
-        Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
-        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
-        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
     });
-        
+    Route::get('/notifications/fetch', [NotificationController::class, 'getUserNotifications']);
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');    
     Route::post('/job-postings/{id}/bookmark', [BookmarkController::class, 'store'])    ->name('bookmarks.store');
     Route::delete('/job-postings/{id}/bookmark', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
     Route::get('/my-bookmarks', [BookmarkController::class, 'index'])->name('jobseeker.bookmarks');

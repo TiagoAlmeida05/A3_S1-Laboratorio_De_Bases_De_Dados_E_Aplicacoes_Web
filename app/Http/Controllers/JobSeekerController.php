@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\JobSeeker;
 use App\Models\Tag;
@@ -14,6 +15,8 @@ use App\Models\CertificationEntry;
 use App\Models\AwardEntry;
 use App\Models\Application;
 use App\Models\JobPosting;
+use App\Models\Recruiter;
+use App\Events\PlatformAlert;
 
 class JobSeekerController extends Controller
 {
@@ -285,7 +288,45 @@ class JobSeekerController extends Controller
                 $applicationData['recommendation_letter'] = $request->file('recommendation_letter')->store('recommendation_letters', 'public');
             }
 
-            Application::create($applicationData);
+            $application = Application::create($applicationData);
+
+            $jobPosting = JobPosting::with(['recruiter.department'])->findOrFail($jobPostingId);
+            $currentUser = auth()->user();
+
+            $recipients = collect();
+
+            if($jobPosting->recruiter){
+                $recipients->push($jobPosting->recruiter->registered_user_id);
+            }
+
+            if($jobPosting->recruiter && $jobPosting->recruiter->department){
+                $companyId = $jobPosting->recruiter->department->company_id;
+                $manager = Recruiter::whereHas('department', function($q) use ($companyId){
+                    $q->where('company_id', $companyId);
+                })->where('is_company_manager', true)->first();
+
+                if($manager){
+                    $recipients->push($manager->registered_user_id);
+                }
+            }
+
+            $uniqueRecipients = $recipients->unique();
+            $message = "New Application: {$currentUser->name} applied for '{$jobPosting->title}'";
+
+            foreach($uniqueRecipients as $userId){
+                $notifId = DB::table('notification')->insertGetId([
+                    'content' => $message,
+                    'notification_type_id' => 1,
+                    'registered_user_id' => $userId,
+                    'issue_date' => now(),
+                ]);
+
+                DB::table('application_notification')->insert([
+                    'notification_id' => $notifId,
+                    'application_id' => $application->id
+                ]);
+                event(new PlatformAlert($message, $userId, $notifId));
+            }
 
             return redirect()->route('job_postings.show', $jobPostingId)->with('success', 'Application submitted successfully!');
 

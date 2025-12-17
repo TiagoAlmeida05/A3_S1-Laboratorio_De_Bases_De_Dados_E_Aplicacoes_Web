@@ -21,11 +21,6 @@ window.Echo = new Echo({
 const userIdElement = document.querySelector("meta[name='user-id']");
 const userId = userIdElement ? userIdElement.content: null;
 
-window.closeNotification = function() {
-    const card = document.getElementById('notification-card')
-    if(card) card.classList.remove('show');
-}
-
 if(userId){
 
     window.Echo.private(`notifications.${userId}`)
@@ -40,7 +35,7 @@ if(userId){
             const dismissBtn = card.querySelector("button");
 
             if(card && message && dismissBtn){
-                title.innerText = "New System Alert";
+                title.innerText = "New Notification";
                 message.innerText = e.message;
 
                 const newBtn = dismissBtn.cloneNode(true);
@@ -48,6 +43,9 @@ if(userId){
                 
                 newBtn.onclick = function(){
                     card.classList.remove('show');
+
+                    const badge = document.getElementById('notificationBadge');
+                    if(badge) badge.style.display = 'none';
 
                     if(e.notificationId){
                         console.log("Marking notification as read:", e.notificationId);

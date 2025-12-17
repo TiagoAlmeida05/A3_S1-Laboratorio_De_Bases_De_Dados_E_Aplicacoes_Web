@@ -318,7 +318,7 @@
                 </div>
                 <div class="notification-body">
                     <p id="notification-message"></p>
-                    <button onclick="closeNotification()">Dismiss</button>
+                    <button>Dismiss</button>
                 </div>
             </div>
 
