@@ -9,5 +9,8 @@
         </p>
     </div>
 
-    <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.profile', $jobSeeker->registered_user_id) }}">View Profile</a>
+    <a href="{{ route('jobseeker.profile', $jobSeeker->registered_user_id) }}">View Profile</a>
+    @auth
+    <a href="{{ route('messages.index', $jobSeeker->registered_user_id) }}">Message</a>
+    @endauth
 </div>
