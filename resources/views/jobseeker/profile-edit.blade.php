@@ -7,7 +7,7 @@
     <h1>Edit Profile</h1>
 
     @if(session('success'))
-        <div>
+        <div class="alert alert-success">
             {{ session('success') }}
         </div>
     @endif
@@ -16,16 +16,13 @@
         @csrf
         @method('PUT')
 
-        <div>
-            <h2>Profile Picture</h2>
-            <div>
-                <div>
-                    <img src="" alt="Profile Picture">
-                </div>
-                <div>
-                    <input type="file" name="profile_photo">
-                </div>
-            </div>
+        <div class="mb-3">
+            <label class="form-label">Profile Picture</label>
+            <input name="profile_photo" type="file" class="form-control">
+
+            @if ($jobSeeker->profile_photo)
+                <img src="{{ asset('storage/' . $jobSeeker->profile_photo) }}" class="mt-2 rounded shadow-sm" width="120">
+            @endif
         </div>
 
         <div>
@@ -58,19 +55,24 @@
                            placeholder="https://exemplo.com">
                 </div>
 
-                @if($jobSeeker->cv)
-                    <div>
-                        <a href="{{ asset('storage/'.$jobSeeker->cv) }}">
-                            See current CV
-                        </a>
-                    </div>
-                @endif
+                <div>
+                    <label class="form-label">CV (Curriculum Vitae)</label>
+                    <input name="cv" type="file" class="form-control" accept=".pdf,.doc,.docx">
+                    @if ($jobSeeker->cv)
+                        <p>
+                            Current CV:
+                            <a href="{{ asset('storage/' . $jobSeeker->cv) }}" target="_blank">
+                                View CV
+                            </a>
+                        </p>
+                    @endif
+                </div>
 
-                <input type="file" name="cv">
+                <input type="hidden" name="show_cv" value="0">
 
                 <div style="margin-top: 16px; display: flex; align-items: center;">
-                    <input type="checkbox" name="show_cv" value="1" 
-                        {{ $jobSeeker->show_cv ? 'checked' : '' }}>
+                    <input type="checkbox" name="show_cv" value="1"
+                        {{ old('show_cv', $jobSeeker->show_cv) ? 'checked' : '' }}>
                     <label>Public CV</label>
                 </div>
             </div>
@@ -249,6 +251,32 @@
             </button>
         </div>
     </form>
+
+    <hr>
+    <div>
+        <h2>Delete Account</h2>
+        <p>Once you delete your account, your personal data will be deleted. This action is irreversible.</p>
+        
+        <form action="{{ route('jobseeker.profile.destroy') }}" method="POST">
+            @csrf
+            @method('DELETE')
+
+            <div>
+                <label for="password_delete">Confirm Password to delete:</label>
+                <input type="password" id="password_delete" name="password" required>
+                
+                @error('password')
+                    <div style="color: red;">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+            
+            <button type="submit" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                Delete Account
+            </button>
+        </form>
+    </div>
 </section>
 <script>
 let awardIndex = {{ $jobSeeker->awards->count() }};

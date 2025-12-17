@@ -7,6 +7,8 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\JobPosting;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class RecruiterController extends Controller {
     public function index(Request $request): View {
@@ -101,5 +103,38 @@ class RecruiterController extends Controller {
             'currentlyActiveJobs' => $currentlyActiveJobs,
             'currentlyExpiredJobs' => $currentlyExpiredJobs,
         ]);
+    }
+
+    public function destroy(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user->recruiter) {
+            return redirect('/')->with('error', 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        DB::transaction(function () use ($user) {
+            $recruiter = $user->recruiter;
+
+            $recruiter->job_postings()
+                ->whereIn('status', ['Active', 'Pending'])
+                ->update(['status' => 'Closed']);
+
+            $user->name = 'Deleted Recruiter ' . $user->id;
+            $user->email = 'deleted_' . $user->id . '@hireup.com';
+            $user->password = Hash::make(uniqid());
+            $user->status = 'Deleted';
+            $user->save();
+        });
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Your recruiter account has been deleted and active jobs were closed.');
     }
 }

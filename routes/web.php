@@ -14,6 +14,7 @@ use App\Http\Controllers\JobSeekerController;
 use App\Http\Controllers\RecruiterController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\BookmarkController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
@@ -41,13 +42,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/job_postings', 'index')->name('job_postings.index');
         Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
     });
-
-    Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
+        
+    Route::post('/job-postings/{id}/bookmark', [BookmarkController::class, 'store'])    ->name('bookmarks.store');
+    Route::delete('/job-postings/{id}/bookmark', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+    Route::get('/my-bookmarks', [BookmarkController::class, 'index'])->name('jobseeker.bookmarks');
+    Route::get('/job-seeker/applications', [JobSeekerController::class, 'applications'])->name('jobseeker.applications');
     Route::get('/job-seeker/profile/edit', [JobSeekerController::class, 'edit'])->name('jobseeker.profile.edit');
+    Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
     Route::put('/job-seeker/profile/update', [JobSeekerController::class, 'update'])->name('jobseeker.profile.update');
     Route::get('/job_postings/{jobPosting}/apply', [JobSeekerController::class, 'applyForm'])->name('jobseeker.apply');
     Route::post('/job_postings/{jobPosting}/apply', [JobSeekerController::class, 'storeApplication'])->name('jobseeker.apply.store');
-
+    Route::get('/applications/{application}/edit', [JobSeekerController::class, 'editApplication'])->name('applications.edit');
+    Route::put('/applications/{application}', [JobSeekerController::class, 'updateApplication'])->name('applications.update');
+    Route::delete('/applications/{application}/files/{fileType}', [JobSeekerController::class, 'deleteApplicationFile'])->name('applications.files.delete');
+    Route::delete('/applications/{application}/cancel', [JobSeekerController::class, 'cancelApplication'])->name('applications.cancel');
+    Route::delete('/jobseeker/profile', [JobSeekerController::class, 'destroy'])->name('jobseeker.profile.destroy');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -59,8 +68,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/admin/content/{id}/reopen', [AdminController::class, 'reopenReport'])->name('admin.reports.reopen');
     Route::get('/admin/pages/{id}/edit', [AdminController::class, 'showPageForm'])->name('admin.pages.edit');
     Route::put('/admin/pages/{id}', [AdminController::class, 'updatePage'])->name('admin.pages.update');
-    Route::get('/admin/users', [AdminController::class, 'manageUsers'])->name('admin.users');
     Route::patch('/admin/users/{id}/block', [AdminController::class, 'blockUser'])->name('admin.users.block');
+    Route::get('/admin/companies', [AdminController::class, 'manageCompanies'])->name('admin.companies');
+    Route::get('/admin/companies/{id}/edit', [AdminController::class, 'editCompany'])->name('admin.companies.edit');
+    Route::put('/admin/companies/{id}', [AdminController::class, 'updateCompany'])->name('admin.companies.update');
+    Route::get('/admin/job-seekers', [AdminController::class, 'manageJobSeekers'])->name('admin.job_seekers');
+    Route::get('/admin/job-seekers/{id}/edit', [AdminController::class, 'editJobSeeker'])->name('admin.job_seekers.edit');
+    Route::put('/admin/job-seekers/{id}', [AdminController::class, 'updateJobSeeker'])->name('admin.job_seekers.update');
+    Route::delete('/admin/job-seekers/{id}', [AdminController::class, 'deleteJobSeeker'])->name('admin.job_seeker.delete');
+    Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
+    Route::delete('/admin/settings', [AdminController::class, 'destroy'])->name('admin.profile.destroy');
 });
 
 Route::get('/recruiter-dashboard', function () {
@@ -70,6 +87,7 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::get('/recruiter-dashboard', 'index')->name('recruiter-dashboard.index');
     Route::get('/recruiter-dashboard/new-job-posting', [JobPostingController::class, 'create'])->name('job_postings.create');
     Route::get('/recruiter-dashboard/statistics', [RecruiterController::class, 'statistics'])->name('recruiter-dashboard.statistics');
+    Route::delete('/recruiter/dashboard', [RecruiterController::class, 'destroy'])->name('recruiter.dashboard.destroy');
     Route::post('/job-postings', [JobPostingController::class, 'store'])->name('job_postings.store');
     Route::patch('/job-postings/{job_posting}/approve', [JobPostingController::class, 'approve'])->name('job_postings.approve');
     Route::get('/job-postings/{job_posting}/edit', [JobPostingController::class, 'edit'])->name('job_postings.edit');
@@ -91,3 +109,4 @@ Route::get('/about-us', [PageController::class, 'about'])->name('page.about');
 Route::get('/terms-of-service', [PageController::class, 'terms'])->name('page.terms');
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('page.privacy');
 Route::get('/faq', [PageController::class, 'faq'])->name('page.faq');
+

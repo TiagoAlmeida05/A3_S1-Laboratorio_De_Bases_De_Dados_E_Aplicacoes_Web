@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Report;
 use App\Models\WebsiteContent;
 use App\Models\User;
+use App\Models\Company;
+use App\Models\City;
+use Illuminate\Support\Facades\Storage;
+use App\Models\JobSeeker;
+use App\Models\Tag;
+use App\Models\Administrator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -96,11 +104,76 @@ class AdminController extends Controller
         return redirect()->route('admin.pages')->with('success', "{$page->name} updated successfully!");
     }
 
-    //US59
-    public function manageUsers(Request $request) {
-        $query = User::query();
-        $users = $query->orderBy('id', 'asc')->paginate(5);
-        return view('admin.users', ['users' => $users]);
+    //FR042-job seeker
+    public function manageJobSeekers(Request $request) {
+        $query = User::whereHas('jobSeeker')
+                     ->where('status', '!=', 'Deleted');
+
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'ilike', "%{$search}%")
+                  ->orWhere('email', 'ilike', "%{$search}%");
+            });
+        }
+
+        $users = $query->orderBy('id', 'asc')->paginate(10);
+
+        return view('admin.job_seekers', ['users' => $users]);
+    }
+
+    public function editJobSeeker($id) {
+        $jobSeeker = JobSeeker::where('registered_user_id', $id)
+            ->with(['user', 'experienceEntries', 'educationEntries', 'certifications', 'awards', 'tags'])
+            ->firstOrFail();
+
+        $cities = City::orderBy('name')->get();
+        $tags = Tag::where('job_posting_exclusive', false)->orderBy('name')->get();
+
+        return view('admin.job_seekers.edit', compact('jobSeeker', 'cities', 'tags'));
+    }
+
+    public function updateJobSeeker(Request $request, $id) {
+        $jobSeeker = JobSeeker::where('registered_user_id', $id)->firstOrFail();
+        $user = $jobSeeker->user;
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:registered_user,email,' . $user->id,
+            'city_id' => 'nullable|exists:city,id',
+            'about_me' => 'nullable|string',
+            'website' => 'nullable|url',
+        ]);
+
+        $user->update([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+        ]);
+
+        if ($request->hasFile('profile_photo')) {
+            if ($jobSeeker->profile_photo) {
+                Storage::disk('public')->delete($jobSeeker->profile_photo);
+            }
+            $photoPath = $request->file('profile_photo')->store('profile_photos', 'public');
+            $jobSeeker->profile_photo = $photoPath;
+        }
+
+        if ($request->hasFile('cv')) {
+            if ($jobSeeker->cv) {
+                Storage::disk('public')->delete($jobSeeker->cv);
+            }
+            $cvPath = $request->file('cv')->store('cvs', 'public');
+            $jobSeeker->cv = $cvPath;
+        }
+
+        $jobSeeker->update([
+            'city_id' => $request->input('city_id'),
+            'about_me' => $request->input('about_me'),
+            'website' => $request->input('website'),
+            'show_cv' => $request->has('show_cv'),
+        ]);
+
+        return redirect()->route('admin.job_seekers')->with('success', 'Job Seeker profile updated successfully.');
     }
 
     public function blockUser($id) {
@@ -122,4 +195,122 @@ class AdminController extends Controller
 
         return back()->with('success', $msg);
     }    
+
+    public function deleteJobSeeker($id) {
+        $user = User::findOrFail($id);
+
+        DB::transaction(function () use ($user) {
+            
+            $jobSeeker = $user->jobSeeker;
+
+            if ($jobSeeker->cv) {
+                Storage::disk('public')->delete($jobSeeker->cv);
+            }
+            if ($jobSeeker->profile_photo) {
+                Storage::disk('public')->delete($jobSeeker->profile_photo);
+            }
+            
+            $jobSeeker->cv = null;
+            $jobSeeker->profile_photo = null;
+            $jobSeeker->about_me = null;
+            $jobSeeker->website = null;
+            $jobSeeker->show_cv = false;
+            $jobSeeker->city_id = null;
+            $jobSeeker->save();
+
+            $jobSeeker->experienceEntries()->delete();
+            $jobSeeker->educationEntries()->delete();
+            $jobSeeker->certifications()->delete(); 
+            $jobSeeker->awards()->delete();
+            $jobSeeker->socialMediaProfiles()->delete();
+            $jobSeeker->tags()->detach();
+
+            $user->name = 'Deleted User ' . $user->id;
+            $user->email = 'deleted_' . $user->id . '@hireup.com';
+            $user->password = Hash::make(uniqid());
+            $user->status = 'Deleted';
+            $user->save();
+        });
+
+        return redirect()->back()->with('success', 'Job Seeker account successfully deleted.');
+    }
+
+    //FR042-company
+    public function manageCompanies() {
+        $companies = Company::orderBy('id', 'asc')->paginate(10);
+        return view('admin.company_management', ['companies' => $companies]);
+    }
+
+    public function editCompany($id) {
+        $company = Company::findOrFail($id);
+        $cities = City::with('country')->orderBy('name')->get();
+        
+        return view('admin.companies.edit', ['company' => $company, 'cities' => $cities]);
+    }
+
+    public function updateCompany(Request $request, $id) {
+        $company = Company::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'website' => 'nullable|url|max:255',
+            'about_us' => 'nullable|string',
+            'city_id' => 'nullable|exists:city,id',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('logo')) {
+            // Apagar antigo se existir
+            if ($company->logo) {
+                Storage::disk('public')->delete($company->logo);
+            }
+            $validated['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        $company->update($validated);
+
+        return redirect()->route('admin.companies')->with('success', 'Company successfully updated.');
+    }
+
+    public function settings()
+    {
+        $user = Auth::user();
+        return view('admin.settings', compact('user'));
+    }
+
+    public function destroy(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user->isAdmin()) {
+            return redirect('/')->with('error', 'Unauthorized.');
+        }
+
+        $activeAdmins = Administrator::whereHas('user', function ($query) {
+            $query->where('status', 'Active');
+        })->count();
+
+        if ($activeAdmins <= 1) {
+            return back()->with('error', 'You cannot delete the only remaining active administrator account.');
+        }
+
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        DB::transaction(function () use ($user) {
+            $user->name = 'Deleted Admin ' . $user->id;
+            $user->email = 'deleted_admin_' . $user->id . '@hireup.com';
+            $user->password = Hash::make(uniqid());
+            $user->status = 'Deleted';
+            
+            $user->save();
+        });
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Administrator account successfully deleted.');
+    }
 }

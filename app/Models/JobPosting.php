@@ -69,4 +69,15 @@ class JobPosting extends Model {
             $q->where('company_id', $companyId);
         });
     }
+    public function bookmarkedBy()
+    {
+        return $this->belongsToMany(
+            JobSeeker::class,
+            'bookmark',
+            'job_posting_id',
+            'job_seeker_id'
+        )
+        ->withPivot(['date_added', 'is_active']);
+    }
+
 }
