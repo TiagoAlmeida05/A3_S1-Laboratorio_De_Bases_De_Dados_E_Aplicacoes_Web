@@ -11,6 +11,6 @@
 
     <a href="{{ route('jobseeker.profile', $jobSeeker->registered_user_id) }}">View Profile</a>
     @auth
-    <a href="{{ route('messages.index', ['registered_user_id' => $jobSeeker->registered_user_id]) }}">Message</a>
+    <a href="{{ route('messages.index', $jobSeeker->registered_user_id) }}">Message</a>
     @endauth
 </div>

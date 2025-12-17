@@ -26,7 +26,7 @@
     </div>
 
     <div>
-        @if(isset($userId) && $messages->isNotEmpty())
+        @if(isset($userId))
             <h3>Conversation with {{ \App\Models\RegisteredUser::find($userId)?->name ?? 'Deleted User' }}</h3>
             <div class="messages">
                 @foreach ($messages as $message)
