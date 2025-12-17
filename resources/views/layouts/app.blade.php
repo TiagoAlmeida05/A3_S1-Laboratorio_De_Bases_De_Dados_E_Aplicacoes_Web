@@ -287,7 +287,8 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuButton">
                                 @if($isJobSeeker)
                                     <li><a class="dropdown-item" href="{{ route('jobseeker.profile', $jobSeekerId) }}">View Profile</a></li>
-                                    <li><a class="dropdown-item" href="#">My Bookmarks</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('jobseeker.applications') }}">My Applications</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('jobseeker.bookmarks') }}">My Bookmarks</a></li>
                                 @endif
                                 @if($isManager)
                                     <li><a class="dropdown-item" href="{{ route('companies.edit', $companyId) }}">Edit Company Profile</a></li>

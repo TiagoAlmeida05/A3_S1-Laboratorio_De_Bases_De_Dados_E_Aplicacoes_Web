@@ -301,12 +301,22 @@ class JobSeekerController extends Controller
 
     public function applications()
     {
-        $applications = Application::with(['jobPosting.company', 'jobPosting.city'])
+        $allApplications = Application::with(['jobPosting.company', 'jobPosting.city'])
             ->where('job_seeker_id', Auth::id())
             ->orderBy('date', 'desc')
-            ->paginate(10);
+            ->get();
+
+        $pending = $allApplications->filter(function ($app){
+            return !$app->evaluated;
+        });
+        $accepted = $allApplications->filter(function ($app){
+            return $app->evaluated && $app->accepted;
+        });
+        $rejected = $allApplications->filter(function ($app){
+            return $app->evaluated && !$app->accepted;
+        });
             
-        return view('jobseeker.applications', compact('applications'));
+        return view('jobseeker.applications', compact('pending', 'accepted', 'rejected'));
     }
 
     public function editApplication($applicationId)
