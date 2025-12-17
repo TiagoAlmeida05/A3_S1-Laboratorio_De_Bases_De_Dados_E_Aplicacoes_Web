@@ -80,12 +80,12 @@ class JobPostingPolicy
 
         $recruiter = $user->recruiter;
 
-        if ($recruiter && ($job_posting->recruiter_id == $recruiter->registered_user_id || $job_posting->recruiter_id == $user->id)){
-            return in_array($job_posting->status, ['Active', 'Expired', 'Pending']);
+        if ($job_posting->recruiter_id === $user->id){
+            return in_array($job_posting->status, ['Active', 'Expired']);
         }
         
         if($this->isManager($user, $job_posting)){
-            return in_array($job_posting->status, ['Active', 'Expired', 'Pending']);
+            return in_array($job_posting->status, ['Active', 'Expired']);
         }
         
         return false;

@@ -14,6 +14,7 @@ use App\Http\Controllers\JobSeekerController;
 use App\Http\Controllers\RecruiterController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
@@ -40,6 +41,10 @@ Route::middleware('auth')->group(function () {
     Route::controller(JobPostingController::class)->group(function () {
         Route::get('/job_postings', 'index')->name('job_postings.index');
         Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
+        Route::get('/notifications/fetch', [NotificationController::class, 'getUserNotifications']);
+        Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     });
 
     Route::get('/job-seeker/{registered_user_id}', [JobSeekerController::class, 'show'])->name('jobseeker.profile');
@@ -91,3 +96,5 @@ Route::get('/about-us', [PageController::class, 'about'])->name('page.about');
 Route::get('/terms-of-service', [PageController::class, 'terms'])->name('page.terms');
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('page.privacy');
 Route::get('/faq', [PageController::class, 'faq'])->name('page.faq');
+
+Route::post('send-notification', [NotificationController::class, 'sendGeneralNotification']);

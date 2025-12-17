@@ -17,13 +17,13 @@
                     autocomplete="off"
                 >
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
 
-                {{-- Field (Tags) Filter --}}
-                <select name="field" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
-                    <option value="">All Fields/Tags</option>
+                {{-- Tags Filter --}}
+                <select name="tag" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
+                    <option value="">All Tags</option>
                     @foreach($filterTags as $tag)
-                        <option value="{{ $tag->id }}" {{ request('field') == $tag->id ? 'selected' : '' }}>
+                        <option value="{{ $tag->id }}" {{ request('tag') == $tag->id ? 'selected' : '' }}>
                             {{ $tag->name }}
                         </option>
                     @endforeach
@@ -48,6 +48,18 @@
                         </option>
                     @endforeach
                 </select>
+                
+                {{-- Minimum Salary Filter --}}
+                <input 
+                    type="number" 
+                    name="min_salary" 
+                    id="minSalaryInput"
+                    placeholder="Min Salary (€)"
+                    value="{{ request('min_salary') }}"
+                    class="form-control p-2 border rounded w-full" 
+                    onchange="this.form.submit()"
+                    min="0"
+                >
             </div>
             {{-- Reset Filters Button (Optional but helpful) --}}
             @if(request('search') || request('field') || request('company') || request('region'))
