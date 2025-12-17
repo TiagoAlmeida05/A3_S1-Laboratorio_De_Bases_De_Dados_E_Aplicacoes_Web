@@ -63,6 +63,12 @@ class JobPosting extends Model {
         return $this->belongsToMany(Tag::class, 'job_posting_tag');
     }
 
+    public function scopeForCompany($query, $companyId)
+    {
+        return $query->whereHas('recruiter.department', function ($q) use ($companyId){
+            $q->where('company_id', $companyId);
+        });
+    }
     public function bookmarkedBy()
     {
         return $this->belongsToMany(

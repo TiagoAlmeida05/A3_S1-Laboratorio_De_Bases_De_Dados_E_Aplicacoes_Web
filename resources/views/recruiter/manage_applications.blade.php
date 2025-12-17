@@ -15,7 +15,7 @@
         <p>No applications have been submitted for this job posting yet.</p>
         <a href="{{ route('recruiter-dashboard.index') }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">Return to my dashboard</a>
     @else
-        <form id="applicant-selection-form" style="padding: 3rem; width: 40rem; border-color: #4856e7ff;" method="POST" action="{{ route('job_postings.submit-application-selection', $job_posting->id) }}" id="application-selection-form">
+        <form id="applicant-selection-form" style="padding: 3rem; width: 40rem; border-color: #4856e7ff;" method="POST" action="{{ route('job_postings.submit-application-selection', $job_posting->id) }}">
             @csrf
             
             <table>
@@ -52,7 +52,7 @@
                             </td>
                             <td><a href="{{ route('applications.view-application', $application->id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">See full application</a></td>
                             @if($selectMode)
-                                <td><input type="checkbox" name="selected-applications" value="{{ $application->id }}"></td>
+                                <td><input type="checkbox" name="selected_applications[]" value="{{ $application->id }}"></td>
                             @endif
                         </tr>
                     @endforeach

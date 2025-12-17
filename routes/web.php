@@ -14,6 +14,7 @@ use App\Http\Controllers\JobSeekerController;
 use App\Http\Controllers\RecruiterController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\MessageController;
 
@@ -42,6 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::controller(JobPostingController::class)->group(function () {
         Route::get('/job_postings', 'index')->name('job_postings.index');
         Route::get('/job_postings/{jobPosting}', 'show')->name('job_postings.show');
+        Route::get('/notifications/fetch', [NotificationController::class, 'getUserNotifications']);
+        Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     });
         
     Route::post('/job-postings/{id}/bookmark', [BookmarkController::class, 'store'])    ->name('bookmarks.store');
@@ -92,6 +97,7 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::get('/recruiter-dashboard/statistics', [RecruiterController::class, 'statistics'])->name('recruiter-dashboard.statistics');
     Route::delete('/recruiter/dashboard', [RecruiterController::class, 'destroy'])->name('recruiter.dashboard.destroy');
     Route::post('/job-postings', [JobPostingController::class, 'store'])->name('job_postings.store');
+    Route::patch('/job-postings/{job_posting}/approve', [JobPostingController::class, 'approve'])->name('job_postings.approve');
     Route::get('/job-postings/{job_posting}/edit', [JobPostingController::class, 'edit'])->name('job_postings.edit');
     Route::put('/job-postings/{job_posting}', [JobPostingController::class, 'update'])->name('job_postings.update');
     Route::get('/job-postings/{job_posting}/select-applicants', [JobPostingController::class, 'selectApplicants'])->name('job_postings.select-applicants');
@@ -112,3 +118,4 @@ Route::get('/terms-of-service', [PageController::class, 'terms'])->name('page.te
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('page.privacy');
 Route::get('/faq', [PageController::class, 'faq'])->name('page.faq');
 
+Route::post('send-notification', [NotificationController::class, 'sendGeneralNotification']);

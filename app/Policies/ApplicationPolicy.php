@@ -24,8 +24,20 @@ class ApplicationPolicy
 
         if ($user->jobSeeker && $application->jobSeeker->registered_user_id === $user->id) return true;
 
-        if ($user->recruiter) return $application->jobPosting->recruiter_id === $user->id;
+        if ($user->recruiter){
+            $jobRecruiterId = $application->jobPosting->recruiter_id;
 
+            if($jobRecruiterId = $user->id){
+                return true;
+            }
+
+            if($user->recruiter->is_company_manager){
+                $jobOwner = $application->jobPosting->recruiter;
+                if ($jobOwner && $jobOwner->department->company_id === $user->recruiter->department->company_id) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 

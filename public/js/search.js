@@ -1,16 +1,26 @@
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
+    const minSalaryInput = document.getElementById('minSalaryInput');
     const searchForm = document.getElementById('searchForm');
 
     let searchTimeout;
 
-    function performSearch(searchTerm) {
+    function performSearch() {
+        const searchTerm = searchInput.value.trim();
+        const minSalary = minSalaryInput.value.trim();
+
         const url = new URL(window.location.href);
 
-        if (searchTerm.trim()) {
+        if (searchTerm) {
             url.searchParams.set('search', searchTerm);
         } else {
             url.searchParams.delete('search');
+        }
+
+        if(minSalary && parseInt(minSalary) > 0){
+            url.searchParams.set('min_salary', minSalary);
+        }else{
+            url.searchParams.delete('min_salary');
         }
 
         fetch(url.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
@@ -47,10 +57,17 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => performSearch(this.value), 500);
     });
+    
+    if(minSalaryInput){
+        minSalaryInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => performSearch(this.value), 500);
+    });
+    }
 
     searchForm.addEventListener('submit', function(e) {
         e.preventDefault();
         clearTimeout(searchTimeout);
-        performSearch(searchInput.value);
+        performSearch();
     });
 });
