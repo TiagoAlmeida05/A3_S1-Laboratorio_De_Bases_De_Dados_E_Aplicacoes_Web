@@ -15,6 +15,7 @@ use App\Http\Controllers\RecruiterController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\MessageController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
@@ -57,6 +58,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/applications/{application}/files/{fileType}', [JobSeekerController::class, 'deleteApplicationFile'])->name('applications.files.delete');
     Route::delete('/applications/{application}/cancel', [JobSeekerController::class, 'cancelApplication'])->name('applications.cancel');
     Route::delete('/jobseeker/profile', [JobSeekerController::class, 'destroy'])->name('jobseeker.profile.destroy');
+    Route::get('/messages/{registered_user_id}', [MessageController::class, 'index'])->name('messages.index');
+    Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
