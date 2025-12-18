@@ -28,7 +28,9 @@ class StoreJobPostingRequest extends FormRequest
             'max_wage' => 'nullable|integer|min:0',
             'requirements' => 'nullable|string',
             'status' => 'required|in:Pending,Active,Expired,Closed',
-            'city_id' => 'nullable|integer'
+            'city_id' => 'nullable|integer',
+            'tags' => 'nullable|array', // Must be empty or array of tags!
+            'tags.*' => 'exists:tag,id' // We have to ensure any tag in the tags arraw is actually a tag!
         ];
     }
 }

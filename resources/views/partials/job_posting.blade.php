@@ -9,8 +9,17 @@
         </div>
         <div class="jp-body list-group list-group-flush">
             <p class="jp-content">
+                <p class="list-group-item"><strong>Company</strong>: <a class="hover-color" href="{{ route('companies.show', $job_posting->recruiter->department->company) }}">{{ $job_posting->recruiter->department->company->name }}</a></p>
                 <p class="list-group-item"><strong>Deadline</strong>: {{ \Carbon\Carbon::parse($job_posting->deadline)->format('d-m-Y') }}</p>
                 <p class="list-group-item"><strong>Description</strong>: {{ $job_posting->description }}</p>
+                <p class="list-group-item">
+                    <strong>Tags</strong>: 
+                    @if($job_posting->tags->isNotEmpty())
+                        {{ $job_posting->tags->pluck('name')->join(', ') }}
+                    @else
+                        N/A
+                    @endif
+                </p>
             </p>
         </div>
     </div>

@@ -1,7 +1,6 @@
 <article class="job-posting mb-3" data-id="{{ $job_posting->id }}">
     <div class="rec-job-posting border-light mb-3 container d-flex flex-column" style="max-width: 150rem;">
         
-        {{-- Title --}}
         <a href="{{ route('job_postings.show', $job_posting) }}">
             {{ $job_posting->title }}
         </a>
@@ -13,7 +12,6 @@
             </div>
         @endif
 
-        {{-- Details --}}
         <div class="jp-creation-date">
             <p><strong>Creation date</strong>: {{ \Carbon\Carbon::parse($job_posting->creation_date)->format('d-m-Y') }}</p>
         </div>
@@ -27,29 +25,24 @@
             <p><strong>Number of applications</strong>: {{ $job_posting->applications_count }}</p>
         </div>
 
-        {{-- Actions --}}
         <div class="jp-actions d-flex">
             
-            {{-- 1. Edit Button (Always visible if allowed) --}}
             @can('update', $job_posting)
                 <a href="{{ route('job_postings.edit', $job_posting->id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem; margin-right: 5px;">Edit</a>
             @endcan
 
-            {{-- 2. PENDING STATUS ACTIONS --}}
             @if($job_posting->status === 'Pending')
                 
-                {{-- [NEW] APPROVE BUTTON (Only for Managers) --}}
                 @if(Auth::user()->recruiter->is_company_manager)
                     <form action="{{ route('job_postings.approve', $job_posting->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('PATCH')
                         <button type="submit" class="button btn btn-success" style="background-color: #28a745; color: white; padding: 0.5rem 0.4rem; margin-right: 5px; border:none;">
-                            ✓ Approve
+                            Approve
                         </button>
                     </form>
                 @endif
 
-                {{-- Delete Button --}}
                 @can('delete', $job_posting)
                     <form id="delete-{{ $job_posting->id }}-job" method="POST" action="{{ route('job_postings.delete', $job_posting->id) }}">
                         @csrf
@@ -59,7 +52,6 @@
                 @endcan
             @endif
 
-            {{-- 3. ACTIVE STATUS ACTIONS --}}
             @if($job_posting->status === 'Active')
                 @if($job_posting->applications_count > 0)
                     @can('close', $job_posting)

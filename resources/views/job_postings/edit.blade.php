@@ -30,28 +30,43 @@
             </div>
 
             <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-3">
+                <label for="tags">Tags</label>
+                <div id="tags-container">
+                    @foreach ($tags as $tag)
+                        @php
+                            $isChecked = old('tags') ? in_array($tag->id, old('tags')) : $job_posting->tags->contains($tag->id);
+                        @endphp
+                        <label>
+                            <input type="checkbox" name="tags[]" value="{{ $tag->id }}" {{ $isChecked ? 'checked' : '' }}>
+                            <span>{{ $tag->name }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-4">
                 <label for="days_to_deadline">Deadline (in days)</label>
                 <input class="form-number" id="days_to_deadline" name="days_to_deadline" type="number" placeholder="Days" value="{{ old('days_to_deadline', ceil(\Carbon\Carbon::now()->floatDiffInHours($job_posting->deadline) / 24)) }}" required>
             </div>
 
             <input type="hidden" id="deadline" name="deadline">
 
-            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-4">
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-5">
                 <label for="min_wage">Minimum wage</label>
                 <input class="form-number" id="min_wage" name="min_wage" type="number" placeholder="Insert minimum wage (optional)." value="{{ old('min_wage', $job_posting->min_wage) }}">
             </div>
 
-            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-5">
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-6">
                 <label for="max_wage">Maximum wage</label>
                 <input class="form-number" id="max_wage" name="max_wage" type="number" placeholder="Insert maximum wage (optional)." value="{{ old('max_wage', $job_posting->max_wage) }}">
             </div>
 
-            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-6">
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-7">
                 <label for="requirements">Job requirements</label>
                 <textarea class="form-textarea" id="requirements" name="requirements" placeholder="Insert job requirements (optional).">{{ old('requirements', $job_posting->requirements) }}</textarea>
             </div>
 
-            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-7"> <!-- DO LATER: add Country support -->
+            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-8"> <!-- DO LATER: add Country support -->
                 <label for="city_id">City</label>
                 <select class="form-dropdown" id="city_id" name="city_id">
                     <option value="" disabled>Select city</option>
@@ -64,20 +79,33 @@
                 </select>
             </div>
 
-            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-8">
-                <label for="status">Status</label>
-                <select class="form-dropdown" id="status" name="status" required>
-                    <option value="Active" 
-                        {{ old('status', $job_posting->status) === 'Active' ? 'selected' : '' }}>
-                        Active
-                    </option>
+            @php
+                $isManager = Auth::user()->recruiter->is_company_manager;
+            @endphp
 
-                    <option value="Closed" 
-                        {{ old('status', $job_posting->status) === 'Closed' ? 'selected' : '' }}>
-                        Closed
-                    </option>
-                </select>
-            </div>
+            @if($isManager)
+                <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-9">
+                    <label for="status">Status</label>
+                    <select class="form-dropdown" id="status" name="status" required>
+                        <option value="Active" 
+                            {{ old('status', $job_posting->status) === 'Active' ? 'selected' : '' }}>
+                            Active
+                        </option>
+                        <option value="Pending" 
+                            {{ old('status', $job_posting->status) === 'Pending' ? 'selected' : '' }}>
+                            Pending
+                        </option>
+                    </select>
+                </div>
+            @else
+                <input type="hidden" name="status" value="{{ $job_posting->status }}">
+                <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-9">
+                    <label for="status">Status</label>
+                    <select class="form-dropdown" id="status-display" disabled style="cursor: not-allowed;">
+                        <option selected>{{ $job_posting->status }}</option>
+                    </select>
+                </div>
+            @endif
 
             <button class="submit-button" type="submit">Update job posting</button>
             <a href="{{ route('recruiter-dashboard.index') }}" class="cancel-button">Cancel</a>
