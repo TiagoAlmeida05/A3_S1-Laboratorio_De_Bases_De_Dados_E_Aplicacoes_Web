@@ -40,6 +40,7 @@
         <p><strong>Company</strong>: {{ $job_posting->recruiter->department->company->name ?? 'N/A' }}</p>
         <p><strong>Department</strong>: {{ $job_posting->recruiter->department->name ?? 'N/A' }}</p>
         <p><strong>Description</strong>: {{ $job_posting->description }}</p>
+        <p><strong>Tags</strong>: {{ $job_posting->tags->pluck('name')->join(', ') ?: 'N/A' }}</p>
         <p><strong>Requirements</strong>:  {{ $job_posting->requirements ?? 'N/A' }}</p>
         <p><strong>City</strong>: {{ $job_posting->city->name ?? 'N/A' }}</p>
         <p><strong>Minimum wage</strong>: {{ $job_posting->min_wage ?? 'N/A' }}</p>

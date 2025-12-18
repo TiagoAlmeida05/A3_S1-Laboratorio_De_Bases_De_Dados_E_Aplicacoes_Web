@@ -766,12 +766,14 @@ INSERT INTO job_posting (title, description, creation_date, deadline, min_wage, 
 VALUES
 ('Frontend Developer', 'Develop and maintain UI components.','2025-12-01',  '2025-12-11', 2000, 3000, 'React, CSS, HTML', 'Closed', 2, 1),
 ('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2025-12-03', 1800, 2800, 'SQL, Python, Excel', 'Closed', 1, 2),
-('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-03-03', 1800, 2800, 'SQL, Python, Excel', 'Expired', 1, 2),
+('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2025-12-12', 1800, 2800, 'SQL, Python, Excel', 'Expired', 1, 2),
 ('Project Manager', 'Coordinate multiple software projects.', '2025-12-06', '2026-01-06', 2500, 4000, 'Agile, Scrum, Jira', 'Active', 9, 3),
-('Backend Developer', 'Design RESTful APIs and databases.', '2025-12-12', '2026-02-04', 2200, 3500, 'Node.js, PostgreSQL, Docker', 'Pending', 1, 1),
+('Backend Developer', 'Design RESTful APIs and databases.', '2025-12-12', '2026-02-04', 2200, 3500, 'Node.js, PostgreSQL, Docker', 'Pending', 2, 1),
 ('Marketing Assistant', 'Support campaign management.', '2025-11-28', '2026-03-27', 1500, 2200, 'SEO, content creation', 'Active', 2, 3),
 ('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-12-12', 1800, 2800, 'SQL, Python, Excel', 'Expired', 1, 2),
-('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-03-18', 1800, 2800, 'SQL, Python, Excel', 'Active', 1, 2);
+('Data Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-03-18', 1800, 2800, 'SQL, Python, Excel', 'Active', 1, 2),
+('Company Analyst', 'Analyze company data for insights.', '2025-11-03', '2026-03-18', 1800, 2800, 'SQL, Python, Excel', 'Active', 1, 2),
+('Backend Developer', 'Design RESTful APIs and databases.', '2025-12-12', '2026-02-04', 2200, 3500, 'Node.js, PostgreSQL, Docker', 'Active', 1, 1);
 
 INSERT INTO application (cover_letter, date, recommendation_letter, evaluated, accepted, job_seeker_id, job_posting_id)
 VALUES
@@ -779,10 +781,11 @@ VALUES
 ('Looking forward to joining your team.', '2025-04-03',  NULL, TRUE, FALSE, 4, 1),
 ('Excited to contribute my data analysis skills.', '2025-11-04', NULL, FALSE, FALSE, 5, 4),
 ('Passionate about HR operations.', '2025-08-25', NULL, TRUE, TRUE, 6, 2),
-('Marketing enthusiast with campaign experience.', '2025-07-01', NULL, TRUE, TRUE, 6, 6),
+('Marketing enthusiast with campaign experience.', '2025-07-01', NULL, FALSE, FALSE, 6, 6),
 ('Let me work at your company.', '2025-12-12', NULL, FALSE, FALSE, 6, 3),
 ('Let me work at your company.', '2025-12-12', NULL, FALSE, FALSE, 5, 3),
 ('Let me work at your company.', '2025-12-12', NULL, FALSE, FALSE, 4, 3),
+('Let me work at your company.', '2025-12-12', NULL, FALSE, FALSE, 4, 10),
 ('Let me work at your company.', '2025-12-12', NULL, FALSE, FALSE, 3, 3);
 
 INSERT INTO bookmark (job_seeker_id, job_posting_id)

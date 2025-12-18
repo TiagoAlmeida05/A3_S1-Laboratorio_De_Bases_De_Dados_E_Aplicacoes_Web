@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\JobPosting;
 use App\Models\Application;
 use App\Models\City;
-use App\Models\Notification;
+use App\Models\Tag;
 use App\Events\PlatformAlert;
 use Carbon\Carbon;
 
@@ -138,8 +138,10 @@ class JobPostingController extends Controller {
         Gate::authorize('create-job-posting');
 
         $cities = City::all();
+        $tags = Tag::all();
         return view('job_postings.create', [
-            'cities' => $cities
+            'cities' => $cities,
+            'tags' => $tags
         ]);
     }
 
@@ -151,7 +153,7 @@ class JobPostingController extends Controller {
             $isManager = Auth::user()->recruiter->is_company_manager;
             $initialStatus = $isManager ? 'Active' : 'Pending';
 
-            JobPosting::create([
+            $jobPosting = JobPosting::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'deadline' => $request->deadline,
@@ -162,6 +164,8 @@ class JobPostingController extends Controller {
                 'recruiter_id' => Auth::user()->recruiter->registered_user_id,
                 'city_id' => $request->city_id
             ]);
+
+            if ($request->has('tags')) $jobPosting->tags()->attach($request->tags);
             
             $message = $isManager
                 ? 'Job posting created and published!'
@@ -177,10 +181,14 @@ class JobPostingController extends Controller {
     public function edit(JobPosting $job_posting): View {
         Gate::authorize('update', $job_posting);
 
+        $job_posting->load('tags');
+
         $cities = City::all();
+        $tags = Tag::all();
         return view('job_postings.edit', [
             'job_posting' => $job_posting,
-            'cities' => $cities
+            'cities' => $cities,
+            'tags' => $tags
         ]);
     }
 
@@ -199,6 +207,8 @@ class JobPostingController extends Controller {
                 'status' => $request->status,
                 'city_id' => $request->city_id
             ]);
+
+            $job_posting->tags()->sync($request->tags ?? []);
     
             return redirect()->route('recruiter-dashboard.index')->with('success', 'Job posting updated successfully! :)');
         }
@@ -277,29 +287,24 @@ class JobPostingController extends Controller {
                     'evaluated' => true,
                     'accepted' => true
                 ]);
-            }
 
-            $rejectedApplications = $job_posting->applications()
-                ->whereNotIn('id', $selectedIds)
-                ->with('jobPosting')
-                ->get();
+                foreach($acceptedApplications as $app){
+                    $message = "Congratulations! Your application for '{$app->jobPosting->title}' has been accepted.";
 
-            foreach($acceptedApplications as $app){
-                $message = "Congratulations! Your application for '{$app->jobPosting->title}' has been accepted.";
+                    $notifId = \DB::table('notification')->insertGetId([
+                        'content' => $message,
+                        'notification_type_id' => 4,
+                        'registered_user_id' => $app->job_seeker_id,
+                        'issue_date' => now(),
+                    ]);
 
-                $notifId = \DB::table('notification')->insertGetId([
-                    'content' => $message,
-                    'notification_type_id' => 4,
-                    'registered_user_id' => $app->job_seeker_id,
-                    'issue_date' => now(),
-                ]);
+                    \DB::table('application_notification')->insert([
+                        'notification_id' => $notifId,
+                        'application_id' => $app->id
+                    ]);
 
-                \DB::table('application_notification')->insert([
-                    'notification_id' => $notifId,
-                    'application_id' => $app->id
-                ]);
-
-                event(new PlatformAlert($message, $app->job_seeker_id, $notifId));
+                    event(new PlatformAlert($message, $app->job_seeker_id, $notifId));
+                }
             }
 
             foreach($rejectedApplications as $app){
