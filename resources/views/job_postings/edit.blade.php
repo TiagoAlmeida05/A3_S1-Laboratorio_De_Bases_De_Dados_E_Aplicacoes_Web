@@ -79,20 +79,33 @@
                 </select>
             </div>
 
-            <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-8">
-                <label for="status">Status</label>
-                <select class="form-dropdown" id="status" name="status" required>
-                    <option value="Active" 
-                        {{ old('status', $job_posting->status) === 'Active' ? 'selected' : '' }}>
-                        Active
-                    </option>
+            @php
+                $isManager = Auth::user()->recruiter->is_company_manager;
+            @endphp
 
-                    <option value="Closed" 
-                        {{ old('status', $job_posting->status) === 'Closed' ? 'selected' : '' }}>
-                        Closed
-                    </option>
-                </select>
-            </div>
+            @if($isManager)
+                <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-9">
+                    <label for="status">Status</label>
+                    <select class="form-dropdown" id="status" name="status" required>
+                        <option value="Active" 
+                            {{ old('status', $job_posting->status) === 'Active' ? 'selected' : '' }}>
+                            Active
+                        </option>
+                        <option value="Pending" 
+                            {{ old('status', $job_posting->status) === 'Pending' ? 'selected' : '' }}>
+                            Pending
+                        </option>
+                    </select>
+                </div>
+            @else
+                <input type="hidden" name="status" value="{{ $job_posting->status }}">
+                <div class="form-element d-flex flex-column" style="margin: 0.5rem 0rem;" id="fe-9">
+                    <label for="status">Status</label>
+                    <select class="form-dropdown" id="status-display" disabled style="cursor: not-allowed;">
+                        <option selected>{{ $job_posting->status }}</option>
+                    </select>
+                </div>
+            @endif
 
             <button class="submit-button" type="submit">Update job posting</button>
             <a href="{{ route('recruiter-dashboard.index') }}" class="cancel-button">Cancel</a>

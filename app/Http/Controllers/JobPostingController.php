@@ -285,24 +285,24 @@ class JobPostingController extends Controller {
                     'evaluated' => true,
                     'accepted' => true
                 ]);
-            }
 
-            foreach($acceptedApplications as $app){
-                $message = "Congratulations! Your application for '{$app->jobPosting->title}' has been accepted.";
+                foreach($acceptedApplications as $app){
+                    $message = "Congratulations! Your application for '{$app->jobPosting->title}' has been accepted.";
 
-                $notifId = \DB::table('notification')->insertGetId([
-                    'content' => $message,
-                    'notification_type_id' => 4,
-                    'registered_user_id' => $app->job_seeker_id,
-                    'issue_date' => now(),
-                ]);
+                    $notifId = \DB::table('notification')->insertGetId([
+                        'content' => $message,
+                        'notification_type_id' => 4,
+                        'registered_user_id' => $app->job_seeker_id,
+                        'issue_date' => now(),
+                    ]);
 
-                \DB::table('application_notification')->insert([
-                    'notification_id' => $notifId,
-                    'application_id' => $app->id
-                ]);
+                    \DB::table('application_notification')->insert([
+                        'notification_id' => $notifId,
+                        'application_id' => $app->id
+                    ]);
 
-                event(new PlatformAlert($message, $app->job_seeker_id, $notifId));
+                    event(new PlatformAlert($message, $app->job_seeker_id, $notifId));
+                }
             }
             
             $creationDate = Carbon::parse($job_posting->creation_date);
