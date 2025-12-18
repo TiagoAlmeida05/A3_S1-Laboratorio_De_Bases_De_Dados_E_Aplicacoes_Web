@@ -306,6 +306,11 @@ class JobPostingController extends Controller {
                     event(new PlatformAlert($message, $app->job_seeker_id, $notifId));
                 }
             }
+            
+            $rejectedApplications = $job_posting->applications()
+                ->whereNotIn('id', $selectedIds)
+                ->with('jobPosting')
+                ->get();
 
             foreach($rejectedApplications as $app){
                 $message = "Thank you for your interest. Unfortunately, your application for '{$app->jobPosting->title}' was not selected at this time.";
