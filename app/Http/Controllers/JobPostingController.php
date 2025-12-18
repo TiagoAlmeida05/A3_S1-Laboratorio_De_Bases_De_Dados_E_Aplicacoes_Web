@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\JobPosting;
 use App\Models\Application;
 use App\Models\City;
-use App\Models\Notification;
+use App\Models\Tag;
 use App\Events\PlatformAlert;
 use Carbon\Carbon;
 
@@ -138,8 +138,10 @@ class JobPostingController extends Controller {
         Gate::authorize('create-job-posting');
 
         $cities = City::all();
+        $tags = Tag::all();
         return view('job_postings.create', [
-            'cities' => $cities
+            'cities' => $cities,
+            'tags' => $tags
         ]);
     }
 
