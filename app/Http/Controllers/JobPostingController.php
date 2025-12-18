@@ -153,7 +153,7 @@ class JobPostingController extends Controller {
             $isManager = Auth::user()->recruiter->is_company_manager;
             $initialStatus = $isManager ? 'Active' : 'Pending';
 
-            JobPosting::create([
+            $jobPosting = JobPosting::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'deadline' => $request->deadline,
@@ -164,6 +164,8 @@ class JobPostingController extends Controller {
                 'recruiter_id' => Auth::user()->recruiter->registered_user_id,
                 'city_id' => $request->city_id
             ]);
+
+            if ($request->has('tags')) $jobPosting->tags()->attach($request->tags);
             
             $message = $isManager
                 ? 'Job posting created and published!'
@@ -179,10 +181,14 @@ class JobPostingController extends Controller {
     public function edit(JobPosting $job_posting): View {
         Gate::authorize('update', $job_posting);
 
+        $job_posting->load('tags');
+
         $cities = City::all();
+        $tags = Tag::all();
         return view('job_postings.edit', [
             'job_posting' => $job_posting,
-            'cities' => $cities
+            'cities' => $cities,
+            'tags' => $tags
         ]);
     }
 
@@ -201,6 +207,8 @@ class JobPostingController extends Controller {
                 'status' => $request->status,
                 'city_id' => $request->city_id
             ]);
+
+            $job_posting->tags()->sync($request->tags ?? []);
     
             return redirect()->route('recruiter-dashboard.index')->with('success', 'Job posting updated successfully! :)');
         }
