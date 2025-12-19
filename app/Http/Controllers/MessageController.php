@@ -31,7 +31,6 @@ class MessageController extends Controller
     public function index($userId = null)
     {
         $authId = auth()->id();
-        $userId = $userId ?? $authId;
 
         $conversations = Message::where('sender_id', $authId)
             ->orWhere('receiver_id', $authId)
@@ -51,7 +50,10 @@ class MessageController extends Controller
                 $q->where('sender_id', $userId)
                 ->where('receiver_id', $authId);
             })->orderBy('date_sent')->get();
+        } else {
+            $userId = null;
         }
+        
         return view('messages.messages', compact('conversations', 'messages', 'userId'));
     }
 }
