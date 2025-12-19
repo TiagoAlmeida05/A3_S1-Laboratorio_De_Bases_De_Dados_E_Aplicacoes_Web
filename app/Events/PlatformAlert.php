@@ -17,15 +17,17 @@ class PlatformAlert implements ShouldBroadcast
     public $message;
     public $userId;
     public $notificationId;
+    public $typeId;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($message, $userId, $notificationId = null)
+    public function __construct($message, $userId, $notificationId, $typeId)
     {
         $this->message = $message;
         $this->userId = $userId;
         $this->notificationId = $notificationId;
+        $this->typeId = $typeId;
     }
 
     /**

@@ -112,12 +112,7 @@ class AdminController extends Controller
                 'issue_date' => now(),
             ]);
 
-            DB::table('notification_by_admin')->insert([
-                'notification_id' => $notifId,
-                'admin_id' => $adminId
-            ]);
-
-            event(new \App\Events\PlatformAlert($message, $userId, $notifId));
+            event(new \App\Events\PlatformAlert($message, $userId, $notifId, 1));
         }
 
         return redirect()->route('admin.pages')->with('success', "{$page->name} updated successfully!");

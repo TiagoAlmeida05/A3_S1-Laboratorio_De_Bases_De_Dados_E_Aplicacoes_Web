@@ -321,11 +321,7 @@ class JobSeekerController extends Controller
                     'issue_date' => now(),
                 ]);
 
-                DB::table('application_notification')->insert([
-                    'notification_id' => $notifId,
-                    'application_id' => $application->id
-                ]);
-                event(new PlatformAlert($message, $userId, $notifId));
+                event(new PlatformAlert($message, $userId, $notifId, 1));
             }
 
             return redirect()->route('job_postings.show', $jobPostingId)->with('success', 'Application submitted successfully!');

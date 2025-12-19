@@ -35,12 +35,46 @@ Schedule::call(function() {
             'registered_user_id' => $item->job_seeker_id,
             'issue_date' => now(),
         ]);
+        
+        event(new PlatformAlert($message, $item->job_seeker_id, $notifId, 3));
+    }
 
-        DB::table('bookmark_notification')->insert([
-            'notification_id' => $notifId,
-            'job_seeker_id' => $item->job_seeker_id,
-            'job_posting_id' => $item->job_posting_id
-        ]);
-        event(new PlatformAlert($message, $item->job_seeker_id, $notifId));
+    $expiringJobs = DB::table('job_posting')
+        ->where('status', 'Active')
+        ->whereDate('deadline', $targetDate)
+        ->select('id', 'title', 'recruiter_id')
+        ->get();
+
+    foreach($expiringJobs as $job) {
+        $staffMessage = "Action Required: Your job posting '{$job->title}' expires in 5 days.";
+
+        $recipients = collect([$job->recruiter_id]);
+
+        $manager = DB::table('recruiter')
+            ->join('department', 'recruiter.department_id', '=', 'department.id')
+            ->where('recruiter.is_company_manager', true)
+            ->where('department.company_id', function($query) use ($job) {
+                $query->select('d2.company_id')
+                      ->from('recruiter as r2')
+                      ->join('department as d2', 'r2.department_id', '=', 'd2.id')
+                      ->where('r2.registered_user_id', $job->recruiter_id);
+            })
+            ->select('recruiter.registered_user_id')
+            ->first();
+        
+        if($manager && $manager->registered_user_id != $job->recruiter_id) {
+            $recipients->push($manager->registered_user_id);
+        }
+
+        foreach($recipients->unique() as $userId){
+            $notifId = DB::table('notification')->insertGetId([
+                'content' => $staffMessage,
+                'notification_type_id' => 1,
+                'registered_user_id' => $userId,
+                'issue_date' => now(),
+            ]);
+
+            event(new PlatformAlert($staffMessage, $userId, $notifId, 1));
+        }
     }
 })->daily()->timezone('Europe/Lisbon');
