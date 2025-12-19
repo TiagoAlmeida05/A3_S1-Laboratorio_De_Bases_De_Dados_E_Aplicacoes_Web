@@ -88,6 +88,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/admin/settings', [AdminController::class, 'destroy'])->name('admin.profile.destroy');
     Route::get('/notifications/send', [NotificationController::class, 'create'])->name('admin.notifications.create');
     Route::post('/notifications/send', [NotificationController::class, 'storeAdminNotification'])->name('admin.notifications.send');
+    Route::get('/admin/users/create', [AdminController::class, 'create'])->name('admin.users.create');
+    Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.users.store');
 });
 
 Route::get('/recruiter-dashboard', function () {
