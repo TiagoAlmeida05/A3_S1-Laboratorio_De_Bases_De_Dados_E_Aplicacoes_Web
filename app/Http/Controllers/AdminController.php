@@ -16,6 +16,10 @@ use App\Models\Tag;
 use App\Models\Administrator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Recruiter;
+use App\Models\Department;
+use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 
 class AdminController extends Controller
 {
@@ -331,5 +335,64 @@ class AdminController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/')->with('success', 'Administrator account successfully deleted.');
+    }
+
+    public function create()
+    {
+        $companies = Company::with('departments')->orderBy('name')->get();
+        return view('admin.create_user', compact('companies'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:registered_user,email',
+            'password' => 'required|min:8',
+            'birthday' => 'required|date|before:-18 years',
+            'user_type' => 'required|in:job_seeker,recruiter',
+            
+            'department_id' => 'required_if:user_type,recruiter|nullable|exists:department,id',
+        ]);
+
+        // 2. Calcular Idade
+        $birthday = Carbon::parse($request->birthday);
+        $age = $birthday->age;
+
+        try {
+            DB::transaction(function () use ($request, $age) {
+                
+                // A. Criar User Genérico
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'birthday' => $request->birthday,
+                    'age' => $age,
+                    'status' => 'Active',
+                    'sign_up_date' => now(),
+                ]);
+
+                // B. Criar Tipo Específico
+                if ($request->user_type === 'job_seeker') {
+                    JobSeeker::create([
+                        'registered_user_id' => $user->id,
+                        'show_cv' => true, 
+                    ]);
+                } 
+                elseif ($request->user_type === 'recruiter') {
+                    Recruiter::create([
+                        'registered_user_id' => $user->id,
+                        'department_id' => $request->department_id,
+                        'is_company_manager' => false, // Forçamos sempre a false aqui
+                    ]);
+                }
+            });
+
+            return redirect()->route('admin.job_seekers')->with('success', 'User successfully created!');
+
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['error' => 'Error creating user: ' . $e->getMessage()]);
+        }
     }
 }

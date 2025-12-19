@@ -86,6 +86,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/admin/job-seekers/{id}', [AdminController::class, 'deleteJobSeeker'])->name('admin.job_seeker.delete');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::delete('/admin/settings', [AdminController::class, 'destroy'])->name('admin.profile.destroy');
+    Route::get('/admin/users/create', [AdminController::class, 'create'])->name('admin.users.create');
+    Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.users.store');
 });
 
 Route::get('/recruiter-dashboard', function () {
