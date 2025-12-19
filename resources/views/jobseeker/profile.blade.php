@@ -32,10 +32,12 @@
             </div>
         </div>
 
-        <div style="margin: 1rem 0rem;">
-            <h4>About me</h4>
-            <p>{{ $jobSeeker->about_me ?? '' }}</p>
-        </div>
+       @if(!empty($jobSeeker->about_me))
+            <div style="margin: 1rem 0rem;">
+                <h4>About me</h4>
+                <p>{{ $jobSeeker->about_me }}</p>
+            </div>
+        @endif
 
         @if($jobSeeker->experienceEntries->count() > 0)
         <div style="margin: 1rem 0rem;">

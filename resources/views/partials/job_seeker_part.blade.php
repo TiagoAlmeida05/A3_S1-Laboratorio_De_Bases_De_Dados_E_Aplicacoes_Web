@@ -1,6 +1,6 @@
 <div class="js-container" style="margin: 1rem 0rem;">
     <h3>
-        {{ $jobSeeker->registeredUser->name ?? 'Unknown user' }}
+        <a href="{{ route('jobseeker.profile', $jobSeeker->registered_user_id) }}">{{ $jobSeeker->registeredUser->name ?? 'Unknown user' }}</a>
     </h3>
     <div class="js-body list-group list-group-flush">
         <p class="js-content">
@@ -9,7 +9,6 @@
         </p>
     </div>
 
-    <a href="{{ route('jobseeker.profile', $jobSeeker->registered_user_id) }}">View Profile</a>
     @auth
     <a href="{{ route('messages.index', $jobSeeker->registered_user_id) }}">Message</a>
     @endauth
