@@ -56,7 +56,7 @@ class MessageController extends Controller
 
             event(new PlatformAlert($notifContent, $request->receiver_id, $notifId, 2));
         } catch (\Eception $e) {}
-        return back->with('success', 'Message sent successfully.');
+        return back()->with('success', 'Message sent successfully.');
     }
 
     public function index($userId = null)
