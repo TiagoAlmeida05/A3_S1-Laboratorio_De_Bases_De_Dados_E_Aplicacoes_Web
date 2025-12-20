@@ -314,14 +314,17 @@ class JobSeekerController extends Controller
             $message = "New Application: {$currentUser->name} applied for '{$jobPosting->title}'";
 
             foreach($uniqueRecipients as $userId){
-                $notifId = DB::table('notification')->insertGetId([
-                    'content' => $message,
-                    'notification_type_id' => 1,
-                    'registered_user_id' => $userId,
-                    'issue_date' => now(),
-                ]);
+                try{
+                    $notifId = DB::table('notification')->insertGetId([
+                        'content' => $message,
+                        'notification_type_id' => 4,
+                        'registered_user_id' => $userId,
+                        'issue_date' => now(),
+                    ]);
 
-                event(new PlatformAlert($message, $userId, $notifId, 1));
+                    event(new PlatformAlert($message, $userId, $notifId, 4));
+                }catch (\Exception $e) {}
+                
             }
 
             return redirect()->route('job_postings.show', $jobPostingId)->with('success', 'Application submitted successfully!');
@@ -470,7 +473,7 @@ class JobSeekerController extends Controller
 
         \DB::transaction(function () use ($user) {
             
-            $jobSeeker = $user->jobSeeker;
+            $jobSeeker = $user->isJobSeeker();
             if ($jobSeeker) {
                 if ($jobSeeker->cv) Storage::disk('public')->delete($jobSeeker->cv);
                 if ($jobSeeker->profile_photo) Storage::disk('public')->delete($jobSeeker->profile_photo);

@@ -95,4 +95,45 @@ class NotificationController extends Controller
 
         return response() ->json(['status' => 'success']);
     }
+
+    public function settings()
+    {
+        $userId = Auth::id();
+        $user = Auth::user();
+        $allTypes = DB::table('notification_type')->orderBy('id')->get();
+        $userSettings = dB::table('notification_subscription')
+            ->where('registered_user_id', $userId)
+            ->pluck('is_enabled', 'notification_type_id')
+            ->toArray();
+
+        return view('pages.notificationssettings', [
+            'types' => $allTypes,
+            'userSettings' => $userSettings,
+            'user' => $user
+        ]);
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $userId = Auth::id();
+        $subscriptions = $request->input('subscriptions', []);
+        $allowedTypes = [2, 3, 4, 5, 6, 7];
+
+        try{
+            DB::transaction(function () use ($userId, $subscriptions, $allowedTypes) {
+                foreach($allowedTypes as $typeId){
+                    $isEnabled = array_key_exists($typeId, $subscriptions);
+
+                    DB::table('notification_subscription')->updateOrInsert(
+                        ['registered_user_id' => $userId, 'notification_type_id' => $typeId],
+                        ['is_enabled' =>$isEnabled]
+                    );
+                }
+            });
+
+            return back()->with('success', 'Notification preferences updated.');
+        } catch(\Exception $e) {
+            return back()->with('error', 'Failed to update settings.');
+        }
+    }
 }

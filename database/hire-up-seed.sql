@@ -9,7 +9,7 @@ BEGIN
 END
 $do$ LANGUAGE plpgsql;
 
-CREATE TYPE notification_type_name AS ENUM ('PlatformAlert', 'Message', 'BookmarkDeadline', 'ApplicationStatus', 'NewJobPosting');
+CREATE TYPE notification_type_name AS ENUM ('PlatformAlert', 'Message', 'BookmarkDeadline', 'ApplicationStatus', 'NewJobPosting', 'JobPostingUpdate', 'TeamAction');
 CREATE TYPE job_posting_status AS ENUM('Pending', 'Active', 'Expired', 'Closed');
 CREATE TYPE account_status AS ENUM('Active', 'Suspended', 'Deleted');
 
@@ -689,8 +689,10 @@ VALUES
 ('PlatformAlert', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
 ('Message', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
 ('BookmarkDeadline', FALSE, TRUE, FALSE, FALSE, FALSE, TRUE),
-('ApplicationStatus', FALSE, TRUE, TRUE, FALSE, FALSE, TRUE),
-('NewJobPosting', FALSE, TRUE, FALSE, FALSE, FALSE, TRUE);
+('ApplicationStatus', FALSE, TRUE, TRUE, TRUE, FALSE, TRUE),
+('NewJobPosting', FALSE, TRUE, FALSE, FALSE, FALSE, TRUE),
+('JobPostingUpdate', FALSE, FALSE, TRUE, TRUE, FALSE, TRUE),
+('TeamAction', FALSE, FALSE, FALSE, TRUE, FALSE, TRUE);
 
 INSERT INTO social_media_type (name, default_url, illustration)
 VALUES

@@ -108,14 +108,11 @@
                 <div class="header-actions">
                     @auth
                         @php
-                            // We removed the Notification Query from here!
-                            // It is now handled by AppServiceProvider logic ($bellCount, $letterCount)
-                            
                             $user = Auth::user();
                             $recruiter = $user->recruiter;
                             $isRecruiter = $recruiter !== null;
                             $isManager = $isRecruiter && $recruiter->is_company_manager;
-                            $isJobSeeker = $user->jobSeeker !== null;
+                            $isJobSeeker = ($user->jobSeeker !== null) && !$isRecruiter;
                             $companyId = $isManager && $recruiter->department ? $recruiter->department->company_id : null;
                             $jobSeekerId = $isJobSeeker ? $user->jobSeeker->registered_user_id : null;
                         @endphp
@@ -128,7 +125,6 @@
                                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                                 </svg>
                                 
-                                {{-- Updated to use $bellCount and new class --}}
                                 <span id="notificationBadge" class="icon-badge" 
                                       style="display: {{ (isset($bellCount) && $bellCount > 0) ? 'block' : 'none' }};">
                                 </span>
@@ -179,6 +175,10 @@
                                 @elseif($isRecruiter && !$isManager)
                                     <li><a class="dropdown-item" href="{{ route('recruiter-dashboard.index') }}">Dashboard</a></li>
                                 @endif
+
+                                {{-- ADDED: Notification Settings Link --}}
+                                <li><a class="dropdown-item" href="{{ route('notifications.settings') }}">Notification Settings</a></li>
+                                
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="{{ url('/logout') }}">Log Out</a></li>
                             </ul>

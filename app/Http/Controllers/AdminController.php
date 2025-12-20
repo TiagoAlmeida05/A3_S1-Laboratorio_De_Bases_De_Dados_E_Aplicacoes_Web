@@ -219,7 +219,7 @@ class AdminController extends Controller
 
         DB::transaction(function () use ($user) {
             
-            $jobSeeker = $user->jobSeeker;
+            $jobSeeker = $user->isJobSeeker();
 
             if ($jobSeeker->cv) {
                 Storage::disk('public')->delete($jobSeeker->cv);

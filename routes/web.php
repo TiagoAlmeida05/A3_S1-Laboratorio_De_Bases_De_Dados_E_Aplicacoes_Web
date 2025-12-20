@@ -65,6 +65,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/jobseeker/profile', [JobSeekerController::class, 'destroy'])->name('jobseeker.profile.destroy');
     Route::get('/messages/{registered_user_id?}', [MessageController::class, 'index'])->name('messages.index');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+    Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('notifications.settings');
+    Route::post('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('notifications.settings.update');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -111,6 +113,8 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::get('/applications/{application}/closed-job', [JobPostingController::class, 'viewApplicationOfClosedJob'])->name('job_postings.view-application-closed-job');    Route::post('/job-postings/{job_posting}/applications/submit-application-selection', [JobPostingController::class, 'submitApplicationSelection'])->name('job_postings.submit-application-selection');
     Route::patch('/job-postings/{job_posting}/close', [JobPostingController::class, 'close'])->name('job_postings.close');
     Route::delete('/job-postings/{job_posting}', [JobPostingController::class, 'delete'])->name('job_postings.delete');
+    Route::post('/recruiter/staff/promote', 'promoteToRecruiter')->name('recruiter.promote');
+    Route::delete('/recruiter/staff/{id}/demote', 'demoteToJobSeeker')->name('recruiter.demote');
 });
 
 Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');

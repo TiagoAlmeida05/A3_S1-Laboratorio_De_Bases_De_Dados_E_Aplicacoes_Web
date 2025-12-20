@@ -31,7 +31,7 @@ if(userId){
                 const msgBadge = document.getElementById('messageBadge');
 
                 if(msgBadge){
-                    msgBadge.style.display = 'block';
+                    msgBadge.style.display = 'flex';
 
                     let currentCount = parseInt(msgBadge.innerText);
                     if(isNaN(currentCount)) currentCount = 0;
@@ -40,7 +40,13 @@ if(userId){
             }
             else{           
                 const badge = document.getElementById('notificationBadge');
-                if(badge) badge.style.display = 'block';
+                if(badge) {
+                    badge.style.display = 'block';
+
+                    let currentCount = parseInt(badge.innerText);
+                    if(isNaN(currentCount)) currentCount = 0;
+                    badge.innerText = currentCount + 1;
+                }
             }
 
             const card= document.getElementById('notification-card');
@@ -64,7 +70,17 @@ if(userId){
 
                     if(e.typeId != 2){
                         const badge = document.getElementById('notificationBadge');
-                        if(badge) badge.style.display = 'none';
+                        if(badge) {
+                            let currentCount = parseInt(badge.innerText);
+                            if(isNaN(currentCount)) currentCount = 1;
+                            let newCount = currentCount - 1;
+                            if(newCount <= 0){
+                                badge.style.display = 'none';
+                                badge.innerText = '';
+                            }else{
+                                badge.innerText = newCount;
+                            }
+                        }
                     }
                     
                     if(e.notificationId && e.typeId != 2){

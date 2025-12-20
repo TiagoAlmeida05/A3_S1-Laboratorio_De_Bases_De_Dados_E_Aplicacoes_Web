@@ -36,7 +36,7 @@ class BookmarkController extends Controller
 
     public function index()
     {
-        $jobSeeker = Auth::user()->jobSeeker;
+        $jobSeeker = Auth::user()->isJobSeeker();
         $bookmarks = $jobSeeker->bookmarks()->wherePivot('is_active', true)->with(['company', 'city'])->orderByPivot('date_added', 'desc')->paginate(10);
         return view('jobseeker.bookmarks', compact('bookmarks'));
     }

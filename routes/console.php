@@ -27,16 +27,19 @@ Schedule::call(function() {
         ->get();
 
     foreach ($bookmarks as $item) {
-        $message = "Reminder: The job '{$item->title}' closes in 5 days!";
-
-        $notifId = DB::table('notification')->insertGetId([
-            'content' => $message,
-            'notification_type_id' => 3,
-            'registered_user_id' => $item->job_seeker_id,
-            'issue_date' => now(),
-        ]);
         
-        event(new PlatformAlert($message, $item->job_seeker_id, $notifId, 3));
+         try{
+            $message = "Reminder: The job '{$item->title}' closes in 5 days!";
+            $notifId = DB::table('notification')->insertGetId([
+                'content' => $message,
+                'notification_type_id' => 3,
+                'registered_user_id' => $item->job_seeker_id,
+                'issue_date' => now(),
+            ]);   
+
+            event(new PlatformAlert($message, $item->job_seeker_id, $notifId, 3));
+         } catch (\Exception $e) {}
+        
     }
 
     $expiringJobs = DB::table('job_posting')
@@ -67,14 +70,18 @@ Schedule::call(function() {
         }
 
         foreach($recipients->unique() as $userId){
-            $notifId = DB::table('notification')->insertGetId([
-                'content' => $staffMessage,
-                'notification_type_id' => 1,
-                'registered_user_id' => $userId,
-                'issue_date' => now(),
-            ]);
+            try{
+                $notifId = DB::table('notification')->insertGetId([
+                    'content' => $staffMessage,
+                    'notification_type_id' => 6,
+                    'registered_user_id' => $userId,
+                    'issue_date' => now(),
+                ]);
 
-            event(new PlatformAlert($staffMessage, $userId, $notifId, 1));
+                event(new PlatformAlert($staffMessage, $userId, $notifId, 6));
+            }catch(\Exception $e) {
+                continue;
+            }
         }
     }
 })->daily()->timezone('Europe/Lisbon');

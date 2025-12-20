@@ -22,7 +22,7 @@ class ApplicationPolicy
     public function view(User $user, Application $application): bool {
         if ($user->admin) return true;
 
-        if ($user->jobSeeker && $application->jobSeeker->registered_user_id === $user->id) return true;
+        if ($user->isJobSeeker() && $application->jobSeeker->registered_user_id === $user->id) return true;
 
         if ($user->recruiter){
             $jobRecruiterId = $application->jobPosting->recruiter_id;

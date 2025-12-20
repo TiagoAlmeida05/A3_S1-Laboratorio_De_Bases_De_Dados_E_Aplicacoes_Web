@@ -17,36 +17,46 @@ class MessageController extends Controller
             'content' => 'required|string|max:5000',
         ]);
 
+        $message = null;
+
         try {
-            DB::transaction(function () use ($request) {
-                $message = Message::create([
-                    'sender_id' => Auth::id(),
-                    'receiver_id' => $request->receiver_id,
-                    'content' => $request->content,
-                ]);
+            DB::beginTransaction();
 
-                $senderName = Auth::user()->name;
-                $preview = substr($request->content, 0, 30) . (strlen($request->content) > 30 ? '...' : '');
-                $notifContent = "New message from {$senderName}: \"{$preview}\"";
-                $notifId = DB::table('notification')->insertGetId([
-                    'content' => $notifContent,
-                    'notification_type_id' => 2,
-                    'registered_user_id' => $request->receiver_id,
-                    'issue_date' => now(),
-                ]);
+            $message = Message::create([
+                'sender_id' => Auth::id(),
+                'receiver_id' => $request->receiver_id,
+                'content' => $request->content,
+            ]);
 
-                DB::table('message_notification')->insert([
-                    'message_id' => $message->id,
-                    'notification_id' => $notifId
-                ]);
+            DB::commit();
 
-                event(new PlatformAlert($notifContent, $request->receiver_id, $notifId, 2));
-            });
-            return back()->with('success', 'Message sent successfully.');
-        } catch (\Illuminate\Database\QueryException $e) { 
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
             \Log::error($e->getMessage());
             return back()->with('error', 'You are not allowed to message this user.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'An error occurred while sending the message.');
         }
+        try{
+            $senderName = Auth::user()->name;
+            $preview = substr($request->content, 0, 30) . (strlen($request->content) > 30 ? '...' : '');
+            $notifContent = "New message from {$senderName}: \"{$preview}\"";
+            $notifId = DB::table('notification')->insertGetId([
+                'content' => $notifContent,
+                'notification_type_id' => 2,
+                'registered_user_id' => $request->receiver_id,
+                'issue_date' => now(),
+            ]);
+
+            DB::table('message_notification')->insert([
+                'message_id' => $message->id,
+                'notification_id' => $notifId
+            ]);
+
+            event(new PlatformAlert($notifContent, $request->receiver_id, $notifId, 2));
+        } catch (\Eception $e) {}
+        return back->with('success', 'Message sent successfully.');
     }
 
     public function index($userId = null)
