@@ -407,15 +407,8 @@ class AdminController extends Controller
 
     public function promoteToManager($id) {
         $newManager = User::findOrFail($id);
-        
-        if (!$newManager->recruiter) {
-            return back()->with('error', 'User is not a recruiter.');
-        }
 
         $department = $newManager->recruiter->department;
-        if (!$department) {
-            return back()->with('error', 'Recruiter does not belong to a department.');
-        }
         $companyId = $department->company_id;
 
         // Encontrar o Manager ATUAL dessa empresa
@@ -423,10 +416,6 @@ class AdminController extends Controller
             ->whereHas('department', function($query) use ($companyId) {
                 $query->where('company_id', $companyId);
             })->first();
-
-        if ($currentManagerRecruiter && $currentManagerRecruiter->registered_user_id === $newManager->id) {
-            return back()->with('info', 'User is already the manager.');
-        }
 
         try {
             DB::transaction(function () use ($newManager, $currentManagerRecruiter) {
@@ -438,6 +427,7 @@ class AdminController extends Controller
                 }
 
                 $newManager->recruiter->update(['is_company_manager' => true]);
+                $newManager->update(['status' => 'Active']);
 
                 // Ligar Trigger novamente
                 DB::statement('ALTER TABLE recruiter ENABLE TRIGGER enforce_single_company_manager');
@@ -454,18 +444,24 @@ class AdminController extends Controller
     public function deleteRecruiter($id) {
         $user = User::findOrFail($id);
 
+        // Proteção: Não apagar Company Manager (Promover outro primeiro)
+        if ($user->recruiter && $user->recruiter->is_company_manager) {
+            return back()->with('error', 'Cannot delete a Company Manager. Promote someone else first.');
+        }
+
         DB::transaction(function () use ($user) {
             if ($user->recruiter) {
-                $user->recruiter->delete();
+                $user->recruiter->update(['is_company_manager' => false]);
             }
 
-            $user->name = 'Deleted Recruiter ' . $user->id;
+            $user->name = 'Deleted Recruiter';
             $user->email = 'deleted_rec_' . $user->id . '@hireup.com';
             $user->password = Hash::make(uniqid());
             $user->status = 'Deleted';
+            
             $user->save();
         });
 
-        return back()->with('success', 'Recruiter account deleted/anonymized successfully.');
+        return back()->with('success', 'Recruiter account deleted successfully.');
     }
 }
