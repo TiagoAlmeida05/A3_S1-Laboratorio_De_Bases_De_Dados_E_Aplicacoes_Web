@@ -70,8 +70,6 @@ class MessageController extends Controller
                 ->update(['date_read' => now()]);
         }
 
-        $userId = $userId ?? $authId;
-
         $conversations = Message::where('sender_id', $authId)
             ->orWhere('receiver_id', $authId)
             ->orderBy('date_sent', 'desc')
@@ -109,11 +107,12 @@ class MessageController extends Controller
 
         $messages->load('sender');
 
-        return response()->json([
+       return response()->json([
             'messages' => $messages->map(fn($m) => [
                 'id' => $m->id,
                 'content' => $m->content,
                 'date_sent' => $m->date_sent,
+                'sender_id' => $m->sender_id,
                 'sender_name' => $m->sender?->name ?? 'Deleted User'
             ])
         ]);

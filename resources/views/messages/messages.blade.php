@@ -53,7 +53,7 @@
 
 <script>
     const userId = {{ $userId }};
-    const authId = {{ auth()->id() }};
+    const authId = parseInt({{ auth()->id() }});
     const messagesContainer = document.getElementById('messages-container');
 
     function fetchMessages() {
@@ -63,7 +63,7 @@
                 messagesContainer.innerHTML = '';
                 data.messages.forEach(msg => {
                     const div = document.createElement('div');
-                    div.innerHTML = `<strong>${msg.sender_name === authId ? 'You' : msg.sender_name}:</strong> ${msg.content} <small>(${msg.date_sent})</small>`;
+                    div.innerHTML = `<strong>${msg.sender_id === authId ? 'You' : msg.sender_name}:</strong> ${msg.content} <small>(${msg.date_sent})</small>`;
                     messagesContainer.appendChild(div);
                 });
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;

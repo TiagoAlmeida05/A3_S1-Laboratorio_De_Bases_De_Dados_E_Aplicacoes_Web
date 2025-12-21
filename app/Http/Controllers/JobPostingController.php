@@ -39,10 +39,13 @@ class JobPostingController extends Controller {
             }
         }
 
+        $recruiter = $jobPosting->recruiter;
+
         return view('pages.job_posting', [
             'job_posting' => $jobPosting,
             'jobSeeker' => $jobSeeker,
-            'hasApplied' => $hasApplied
+            'hasApplied' => $hasApplied,
+            'recruiter' => $recruiter,
         ]);
     }
 

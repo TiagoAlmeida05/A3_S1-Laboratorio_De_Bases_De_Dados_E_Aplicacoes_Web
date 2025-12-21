@@ -10,13 +10,10 @@
         @endif
 
         @auth
-        @if(auth()->user()->isRecruiter() && auth()->id() != $jobSeeker->registered_user_id)
-            <a class="button button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('messages.index', $jobSeeker->registered_user_id) }}" class="btn btn-success" style="margin-top: 1rem;">
-                Message
-            </a>
-        @endif
-@endauth
-
+            @if(auth()->user()->isRecruiter() && auth()->id() != $jobSeeker->registered_user_id)
+                <a class="button button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('messages.index', $jobSeeker->registered_user_id) }}">Message</a>
+            @endif
+        @endauth
     @endauth
 
     <div class="d-flex flex-column" style="margin-bottom: 1rem;">
