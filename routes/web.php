@@ -17,6 +17,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
@@ -65,6 +67,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/jobseeker/profile', [JobSeekerController::class, 'destroy'])->name('jobseeker.profile.destroy');
     Route::get('/messages/{registered_user_id?}', [MessageController::class, 'index'])->name('messages.index');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+    Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('notifications.settings');
+    Route::post('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('notifications.settings.update');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -86,8 +90,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/admin/job-seekers/{id}', [AdminController::class, 'deleteJobSeeker'])->name('admin.job_seeker.delete');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::delete('/admin/settings', [AdminController::class, 'destroy'])->name('admin.profile.destroy');
+    Route::get('/notifications/send', [NotificationController::class, 'create'])->name('admin.notifications.create');
+    Route::post('/notifications/send', [NotificationController::class, 'storeAdminNotification'])->name('admin.notifications.send');
     Route::get('/admin/users/create', [AdminController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.users.store');
+    Route::get('/admin/recruiters', [AdminController::class, 'manageRecruiters'])->name('admin.recruiters');
+    Route::patch('/admin/recruiters/{id}/promote', [AdminController::class, 'promoteToManager'])->name('admin.recruiters.promote');
+    Route::delete('/admin/recruiters/{id}', [AdminController::class, 'deleteRecruiter'])->name('admin.recruiters.delete');
 });
 
 Route::get('/recruiter-dashboard', function () {
@@ -109,6 +118,8 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::get('/applications/{application}/closed-job', [JobPostingController::class, 'viewApplicationOfClosedJob'])->name('job_postings.view-application-closed-job');    Route::post('/job-postings/{job_posting}/applications/submit-application-selection', [JobPostingController::class, 'submitApplicationSelection'])->name('job_postings.submit-application-selection');
     Route::patch('/job-postings/{job_posting}/close', [JobPostingController::class, 'close'])->name('job_postings.close');
     Route::delete('/job-postings/{job_posting}', [JobPostingController::class, 'delete'])->name('job_postings.delete');
+    Route::post('/recruiter/staff/promote', 'promoteToRecruiter')->name('recruiter.promote');
+    Route::delete('/recruiter/staff/{id}/demote', 'demoteToJobSeeker')->name('recruiter.demote');
 });
 
 Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
@@ -119,5 +130,12 @@ Route::get('/about-us', [PageController::class, 'about'])->name('page.about');
 Route::get('/terms-of-service', [PageController::class, 'terms'])->name('page.terms');
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('page.privacy');
 Route::get('/faq', [PageController::class, 'faq'])->name('page.faq');
+Route::get('/contact-us', [PageController::class, 'contacts'])->name('page.contacts');
 
 Route::post('send-notification', [NotificationController::class, 'sendGeneralNotification']);
+
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');

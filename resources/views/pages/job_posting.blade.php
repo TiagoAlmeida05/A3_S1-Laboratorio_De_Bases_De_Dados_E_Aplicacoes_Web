@@ -4,7 +4,7 @@
 
 @section('content')
 <section id="job_posting">
-    @if(auth()->check() && auth()->user()->jobSeeker)
+    @if(auth()->check() && auth()->user()->isJobSeeker())
         @php
             $isBookmarked = \DB::table('bookmark')->where('job_seeker_id', auth()->id())->where('job_posting_id', $job_posting->id)->where('is_active', true)->exists();
         @endphp
@@ -51,7 +51,7 @@
     <div class="jp-buttons d-flex">
         <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ url('/') }}">Go back</a>
         @auth
-            @if($jobSeeker)
+            @if(Auth::user()->isJobSeeker())
                 @if($hasApplied)
                     <button style="background-color: gray" disabled>Applied</button>
                 @else

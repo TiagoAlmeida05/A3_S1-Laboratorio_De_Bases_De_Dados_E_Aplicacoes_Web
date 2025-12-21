@@ -22,7 +22,15 @@
                                 {!! nl2br(e($block['text'])) !!} 
                             </div>
                         </details>
-
+                    @elseif($page->name === 'Contact us')
+                        @if(!empty($block['heading']))
+                            <div>
+                                <h3>{{ $block['heading'] }}</h3>
+                                <a href="mailto:{{ $block['text'] }}">{{ $block['text'] }}</a>
+                            </div>
+                        @else
+                            <p>{!! nl2br(e($block['text'])) !!}</p>
+                        @endif
                     @else
                         <div class="mb-6">
                             @if(!empty($block['heading']))

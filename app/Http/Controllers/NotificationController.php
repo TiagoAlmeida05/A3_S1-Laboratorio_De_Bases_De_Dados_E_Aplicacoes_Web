@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Notification;
+use App\Models\RegisteredUser;
 
 class NotificationController extends Controller
 {
@@ -22,45 +23,45 @@ class NotificationController extends Controller
         ]);
     }
 
-    public function sendGeneralNotification(Request $request)
+    public function create()
     {
-        $senderID = Auth::id();
-        $targetUserId = $request->input('target_user_id');
-        $notificationTypeId = $request->input('notification_type_id');
-        $messageContent = $request->input('message_content');
+        return view('admin.notifications');
+    }
 
-        if(!$senderID){
-            return response()->json(['status' => 'Error: Sender must be logged in.'], 401);
-        }
-        if(!$targetUserId || !$notificationTypeId || !$messageContent){
-            return response()->json(['status' => 'Error: Missing required notification parameters.'], 400);
-        }
+    public function storeAdminNotification(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|exists:registered_user,email',
+            'message' => 'required|string|max:1000'
+        ]);
+
+        $senderID = Auth::id();
+        $targetUser = RegisteredUser::where('email', $validated['email'])->first();
 
         try{
-            DB::transaction(function () use ($senderID, $targetUserId, $notificationTypeId, $messageContent) {
+            DB::transaction(function () use ($senderID, $targetUser, $validated) {
                 $notificationId = DB::table('notification')->insertGetId([
-                    'content' => $messageContent,
-                    'notification_type_id' => $notificationTypeId,
-                    'registered_user_id' => $targetUserId,
+                    'content' => $validated['message'],
+                    'notification_type_id' => 1,
+                    'registered_user_id' => $targetUser->id,
                     'issue_date' => now(),
                 ]);
 
-                if($notificationTypeId == 1) {
-                    if(!DB::table('administrator')->where('registered_user_id', $senderID)->exists()){
-                        throw new \Exception("Notification Type 1 (PlatformAlert) requires an administrator sender.");
+                if (!DB::table('administrator')->where('registered_user_id', $senderID)->exists()) {
+                        throw new \Exception("Only Administrators can send Platform Alerts.");
                     }
-                    DB::table('notification_by_admin')->insert([
-                        'notification_id' => $notificationId,
-                        'admin_id' => $senderID
-                    ]);
-                }
-                event(new PlatformAlert($messageContent, $targetUserId, $notificationId));        
+                
+                DB::table('notification_by_admin')->insert([
+                    'notification_id' => $notificationId,
+                    'admin_id' => $senderID
+                ]);
+
+                event(new PlatformAlert($validated['message'], $targetUser->id, $notificationId, 1));        
             });
-            return response()->json(['status' => "Notification Type {$notificationTypeId} broadcasted to User {$targetUserId}"]);    
-        
+            return back()->with('success', "Notification sent to {$targetUser->name} successfully!");
         } catch(\Exception $e) {
             \Log::error("Notification Error: ". $e->getMessage());
-            return response()->json(['status' => 'Error: ' . $e->getMessage()], 500);
+            return back()->with('error', 'Error: '.$e->getMessage());
         }        
     }
 
@@ -69,6 +70,7 @@ class NotificationController extends Controller
         $userId = Auth::id();
 
         $notifications = Notification::where('registered_user_id', $userId)
+            ->where('notification_type_id', '!=', 2)
             ->orderBy('issue_date', 'desc')
             ->take(10)
             ->get();
@@ -92,5 +94,46 @@ class NotificationController extends Controller
             ->update(['read_date' => now()]);
 
         return response() ->json(['status' => 'success']);
+    }
+
+    public function settings()
+    {
+        $userId = Auth::id();
+        $user = Auth::user();
+        $allTypes = DB::table('notification_type')->orderBy('id')->get();
+        $userSettings = dB::table('notification_subscription')
+            ->where('registered_user_id', $userId)
+            ->pluck('is_enabled', 'notification_type_id')
+            ->toArray();
+
+        return view('pages.notificationssettings', [
+            'types' => $allTypes,
+            'userSettings' => $userSettings,
+            'user' => $user
+        ]);
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $userId = Auth::id();
+        $subscriptions = $request->input('subscriptions', []);
+        $allowedTypes = [2, 3, 4, 5, 6, 7];
+
+        try{
+            DB::transaction(function () use ($userId, $subscriptions, $allowedTypes) {
+                foreach($allowedTypes as $typeId){
+                    $isEnabled = array_key_exists($typeId, $subscriptions);
+
+                    DB::table('notification_subscription')->updateOrInsert(
+                        ['registered_user_id' => $userId, 'notification_type_id' => $typeId],
+                        ['is_enabled' =>$isEnabled]
+                    );
+                }
+            });
+
+            return back()->with('success', 'Notification preferences updated.');
+        } catch(\Exception $e) {
+            return back()->with('error', 'Failed to update settings.');
+        }
     }
 }

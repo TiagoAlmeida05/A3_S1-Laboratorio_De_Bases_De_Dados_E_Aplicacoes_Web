@@ -93,7 +93,7 @@ class User extends Authenticatable
 
     public function isJobSeeker(): bool
     {
-        return $this->jobSeeker()->exists();
+        return $this->jobSeeker()->exists() && !$this->recruiter()->exists();
     }
 
     public function sentMessages(): HasMany

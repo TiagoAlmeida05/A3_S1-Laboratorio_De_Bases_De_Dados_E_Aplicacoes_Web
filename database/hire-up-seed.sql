@@ -9,7 +9,7 @@ BEGIN
 END
 $do$ LANGUAGE plpgsql;
 
-CREATE TYPE notification_type_name AS ENUM ('PlatformAlert', 'Message', 'BookmarkDeadline', 'ApplicationStatus', 'NewJobPosting');
+CREATE TYPE notification_type_name AS ENUM ('PlatformAlert', 'Message', 'BookmarkDeadline', 'ApplicationStatus', 'NewJobPosting', 'JobPostingUpdate', 'TeamAction');
 CREATE TYPE job_posting_status AS ENUM('Pending', 'Active', 'Expired', 'Closed');
 CREATE TYPE account_status AS ENUM('Active', 'Suspended', 'Deleted');
 
@@ -689,8 +689,10 @@ VALUES
 ('PlatformAlert', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
 ('Message', TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
 ('BookmarkDeadline', FALSE, TRUE, FALSE, FALSE, FALSE, TRUE),
-('ApplicationStatus', FALSE, TRUE, TRUE, FALSE, FALSE, TRUE),
-('NewJobPosting', FALSE, TRUE, FALSE, FALSE, FALSE, TRUE);
+('ApplicationStatus', FALSE, TRUE, TRUE, TRUE, FALSE, TRUE),
+('NewJobPosting', FALSE, TRUE, FALSE, FALSE, FALSE, TRUE),
+('JobPostingUpdate', FALSE, FALSE, TRUE, TRUE, FALSE, TRUE),
+('TeamAction', FALSE, FALSE, FALSE, TRUE, FALSE, TRUE);
 
 INSERT INTO social_media_type (name, default_url, illustration)
 VALUES
@@ -949,6 +951,30 @@ VALUES
         "text": "Click on the \"Login\" button and select \"Forgot Password.\" Enter your email address, and we will send you a secure link to reset your credentials."
     }
  ]', 
+ 8),
+ ('Contact us', 
+ '[
+    {
+        "heading": "",
+        "text": "Would you like to make a suggestion or get to know the people who created HireUp? Don''t hesitate to reach out! Here are our contacts:"
+    },
+    {
+        "heading": "Ana Beatriz Pinto",
+        "text": "up201404488@edu.fe.up.pt"
+    },
+    {
+        "heading": "Filipe Paiva",
+        "text": "up202304284@edu.fe.up.pt"
+    },
+    {
+        "heading": "Inês Oliveira",
+        "text": "up202305418@edu.fe.up.pt"
+    },
+    {
+        "heading": "Tiago Almeida",
+        "text": "up202303450@edu.fe.up.pt"
+    }
+]', 
  8);
 INSERT INTO job_posting_tag (job_posting_id, tag_id)
 VALUES

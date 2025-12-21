@@ -25,9 +25,29 @@ if(userId){
 
     window.Echo.private(`notifications.${userId}`)
         .listen('.PlatformAlert', (e) => {
-            
-            const badge = document.getElementById('notificationBadge');
-            if(badge) badge.style.display = 'block';
+
+            if(e.typeId == 2){
+                console.log("New Message Received!");
+                const msgBadge = document.getElementById('messageBadge');
+
+                if(msgBadge){
+                    msgBadge.style.display = 'flex';
+
+                    let currentCount = parseInt(msgBadge.innerText);
+                    if(isNaN(currentCount)) currentCount = 0;
+                    msgBadge.innerText = currentCount + 1;
+                }
+            }
+            else{           
+                const badge = document.getElementById('notificationBadge');
+                if(badge) {
+                    badge.style.display = 'block';
+
+                    let currentCount = parseInt(badge.innerText);
+                    if(isNaN(currentCount)) currentCount = 0;
+                    badge.innerText = currentCount + 1;
+                }
+            }
 
             const card= document.getElementById('notification-card');
             const title= document.getElementById('notification-title');
@@ -35,7 +55,11 @@ if(userId){
             const dismissBtn = card.querySelector("button");
 
             if(card && message && dismissBtn){
-                title.innerText = "New Notification";
+                if(e.typeId == 2){
+                    title.innerText = "New Message";
+                }else{
+                    title.innerText = "New Notification";
+                }                
                 message.innerText = e.message;
 
                 const newBtn = dismissBtn.cloneNode(true);
@@ -44,10 +68,22 @@ if(userId){
                 newBtn.onclick = function(){
                     card.classList.remove('show');
 
-                    const badge = document.getElementById('notificationBadge');
-                    if(badge) badge.style.display = 'none';
-
-                    if(e.notificationId){
+                    if(e.typeId != 2){
+                        const badge = document.getElementById('notificationBadge');
+                        if(badge) {
+                            let currentCount = parseInt(badge.innerText);
+                            if(isNaN(currentCount)) currentCount = 1;
+                            let newCount = currentCount - 1;
+                            if(newCount <= 0){
+                                badge.style.display = 'none';
+                                badge.innerText = '';
+                            }else{
+                                badge.innerText = newCount;
+                            }
+                        }
+                    }
+                    
+                    if(e.notificationId && e.typeId != 2){
                         console.log("Marking notification as read:", e.notificationId);
                         axios.post(`/notifications/${e.notificationId}/mark-as-read`);
                     }

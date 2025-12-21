@@ -6,6 +6,7 @@
             <a href="{{ route('page.privacy') }}">Privacy Policy</a>
             <a href="{{ route('page.terms') }}">Terms of Service</a>
             <a href="{{ route('page.faq') }}">FAQs</a>
+            <a href="{{ route('page.contacts') }}">Contact us!</a>
         </div>
 
         <p>

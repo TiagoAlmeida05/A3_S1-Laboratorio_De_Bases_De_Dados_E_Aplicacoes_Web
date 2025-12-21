@@ -16,6 +16,8 @@ use App\Models\Application;
 use App\Models\City;
 use App\Models\Tag;
 use App\Events\PlatformAlert;
+use App\Models\JobSeeker;
+use App\Models\Company;
 use Carbon\Carbon;
 
 
@@ -150,8 +152,11 @@ class JobPostingController extends Controller {
         try {
             $validated = $request->validated();
             
-            $isManager = Auth::user()->recruiter->is_company_manager;
+            $recruiter = Auth::user()->recruiter;
+            $isManager = $recruiter->is_company_manager;
             $initialStatus = $isManager ? 'Active' : 'Pending';
+
+            DB::beginTransaction();
 
             $jobPosting = JobPosting::create([
                 'title' => $request->title,
@@ -161,21 +166,69 @@ class JobPostingController extends Controller {
                 'max_wage' => $request->max_wage,
                 'requirements' => $request->requirements,
                 'status' => $initialStatus,
-                'recruiter_id' => Auth::user()->recruiter->registered_user_id,
+                'recruiter_id' => $recruiter->registered_user_id,
                 'city_id' => $request->city_id
             ]);
 
             if ($request->has('tags')) $jobPosting->tags()->attach($request->tags);
             
-            $message = $isManager
-                ? 'Job posting created and published!'
-                : 'Job posting created! It is now pending approval by your manager.';
-
-            return redirect()->route('recruiter-dashboard.index')->with('success', $message);
-        }
-        catch (\Exception $e){
+            DB::commit();
+        } catch (\Exception $e){
+            DB::rollBack();
             return back()->with('error', "An error occurred while creating your new job posting. Please try again.");
+        }    
+        if($initialStatus === 'Active' && $request->has('tags')){
+            $interestedSeekers = JobSeeker::whereHas('tags', function($query) use ($request){
+                $query->whereIn('tag.id', $request->tags);
+            })->get();
+
+            foreach($interestedSeekers as $seeker){
+                try{
+                    $message = "New Job Alert: '{$jobPosting->title}' matches your interests!";
+
+                    $notifId = DB::table('notification')->insertGetId([
+                        'content'=>$message,
+                        'notification_type_id' => 5,
+                        'registered_user_id' => $seeker->registered_user_id,
+                        'issue_date' => now(),
+                    ]);
+
+                    event(new PlatformAlert($message, $seeker->registered_user_id, $notifId, 5));
+                } catch (\Exception $e) {
+                    continue;
+                }
+                
+            }
         }
+
+        if($initialStatus === 'Pending'){
+            $companyId = $recruiter->department->company_id;
+            $manager = \App\Models\Recruiter::where('is_company_manager', true)
+                ->whereHas('department', function($q) use ($companyId) {
+                    $q->where('company_id', $companyId);
+                })->first();
+
+            if($manager){
+                try{
+                    $message = "Action Required: A new job posting '{$jobPosting->title}' is pending your approval.";
+        
+                    $notifId = DB::table('notification')->insertGetId([
+                        'content'=>$message,
+                        'notification_type_id' => 7,
+                        'registered_user_id' => $manager->registered_user_id,
+                        'issue_date' => now(),
+                    ]);
+
+                    event(new PlatformAlert($message, $manager->registered_user_id, $notifId, 7));
+                } catch (\Exception $e) {}
+            }
+        }
+        $message = $isManager
+            ? 'Job posting created and published!'
+            : 'Job posting created! It is now pending approval by your manager.';
+
+        return redirect()->route('recruiter-dashboard.index')->with('success', $message);
+        
     }
 
     public function edit(JobPosting $job_posting): View {
@@ -289,21 +342,18 @@ class JobPostingController extends Controller {
                 ]);
 
                 foreach($acceptedApplications as $app){
-                    $message = "Congratulations! Your application for '{$app->jobPosting->title}' has been accepted.";
+                    try{
+                        $message = "Congratulations! Your application for '{$app->jobPosting->title}' has been accepted.";
 
-                    $notifId = \DB::table('notification')->insertGetId([
-                        'content' => $message,
-                        'notification_type_id' => 4,
-                        'registered_user_id' => $app->job_seeker_id,
-                        'issue_date' => now(),
-                    ]);
+                        $notifId = \DB::table('notification')->insertGetId([
+                            'content' => $message,
+                            'notification_type_id' => 4,
+                            'registered_user_id' => $app->job_seeker_id,
+                            'issue_date' => now(),
+                        ]);
 
-                    \DB::table('application_notification')->insert([
-                        'notification_id' => $notifId,
-                        'application_id' => $app->id
-                    ]);
-
-                    event(new PlatformAlert($message, $app->job_seeker_id, $notifId));
+                        event(new PlatformAlert($message, $app->job_seeker_id, $notifId, 4));
+                    }catch (\Exception $e) {}                
                 }
             }
             
@@ -313,21 +363,19 @@ class JobPostingController extends Controller {
                 ->get();
 
             foreach($rejectedApplications as $app){
-                $message = "Thank you for your interest. Unfortunately, your application for '{$app->jobPosting->title}' was not selected at this time.";
+                try{
+                    $message = "Thank you for your interest. Unfortunately, your application for '{$app->jobPosting->title}' was not selected at this time.";
 
-                $notifId = \DB::table('notification')->insertGetId([
-                    'content' => $message,
-                    'notification_type_id' => 4,
-                    'registered_user_id' => $app->job_seeker_id,
-                    'issue_date' => now(),
-                ]);
+                    $notifId = \DB::table('notification')->insertGetId([
+                        'content' => $message,
+                        'notification_type_id' => 4,
+                        'registered_user_id' => $app->job_seeker_id,
+                        'issue_date' => now(),
+                    ]);
 
-                \DB::table('application_notification')->insert([
-                    'notification_id' => $notifId,
-                    'application_id' => $app->id
-                ]);
-
-                event(new PlatformAlert($message, $app->job_seeker_id, $notifId));
+                    event(new PlatformAlert($message, $app->job_seeker_id, $notifId, 4));
+            }catch (\Exception $e) {}
+                
             }
             
             $creationDate = Carbon::parse($job_posting->creation_date);
@@ -387,6 +435,47 @@ class JobPostingController extends Controller {
             abort(403, 'Unauthorized');
         }
         $job_posting->update(['status' => 'Active']);
+        $jobTags = $job_posting->tags()->pluck('tag.id');
+
+        if($jobTags->isNotEmpty()){
+            $interestedSeeker = JobSeeker::whereHas('tags', function($query) use ($jobTags){
+                $query->whereIn('tag.id', $jobTags);
+            })->get();
+
+            foreach($interestedSeeker as $seeker) {
+                try{                
+                    $message = "New Job Alert: '{$job_posting->title}' matches your interests!";
+
+                    $notifId = DB::table('notification')->insertGetId([
+                        'content'=>$message,
+                        'notification_type_id' => 5,
+                        'registered_user_id' => $seeker->registered_user_id,
+                        'issue_date' => now(),
+                    ]);
+
+                    event(new PlatformAlert($message, $seeker->registered_user_id, $notifId, 5));
+            }catch (\Exception $e) {}
+            }
+        }
+
+        $creatorId = $job_posting->recruiter->registered_user_id;
+        $managerId = Auth::id();
+
+        if($creatorId !== $managerId){
+            try{
+                $message = "Good News: Your job posting '{$job_posting->title}' has been approved!";
+        
+                $notifId = DB::table('notification')->insertGetId([
+                    'content'=>$message,
+                    'notification_type_id' => 6,
+                    'registered_user_id' => $creatorId,
+                    'issue_date' => now(),
+                ]);
+
+                event(new PlatformAlert($message, $creatorId, $notifId, 6));
+            }catch (\Exception $e) {}
+            
+        }
 
         return back()->with('success', 'Job posting approved successfully!');
     }

@@ -116,12 +116,7 @@ class AdminController extends Controller
                 'issue_date' => now(),
             ]);
 
-            DB::table('notification_by_admin')->insert([
-                'notification_id' => $notifId,
-                'admin_id' => $adminId
-            ]);
-
-            event(new \App\Events\PlatformAlert($message, $userId, $notifId));
+            event(new \App\Events\PlatformAlert($message, $userId, $notifId, 1));
         }
 
         return redirect()->route('admin.pages')->with('success', "{$page->name} updated successfully!");
@@ -202,10 +197,6 @@ class AdminController extends Controller
     public function blockUser($id) {
         $user = User::findOrFail($id);
 
-        if ($user->isAdmin()) {
-            return back()->with('error', 'Unable to block admins');
-        }
-
         if ($user->status === 'Suspended') {
             $user->status = 'Active';
             $msg = 'User successfully unblocked!';
@@ -224,7 +215,7 @@ class AdminController extends Controller
 
         DB::transaction(function () use ($user) {
             
-            $jobSeeker = $user->jobSeeker;
+            $jobSeeker = $user->isJobSeeker();
 
             if ($jobSeeker->cv) {
                 Storage::disk('public')->delete($jobSeeker->cv);
@@ -394,5 +385,83 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return back()->withInput()->withErrors(['error' => 'Error creating user: ' . $e->getMessage()]);
         }
+    }
+
+    public function manageRecruiters(Request $request) {
+        $query = User::whereHas('recruiter')
+                     ->with('recruiter.department.company')
+                     ->where('status', '!=', 'Deleted');
+
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'ilike', "%{$search}%")
+                  ->orWhere('email', 'ilike', "%{$search}%");
+            });
+        }
+
+        $users = $query->orderBy('id', 'asc')->paginate(10);
+
+        return view('admin.recruiters', ['users' => $users]);
+    }
+
+    public function promoteToManager($id) {
+        $newManager = User::findOrFail($id);
+
+        $department = $newManager->recruiter->department;
+        $companyId = $department->company_id;
+
+        // Encontrar o Manager ATUAL dessa empresa
+        $currentManagerRecruiter = Recruiter::where('is_company_manager', true)
+            ->whereHas('department', function($query) use ($companyId) {
+                $query->where('company_id', $companyId);
+            })->first();
+
+        try {
+            DB::transaction(function () use ($newManager, $currentManagerRecruiter) {
+                // Desligar Trigger temporariamente para permitir a troca
+                DB::statement('ALTER TABLE recruiter DISABLE TRIGGER enforce_single_company_manager');
+
+                if ($currentManagerRecruiter) {
+                    $currentManagerRecruiter->update(['is_company_manager' => false]);
+                }
+
+                $newManager->recruiter->update(['is_company_manager' => true]);
+                $newManager->update(['status' => 'Active']);
+
+                // Ligar Trigger novamente
+                DB::statement('ALTER TABLE recruiter ENABLE TRIGGER enforce_single_company_manager');
+            });
+
+            return back()->with('success', 'Manager role swapped successfully!');
+
+        } catch (\Exception $e) {
+            DB::statement('ALTER TABLE recruiter ENABLE TRIGGER enforce_single_company_manager');
+            return back()->with('error', 'Error swapping managers: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteRecruiter($id) {
+        $user = User::findOrFail($id);
+
+        // Proteção: Não apagar Company Manager (Promover outro primeiro)
+        if ($user->recruiter && $user->recruiter->is_company_manager) {
+            return back()->with('error', 'Cannot delete a Company Manager. Promote someone else first.');
+        }
+
+        DB::transaction(function () use ($user) {
+            if ($user->recruiter) {
+                $user->recruiter->update(['is_company_manager' => false]);
+            }
+
+            $user->name = 'Deleted Recruiter';
+            $user->email = 'deleted_rec_' . $user->id . '@hireup.com';
+            $user->password = Hash::make(uniqid());
+            $user->status = 'Deleted';
+            
+            $user->save();
+        });
+
+        return back()->with('success', 'Recruiter account deleted successfully.');
     }
 }

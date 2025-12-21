@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\Message;
+use App\Events\PlatformAlert;
 
 class MessageController extends Controller
 {
@@ -15,22 +17,60 @@ class MessageController extends Controller
             'content' => 'required|string|max:5000',
         ]);
 
+        $message = null;
+
         try {
-            Message::create([
+            DB::beginTransaction();
+
+            $message = Message::create([
                 'sender_id' => Auth::id(),
                 'receiver_id' => $request->receiver_id,
                 'content' => $request->content,
             ]);
 
-            return back()->with('success', 'Message sent successfully.');
-        } catch (\Illuminate\Database\QueryException $e) { 
+            DB::commit();
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            \Log::error($e->getMessage());
             return back()->with('error', 'You are not allowed to message this user.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'An error occurred while sending the message.');
         }
+        try{
+            $senderName = Auth::user()->name;
+            $preview = substr($request->content, 0, 30) . (strlen($request->content) > 30 ? '...' : '');
+            $notifContent = "New message from {$senderName}: \"{$preview}\"";
+            $notifId = DB::table('notification')->insertGetId([
+                'content' => $notifContent,
+                'notification_type_id' => 2,
+                'registered_user_id' => $request->receiver_id,
+                'issue_date' => now(),
+            ]);
+
+            DB::table('message_notification')->insert([
+                'message_id' => $message->id,
+                'notification_id' => $notifId
+            ]);
+
+            event(new PlatformAlert($notifContent, $request->receiver_id, $notifId, 2));
+        } catch (\Eception $e) {}
+        return back()->with('success', 'Message sent successfully.');
     }
 
     public function index($userId = null)
     {
         $authId = auth()->id();
+
+        if($userId && $userId != $authId){
+            Message::where('sender_id', $userId)
+                ->where('receiver_id', $authId)
+                ->whereNull('date_read')
+                ->update(['date_read' => now()]);
+        }
+
+        $userId = $userId ?? $authId;
 
         $conversations = Message::where('sender_id', $authId)
             ->orWhere('receiver_id', $authId)
