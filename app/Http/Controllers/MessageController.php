@@ -96,4 +96,26 @@ class MessageController extends Controller
         
         return view('messages.messages', compact('conversations', 'messages', 'userId'));
     }
+
+    public function messagesJson($userId)
+    {
+        $authId = auth()->id();
+
+        $messages = Message::where(function ($q) use ($authId, $userId) {
+            $q->where('sender_id', $authId)->where('receiver_id', $userId);
+        })->orWhere(function ($q) use ($authId, $userId) {
+            $q->where('sender_id', $userId)->where('receiver_id', $authId);
+        })->orderBy('date_sent')->get();
+
+        $messages->load('sender');
+
+        return response()->json([
+            'messages' => $messages->map(fn($m) => [
+                'id' => $m->id,
+                'content' => $m->content,
+                'date_sent' => $m->date_sent,
+                'sender_name' => $m->sender?->name ?? 'Deleted User'
+            ])
+        ]);
+    }
 }

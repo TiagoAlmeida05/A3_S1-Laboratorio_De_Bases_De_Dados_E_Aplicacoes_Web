@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/jobseeker/profile', [JobSeekerController::class, 'destroy'])->name('jobseeker.profile.destroy');
     Route::get('/messages/{registered_user_id?}', [MessageController::class, 'index'])->name('messages.index');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+    Route::get('/messages/{registered_user_id}/json', [MessageController::class, 'messagesJson'])->name('messages.json');
     Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('notifications.settings');
     Route::post('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('notifications.settings.update');
 });
