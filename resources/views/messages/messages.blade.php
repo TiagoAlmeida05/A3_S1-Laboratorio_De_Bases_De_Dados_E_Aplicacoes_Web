@@ -13,10 +13,15 @@
                 @foreach($conversations as $otherUserId => $msgs)
                     @php
                         $otherUser = \App\Models\RegisteredUser::find($otherUserId);
+                        $hasUnread = $msgs->where('receiver_id', auth()->id())->where('date_read', false)->isNotEmpty();
                     @endphp
                     <li>
-                        <a href="{{ route('messages.index', $otherUserId) }}">
-                            {{ $otherUser ? $otherUser->name : 'Deleted User' }}
+                        <a href="{{ route('messages.index', $otherUserId) }}" id="conv-{{ $otherUserId }}">
+                            @if($hasUnread)
+                                <strong>{{ $otherUser ? $otherUser->name : 'Deleted User' }}</strong>
+                            @else
+                                {{ $otherUser ? $otherUser->name : 'Deleted User' }}
+                            @endif
                             ({{ $msgs->count() }} msgs)
                         </a>
                     </li>
@@ -69,7 +74,21 @@
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });
     }
-
     setInterval(fetchMessages, 3000);
+
+        function fetchConversations() {
+        fetch('/conversations/json')
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(conv => {
+                    const link = document.getElementById(`conv-${conv.otherUserId}`);
+                    if (!link) return;
+                    link.innerHTML = conv.hasUnread
+                        ? `<strong>${conv.name}</strong> (${conv.count} msgs)`
+                        : `${conv.name} (${conv.count} msgs)`;
+                });
+            });
+    }
+    setInterval(fetchConversations, 3000);
 </script>
 @endsection

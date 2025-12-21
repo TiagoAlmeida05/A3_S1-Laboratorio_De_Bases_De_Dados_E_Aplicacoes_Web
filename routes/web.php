@@ -68,6 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/messages/{registered_user_id?}', [MessageController::class, 'index'])->name('messages.index');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::get('/messages/{registered_user_id}/json', [MessageController::class, 'messagesJson'])->name('messages.json');
+    Route::get('/conversations/json', [App\Http\Controllers\MessageController::class, 'conversationsJson'])->name('conversations.json');
     Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('notifications.settings');
     Route::post('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('notifications.settings.update');
 });

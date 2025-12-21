@@ -117,4 +117,30 @@ class MessageController extends Controller
             ])
         ]);
     }
+
+    public function conversationsJson()
+    {
+        $authId = auth()->id();
+
+        $conversations = Message::where('sender_id', $authId)
+            ->orWhere('receiver_id', $authId)
+            ->get()
+            ->groupBy(function($msg) use ($authId) {
+                return $msg->sender_id == $authId ? $msg->receiver_id : $msg->sender_id;
+            });
+
+        $data = [];
+        foreach ($conversations as $otherUserId => $msgs) {
+            $otherUser = \App\Models\RegisteredUser::find($otherUserId);
+            $hasUnread = $msgs->where('receiver_id', $authId)->whereNull('date_read')->isNotEmpty();
+            $data[] = [
+                'otherUserId' => $otherUserId,
+                'name' => $otherUser ? $otherUser->name : 'Deleted User',
+                'count' => $msgs->count(),
+                'hasUnread' => $hasUnread
+            ];
+        }
+
+        return response()->json($data);
+    }
 }
