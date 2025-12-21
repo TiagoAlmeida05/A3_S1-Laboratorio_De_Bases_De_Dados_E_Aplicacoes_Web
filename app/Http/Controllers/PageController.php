@@ -34,4 +34,8 @@ class PageController extends Controller
     public function faq(){
         return view('pages.show', ['page' => $this->getPage('FAQ')]);
     }
+
+    public function contacts() {
+        return view('pages.show', ['page' => $this->getPage('Contact us')]);
+    }
 }

@@ -128,5 +128,6 @@ Route::get('/about-us', [PageController::class, 'about'])->name('page.about');
 Route::get('/terms-of-service', [PageController::class, 'terms'])->name('page.terms');
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('page.privacy');
 Route::get('/faq', [PageController::class, 'faq'])->name('page.faq');
+Route::get('/contact-us', [PageController::class, 'contacts'])->name('page.contacts');
 
 Route::post('send-notification', [NotificationController::class, 'sendGeneralNotification']);
