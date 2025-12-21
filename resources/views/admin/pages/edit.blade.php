@@ -21,8 +21,18 @@
                     $blocks = json_decode($page->content, true) ?? [];
                     if(empty($blocks)) $blocks = [['heading' => '', 'text' => '']];
                     
-                    $headingLabel = ($page->name == 'FAQ') ? 'Question' : 'Section Heading';
-                    $textLabel = ($page->name == 'FAQ') ? 'Answer' : 'Content Text';
+                    if ($page->name == 'FAQ') {
+                        $headingLabel = 'Question';
+                        $textLabel = 'Answer';
+                    } 
+                    elseif ($page->name == 'Contact us') {
+                        $headingLabel = 'Name (leave empty for introductory text)';
+                        $textLabel = 'Email (or introductory message)';
+                    } 
+                    else {
+                        $headingLabel = 'Section Heading';
+                        $textLabel = 'Content Text';
+                    }
                 @endphp
 
                 @foreach($blocks as $index => $block)
@@ -37,16 +47,16 @@
                     <div class="mb-3">
                         <label class="block font-bold text-gray-700 mb-1 text-sm">{{ $headingLabel }}</label>
                         <input type="text" name="headings[]" value="{{ $block['heading'] }}" 
-                               class="w-full border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2" 
-                               placeholder="e.g. {{ $page->name == 'FAQ' ? 'How do I sign up?' : 'Our Mission' }}">
+                            class="w-full border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2" 
+                            placeholder="{{ $page->name == 'FAQ' ? 'e.g., How do I sign up?' : ($page->name == 'Contact us' ? 'Contact name/none' : 'Our Mission') }}">
                     </div>
 
                     {{-- TEXT INPUT --}}
                     <div>
                         <label class="block font-bold text-gray-700 mb-1 text-sm">{{ $textLabel }}</label>
                         <textarea name="texts[]" rows="4" 
-                                  class="w-full border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2"
-                                  placeholder="Type the content here...">{{ $block['text'] }}</textarea>
+                                class="w-full border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2"
+                                placeholder="{{ $page->name == 'Contact us' ? 'Contact e-mail' : 'Type the content here...' }}">{{ $block['text'] }}</textarea>
                     </div>
                 </div>
                 @endforeach
@@ -80,7 +90,7 @@
                 
                 <div class="mb-3">
                     <label class="block font-bold text-gray-700 mb-1 text-sm">${headingLabel}</label>
-                    <input type="text" name="headings[]" class="w-full border-gray-300 rounded shadow-sm p-2" placeholder="Enter title...">
+                    <input type="text" name="headings[]" class="w-full border-gray-300 rounded shadow-sm p-2" placeholder="Enter name...">
                 </div>
 
                 <div>
