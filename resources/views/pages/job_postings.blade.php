@@ -12,7 +12,7 @@
                     name="search" 
                     id="searchInput"
                     value="{{ request('search') }}"
-                    placeholder="⌕ Search jobs or companies..."
+                    placeholder="⌕ Search jobs, users or companies..."
                     class="search-input"
                     autocomplete="off"
                 >
