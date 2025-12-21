@@ -28,15 +28,10 @@
     <div>
         @if(isset($userId))
             <h3>Conversation with {{ \App\Models\RegisteredUser::find($userId)?->name ?? 'Deleted User' }}</h3>
-            <div class="messages">
+           <div class="messages" id="messages-container">
                 @foreach ($messages as $message)
-                    @php
-                        $sender = \App\Models\RegisteredUser::find($message->sender_id);
-                    @endphp
                     <div>
-                        <strong>
-                            {{ $message->sender_id === auth()->id() ? 'You' : ($sender?->name ?? 'Deleted User') }}:
-                        </strong>
+                        <strong>{{ $message->sender_id === auth()->id() ? 'You' : $message->sender?->name ?? 'Deleted User' }}:</strong>
                         {{ $message->content }}
                         <small>({{ $message->date_sent }})</small>
                     </div>
@@ -55,4 +50,26 @@
     </div>
 
 </div>
+
+<script>
+    const userId = {{ $userId }};
+    const authId = {{ auth()->id() }};
+    const messagesContainer = document.getElementById('messages-container');
+
+    function fetchMessages() {
+        fetch(`/messages/${userId}/json`)
+            .then(res => res.json())
+            .then(data => {
+                messagesContainer.innerHTML = '';
+                data.messages.forEach(msg => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `<strong>${msg.sender_name === authId ? 'You' : msg.sender_name}:</strong> ${msg.content} <small>(${msg.date_sent})</small>`;
+                    messagesContainer.appendChild(div);
+                });
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+    }
+
+    setInterval(fetchMessages, 3000);
+</script>
 @endsection
