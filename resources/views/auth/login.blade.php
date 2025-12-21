@@ -45,6 +45,12 @@
         <a class="btn btn-primary" style="background-color: #1c4eb1eb;" href="{{ route('register') }}">Register</a>
     </div>
 
+    <div class="mt-3" style="text-align: left;">
+        <a href="{{ route('password.request') }}" style="color: #1c4eb1eb; text-decoration: underline;">
+            Forgot password?
+        </a>
+    </div>
+
     @if (session('status'))
         <p class="success" role="status">{{ session('status') }}</p>
     @endif

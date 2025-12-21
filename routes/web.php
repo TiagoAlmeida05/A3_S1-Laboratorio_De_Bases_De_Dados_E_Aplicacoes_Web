@@ -17,6 +17,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
@@ -131,3 +133,9 @@ Route::get('/faq', [PageController::class, 'faq'])->name('page.faq');
 Route::get('/contact-us', [PageController::class, 'contacts'])->name('page.contacts');
 
 Route::post('send-notification', [NotificationController::class, 'sendGeneralNotification']);
+
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
