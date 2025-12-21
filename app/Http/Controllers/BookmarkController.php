@@ -34,10 +34,17 @@ class BookmarkController extends Controller
         return back()->with('success', 'Bookmark removed.');
     }
 
-    public function index()
+   public function index()
     {
-        $jobSeeker = Auth::user()->isJobSeeker();
-        $bookmarks = $jobSeeker->bookmarks()->wherePivot('is_active', true)->with(['company', 'city'])->orderByPivot('date_added', 'desc')->paginate(10);
+        $user = Auth::user();
+        $jobSeeker = $user->jobSeeker;
+
+        $bookmarks = $jobSeeker->bookmarks()
+            ->wherePivot('is_active', true)
+            ->with(['company', 'city'])
+            ->orderByPivot('date_added', 'desc')
+            ->paginate(10);
+
         return view('jobseeker.bookmarks', compact('bookmarks'));
     }
 }
