@@ -70,8 +70,6 @@ class MessageController extends Controller
                 ->update(['date_read' => now()]);
         }
 
-        $userId = $userId ?? $authId;
-
         $conversations = Message::where('sender_id', $authId)
             ->orWhere('receiver_id', $authId)
             ->orderBy('date_sent', 'desc')
@@ -109,13 +107,40 @@ class MessageController extends Controller
 
         $messages->load('sender');
 
-        return response()->json([
+       return response()->json([
             'messages' => $messages->map(fn($m) => [
                 'id' => $m->id,
                 'content' => $m->content,
                 'date_sent' => $m->date_sent,
+                'sender_id' => $m->sender_id,
                 'sender_name' => $m->sender?->name ?? 'Deleted User'
             ])
         ]);
+    }
+
+    public function conversationsJson()
+    {
+        $authId = auth()->id();
+
+        $conversations = Message::where('sender_id', $authId)
+            ->orWhere('receiver_id', $authId)
+            ->get()
+            ->groupBy(function($msg) use ($authId) {
+                return $msg->sender_id == $authId ? $msg->receiver_id : $msg->sender_id;
+            });
+
+        $data = [];
+        foreach ($conversations as $otherUserId => $msgs) {
+            $otherUser = \App\Models\RegisteredUser::find($otherUserId);
+            $hasUnread = $msgs->where('receiver_id', $authId)->whereNull('date_read')->isNotEmpty();
+            $data[] = [
+                'otherUserId' => $otherUserId,
+                'name' => $otherUser ? $otherUser->name : 'Deleted User',
+                'count' => $msgs->count(),
+                'hasUnread' => $hasUnread
+            ];
+        }
+
+        return response()->json($data);
     }
 }
