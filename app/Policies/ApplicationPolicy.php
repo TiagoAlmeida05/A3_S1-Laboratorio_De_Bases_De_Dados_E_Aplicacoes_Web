@@ -20,14 +20,14 @@ class ApplicationPolicy
      * Determine whether the user can view the model.
      */
     public function view(User $user, Application $application): bool {
-        if ($user->admin) return true;
+        if ($user->isAdmin()) return true;
 
         if ($user->isJobSeeker() && $application->jobSeeker->registered_user_id === $user->id) return true;
 
         if ($user->recruiter){
             $jobRecruiterId = $application->jobPosting->recruiter_id;
 
-            if($jobRecruiterId = $user->id){
+            if($jobRecruiterId === $user->id){
                 return true;
             }
 

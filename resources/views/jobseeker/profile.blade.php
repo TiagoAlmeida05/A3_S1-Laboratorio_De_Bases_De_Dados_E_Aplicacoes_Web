@@ -12,6 +12,12 @@
         <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('messages.index', $jobSeeker->registered_user_id) }}">Message</a>
     @endcan
 
+    @auth
+        @if(!Auth::user()->isAdmin() && Auth::id() != $jobSeeker->registered_user_id)
+            <a href="{{ route('reports.create', ['type' => 'JobSeeker', 'entity_id' => $jobSeeker->registered_user_id]) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">Report job seeker</a>
+        @endif
+    @endauth
+
     <div class="d-flex flex-column" style="margin-bottom: 1rem;">
         <h2 class="align-self-center" style="margin: 2rem 0rem;">{{ $jobSeeker->registeredUser->name }}</h2>
         <div>

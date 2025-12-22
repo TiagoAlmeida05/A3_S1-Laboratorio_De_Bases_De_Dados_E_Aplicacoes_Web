@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\ItemController;
-
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\CompleteRegistrationController;
 
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\AdminController;
@@ -17,10 +19,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\MessageController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\Auth\CompleteRegistrationController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
@@ -73,6 +72,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/conversations/json', [App\Http\Controllers\MessageController::class, 'conversationsJson'])->name('conversations.json');
     Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('notifications.settings');
     Route::post('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('notifications.settings.update');
+    Route::get('/report', [ReportController::class, 'create'])->name('reports.create');
+    Route::post('/report', [ReportController::class, 'store'])->name('reports.store');
     Route::get('/complete-registration', [CompleteRegistrationController::class, 'show'])->name('register.complete');
     Route::post('/complete-registration', [CompleteRegistrationController::class, 'store'])->name('register.complete.store');
 });
@@ -80,10 +81,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs'); 
     Route::delete('/admin/jobs/{id}', [AdminController::class, 'deleteJob'])->name('admin.jobs.delete');
-    Route::get('/admin/content', [AdminController::class, 'manageContent'])->name('admin.content');
-    Route::patch('/admin/content/{id}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
+    Route::get('/admin/user_reports', [AdminController::class, 'manageUserReports'])->name('admin.user_reports');
+    Route::patch('/admin/user_reports/{id}/solve', [AdminController::class, 'solveUserReport'])->name('admin.user_reports.solve');
     Route::get('/admin/pages', [AdminController::class, 'editPages'])->name('admin.pages');
-    Route::patch('/admin/content/{id}/reopen', [AdminController::class, 'reopenReport'])->name('admin.reports.reopen');
     Route::get('/admin/pages/{id}/edit', [AdminController::class, 'showPageForm'])->name('admin.pages.edit');
     Route::put('/admin/pages/{id}', [AdminController::class, 'updatePage'])->name('admin.pages.update');
     Route::patch('/admin/users/{id}/block', [AdminController::class, 'blockUser'])->name('admin.users.block');
@@ -103,6 +103,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/recruiters', [AdminController::class, 'manageRecruiters'])->name('admin.recruiters');
     Route::patch('/admin/recruiters/{id}/promote', [AdminController::class, 'promoteToManager'])->name('admin.recruiters.promote');
     Route::delete('/admin/recruiters/{id}', [AdminController::class, 'deleteRecruiter'])->name('admin.recruiters.delete');
+    Route::get('/admin/applications/{application}', [JobPostingController::class, 'viewApplication'])->name('admin.view-application');
 });
 
 Route::get('/recruiter-dashboard', function () {

@@ -258,8 +258,16 @@ CREATE TABLE report_to_admin (
     solved BOOLEAN NOT NULL DEFAULT FALSE,
     reporter_id INT NOT NULL,
     handled_by_id INT,
+    reported_job_seeker_id INT,
+    reported_job_posting_id INT,
+    reported_company_id INT,
+    reported_application_id INT,
     FOREIGN KEY (reporter_id) REFERENCES registered_user(id) ON UPDATE CASCADE,
-    FOREIGN KEY (handled_by_id) REFERENCES administrator(registered_user_id) ON UPDATE CASCADE
+    FOREIGN KEY (handled_by_id) REFERENCES administrator(registered_user_id) ON UPDATE CASCADE,
+    FOREIGN KEY (reported_job_seeker_id) REFERENCES job_seeker(registered_user_id) ON UPDATE CASCADE,
+    FOREIGN KEY (reported_job_posting_id) REFERENCES job_posting(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (reported_company_id) REFERENCES company(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (reported_application_id) REFERENCES application(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE certification_entry (
@@ -355,7 +363,6 @@ BEGIN
     RETURN NEW;
 END $$
 LANGUAGE plpgsql;
-
 
 CREATE TRIGGER update_jp_for_searching
     BEFORE INSERT OR UPDATE ON job_posting
@@ -691,6 +698,24 @@ CREATE TRIGGER check_bookmark_status
     FOR EACH ROW
     EXECUTE PROCEDURE check_bookmark_status();
 
+CREATE FUNCTION reports_must_have_only_one_target_id() RETURNS TRIGGER AS $BODY$
+BEGIN
+    IF (
+        (CASE WHEN NEW.reported_job_seeker_id IS NOT NULL THEN 1 ELSE 0 END +
+         CASE WHEN NEW.reported_job_posting_id IS NOT NULL THEN 1 ELSE 0 END +
+         CASE WHEN NEW.reported_company_id IS NOT NULL THEN 1 ELSE 0 END +
+         CASE WHEN NEW.reported_application_id IS NOT NULL THEN 1 ELSE 0 END) > 1
+    ) THEN
+        RAISE EXCEPTION 'A report can only have one target type (referenced by its ID).';
+    END IF;
+    RETURN NEW;
+END
+$BODY$ LANGUAGE plpgsql;
+
+CREATE TRIGGER reports_must_have_only_one_target_id
+    BEFORE INSERT OR UPDATE ON report_to_admin
+    FOR EACH ROW
+    EXECUTE PROCEDURE reports_must_have_only_one_target_id();
 
 INSERT INTO notification_type (name, send_to_registered_user, send_to_job_seeker, send_to_recruiter, send_to_company_manager, send_to_admin, default_enabled)
 VALUES
@@ -827,9 +852,12 @@ VALUES
 ('Thanks, I will check them out.', 4, 2),
 ('Your data analyst application was received.', 2, 5);
 
+INSERT INTO report_to_admin (description, reporter_id, handled_by_id, reported_job_posting_id)
+VALUES
+('Issue with job posting visibility.', 3, NULL, 1);
+
 INSERT INTO report_to_admin (description, reporter_id, handled_by_id)
 VALUES
-('Issue with job posting visibility.', 3, NULL),
 ('Spam message received.', 4, 8),
 ('Application form not submitting properly.', 5, 7),
 ('Recruiter account suspended wrongly.', 6, 8),

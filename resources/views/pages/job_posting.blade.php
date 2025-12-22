@@ -51,12 +51,22 @@
     </div>
 
     <div class="jp-buttons d-flex">
-        <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ url('/') }}">Go back</a>
-        @can('apply', $job_posting)
-            <a class="button btn btn-primary" href="{{ route('jobseeker.apply', $job_posting->id) }}">Apply</a>
-        @elsecan('apply', $job_posting)
-            <button disabled>Applied</button>
-        @endcan
+        <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ url()->previous() }}">Go back</a>
+        @auth
+            @if(Auth::user()->isJobSeeker())
+                @if($hasApplied)
+                    <button style="background-color: gray" disabled>Applied</button>
+                @else
+                    <a class="button btn btn-primary" style="background-color: #3f9236eb;  padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.apply', $job_posting->id) }}">Apply</a>
+                @endif
+            @endif
+            @php
+                $isOwnPosting = Auth::user()->isRecruiter() && $job_posting->recruiter_id == Auth::id();
+            @endphp
+            @if(!Auth::user()->isAdmin() && !$isOwnPosting)
+                <a href="{{ route('reports.create', ['type' => 'JobPosting', 'entity_id' => $job_posting->id]) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">Report job posting</a>
+            @endif
+        @endauth
     </div>
 
 </section>
