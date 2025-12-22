@@ -8,6 +8,12 @@
         @if(Auth::id() == $jobSeeker->registered_user_id)
             <a class="button button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.profile.edit') }}">Edit profile</a>
         @endif
+
+        @auth
+            @if(auth()->user()->isRecruiter() && auth()->id() != $jobSeeker->registered_user_id)
+                <a class="button button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('messages.index', $jobSeeker->registered_user_id) }}">Message</a>
+            @endif
+        @endauth
     @endauth
 
     @auth

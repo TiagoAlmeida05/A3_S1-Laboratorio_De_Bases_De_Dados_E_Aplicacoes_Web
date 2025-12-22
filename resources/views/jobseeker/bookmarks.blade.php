@@ -22,9 +22,9 @@
                         </h5>
 
                         <p>
-                            {{ $job->company->name ?? 'Unknown Company' }}
-                            · {{ $job->city->name ?? 'Unknown City' }}
+                            {{ $job->recruiter?->department?->company?->name ?? 'Unknown Company' }} · {{ $job->city?->name ?? 'Unknown City' }}
                         </p>
+
 
                         <p>
                             <strong>Deadline:</strong>

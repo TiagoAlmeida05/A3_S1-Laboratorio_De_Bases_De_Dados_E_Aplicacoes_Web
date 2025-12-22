@@ -7,6 +7,11 @@
 <section id="recruiter-dashboard">
     <h2>{{ $user->name }}{{Str::endsWith($user->name, 's') ? '\'' : "'s"}} Recruiter Dashboard</h2>
     
+    @if(isset($companyManager) && !$user->recruiter->is_company_manager)
+        <div style="margin: 1rem 0;">
+            <a href="{{ route('messages.index', $companyManager->registered_user_id) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb;">Chat with Company Manager</a>
+        </div>
+    @endif
 
     {{-- MANAGER TABS --}}
 
@@ -168,6 +173,20 @@
                                                 Demote
                                             </button>
                                         </form>
+                                    @else
+                                        <span class="text-muted" style="font-size: 0.9rem;">(You)</span>
+                                    @endif
+                                </td>
+
+                                <td>
+                                    @if($staff->registered_user_id !== Auth::id())
+                                        @if(!$staff->is_company_manager)
+                                            <form action="{{ route('messages.index', $staff->registered_user_id) }}" method="GET" style="display: inline-block;">
+                                                <button type="submit" class="button btn-primary" style="background-color: #1c4eb1eb;">
+                                                    Send Message
+                                                </button>
+                                            </form>
+                                        @endif
                                     @else
                                         <span class="text-muted" style="font-size: 0.9rem;">(You)</span>
                                     @endif

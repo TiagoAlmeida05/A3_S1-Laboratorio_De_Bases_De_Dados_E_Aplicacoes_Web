@@ -50,12 +50,21 @@ class RecruiterController extends Controller {
             })->with(['user', 'department'])->get();
         }
 
+        $companyManager = null;
+
+        if($recruiter && !$recruiter->is_company_manager){
+            $companyManager = Recruiter::whereHas('department', function($q) use ($recruiter) {
+                $q->where('company_id', $recruiter->department->company_id);
+            })->where('is_company_manager', true)->first();
+        }
+
         return view('recruiter.dashboard', [
             'user' => $user,
             'job_postings' => $job_postings,
             'viewMode' => $viewMode,
             'companyStaff' => $companyStaff,
-            'departments' => $departments
+            'departments' => $departments,
+            'companyManager' => $companyManager,
         ]);
     }
 

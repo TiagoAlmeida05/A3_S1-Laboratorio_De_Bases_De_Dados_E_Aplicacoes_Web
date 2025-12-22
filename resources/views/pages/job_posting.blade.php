@@ -21,6 +21,8 @@
                 <button>Bookmark Job</button>
             </form>
         @endif
+
+        <a class="button btn btn-primary" style="background-color: #1c4eb1eb;" href="{{ route('messages.index', $recruiter->registered_user_id) }}">Message</a>
     @endif
 
     @if(session('success'))
