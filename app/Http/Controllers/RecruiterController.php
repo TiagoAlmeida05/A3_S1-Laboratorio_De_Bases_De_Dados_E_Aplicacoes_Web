@@ -141,23 +141,42 @@ class RecruiterController extends Controller {
             return redirect('/')->with('error', 'Unauthorized action.');
         }
 
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+        if (is_null($user->google_id)) {
+            $request->validate([
+                'password' => ['required', 'current_password'],
+            ]);
+        }
 
-        DB::transaction(function () use ($user) {
-            $recruiter = $user->recruiter;
+        try {
+            DB::transaction(function () use ($user) {
+                $recruiter = $user->recruiter;
 
-            $recruiter->job_postings()
-                ->whereIn('status', ['Active', 'Pending'])
-                ->update(['status' => 'Closed']);
+                $recruiter->job_postings()
+                    ->whereIn('status', ['Active', 'Pending'])
+                    ->update(['status' => 'Closed']);
+                if ($recruiter->is_company_manager) {
+                    $recruiter->is_company_manager = false;
+                    $recruiter->save(); 
+                }
 
-            $user->name = 'Deleted Recruiter ' . $user->id;
-            $user->email = 'deleted_' . $user->id . '@hireup.com';
-            $user->password = Hash::make(uniqid());
-            $user->status = 'Deleted';
-            $user->save();
-        });
+                $recruiter->department_id = null;
+                $recruiter->save();
+
+                $user->name = 'Deleted Recruiter ' . $user->id;
+                $user->email = 'deleted_' . $user->id . '@hireup.com';
+                $user->password = Hash::make(uniqid());
+                $user->status = 'Deleted';
+                
+                $user->age = null;
+                $user->birthday = null;
+                $user->google_id = null;
+                
+                $user->save();
+            });
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error: You cannot delete your account because you are the only Manager of your company. Please promote another Recruiter to Manager first.');
+        }
 
         Auth::logout();
         $request->session()->invalidate();
@@ -273,7 +292,6 @@ class RecruiterController extends Controller {
             
             return back()->with('success', "{$request->name} has been promoted to Recruiter.");      
         }catch(\Exception $e) {
-            return back()->with('error', 'Error promoting user: ' . $e->getMessage());
         }
     }
 

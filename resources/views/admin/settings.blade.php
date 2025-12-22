@@ -37,20 +37,26 @@
             @csrf
             @method('DELETE')
 
-            <div class="form-group">
-                <label for="password_delete">Confirm Password to delete:</label>
-                <input type="password" id="password_delete" name="password" required class="form-control">
-                
-                @error('password')
-                    <div class="error-message">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-            
+            @if(is_null(Auth::user()->google_id))
+                <div class="mb-3">
+                    <label for="password_delete" class="form-label">Confirm Password to delete:</label>
+                    <input type="password" id="password_delete" name="password" required class="form-control">
+                    
+                    @error('password')
+                        <div style="color: red; margin-top: 5px;">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            @else
+                <div class="alert alert-warning">
+                    <strong>Note:</strong> Since you logged in via Google, verification is automatic. No password required.
+                </div>
+            @endif
+
             <button type="submit" 
-                    class="btn btn-danger" 
-                    onclick="return confirm('Are you sure you want to delete your administrator account?');">
+                    class="btn btn-danger"
+                    onclick="return confirm('Are you sure you want to delete your administrator account? This action cannot be undone.');">
                 Delete Account
             </button>
         </form>
