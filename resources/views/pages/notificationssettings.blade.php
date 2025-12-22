@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Notification Settings')
+@section('title', 'Notification settings')
 
 @section('content')
 <div class="container" style="max-width: 800px; margin-top: 40px;">
-    <h2>Notification Settings</h2>
+    <h2>Notification settings</h2>
     
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -17,16 +17,13 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Notification Type</th>
+                        <th>Notification type</th>
                         <th class="text-center">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($types as $type)
-                        {{-- 1. Hide System Alerts (ID 1) --}}
                         @if($type->id == 1) @continue @endif
-
-                        {{-- 2. Role-based Visibility Logic --}}
                         @php
                             $isJobSeeker = $user->isJobSeeker(); 
                             $isRecruiter = $user->recruiter()->exists();
@@ -48,14 +45,14 @@
                             <td>
                                 <strong>
                                     @switch($type->id)
-                                        @case(2) Direct Messages @break
-                                        @case(3) Bookmark Reminders @break
+                                        @case(2) Direct messages @break
+                                        @case(3) Bookmark reminders @break
                                         @case(4) 
-                                            {{ $isRecruiter ? 'New Application Alerts' : 'Application Status Updates' }}
+                                            {{ $isRecruiter ? 'New application alerts' : 'Application status updates' }}
                                             @break
-                                        @case(5) Job Recommendations @break
-                                        @case(6) My Job Posting Updates @break
-                                        @case(7) Manager Tasks (Approvals) @break
+                                        @case(5) Job recommendations @break
+                                        @case(6) My job posting updates @break
+                                        @case(7) Manager tasks (approvals) @break
                                         @default {{ $type->name }}
                                     @endswitch
                                 </strong>
@@ -86,7 +83,7 @@
         </div>
 
         <div style="margin-top: 20px; text-align: right;">
-            <button type="submit" class="button btn-primary">Save Changes</button>
+            <button type="submit" class="button btn btn-primary">Save changes</button>
         </div>
     </form>
 </div>
