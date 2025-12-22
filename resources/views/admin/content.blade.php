@@ -26,7 +26,8 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Reporter</th>
+                    <th>Reporter name</th>
+                    <th>Reporter e-mail</th>
                     <th>Reported content</th>
                     <th>Description</th>
                     <th></th>
@@ -37,6 +38,7 @@
                     <tr>
                         <td>{{ $report->date->format('d/m/Y H:i') }}</td>
                         <td>{{ $report->reporter->name ?? 'Anonymous user' }}</td>
+                        <td>{{ $report->reporter->email ?? 'N/A' }}</td>
                         <td>
                             @if($reportType === 'JobSeeker' && $report->reportedJobSeeker)
                                 <a href="{{ route('jobseeker.profile', $report->reported_job_seeker_id) }}">{{ $report->reportedJobSeeker->registeredUser->name }}</a>
@@ -78,7 +80,8 @@
             <tr>
                 <th>Date</th>
                 <th>Type</th>
-                <th>Reporter</th>
+                <th>Reporter name</th>
+                <th>Reporter e-mail</th>
                 <th>Description</th>
                 <th>Handled by</th>
             </tr>
@@ -87,8 +90,9 @@
             @foreach($solvedReports as $report)
                 <tr>
                     <td>{{ $report->date->format('d/m/Y H:i') }}</td>
-                    <td>{{ $report->getReportType() }}</td>
+                    <td>{{ $report->getReportTypeLabel() }}</td>
                     <td>{{ $report->reporter->name ?? 'Anonymous user' }}</td>
+                    <td>{{ $report->reporter->email ?? 'N/A' }}</td>
                     <td>{{ Str::limit($report->description, 60) }}</td>
                     <td>{{ $report->handler->name }}</td>
                 </tr>

@@ -54,7 +54,7 @@
 
             <div>
                 <label for="report-description">Description</label>
-                <textarea name="report-description" id="report-description" rows="5" placeholder="Please explain the reasons for your report." required>{{ old('description') }}</textarea>
+                <textarea name="description" id="report-description" rows="5" placeholder="Please explain the reasons for your report." required>{{ old('description') }}</textarea>
             </div>
 
             <div>

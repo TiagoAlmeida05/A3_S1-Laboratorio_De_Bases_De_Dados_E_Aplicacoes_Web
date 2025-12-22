@@ -67,4 +67,12 @@ class Report extends Model {
         if ($this->reported_application_id) return $this->reportedApplication;
         return null;
     }
+
+    public function getReportTypeLabel() {
+        if ($this->reported_job_seeker_id) return 'Job Seeker';
+        if ($this->reported_job_posting_id) return 'Job posting';
+        if ($this->reported_company_id) return 'Company';
+        if ($this->reported_application_id) return 'Application';
+        return 'General';
+    }
 }

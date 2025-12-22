@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\ItemController;
-
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\CompleteRegistrationController;
 
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\AdminController;
@@ -18,10 +20,6 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\Auth\CompleteRegistrationController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
