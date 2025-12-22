@@ -17,6 +17,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
@@ -67,6 +68,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('notifications.settings');
     Route::post('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('notifications.settings.update');
+    Route::get('/report', [ReportController::class, 'create'])->name('reports.create');
+    Route::post('/report', [ReportController::class, 'store'])->name('reports.store');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {

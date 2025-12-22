@@ -35,11 +35,22 @@ class AdminController extends Controller
         return redirect()->route('admin.jobs')->with('success', 'Job Posting removed!');
     }
 
-    
     public function manageContent() {
-        $reports = Report::orderBy('solved', 'asc')->orderBy('id', 'asc')->paginate(4);
-        
-        return view('admin.content', ['reports' => $reports]);
+        $pendingReports = Report::where('solved', false)
+            ->orderBy('date', 'desc')
+            ->get()
+            ->groupBy(function($report) {
+                return $report->getReportType();
+            });
+
+        $solvedReports = Report::where('solved', true)
+            ->orderBy('date', 'desc')
+            ->get();
+
+        return view('admin.content', [
+            'pendingReports' => $pendingReports,
+            'solvedReports' => $solvedReports
+        ]);
     }
 
     public function solveReport($id) {

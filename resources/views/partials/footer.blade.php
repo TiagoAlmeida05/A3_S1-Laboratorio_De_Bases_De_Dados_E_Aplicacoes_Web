@@ -2,11 +2,16 @@
     <div class="container">
         <div>
             <a href="{{ url('/') }}">Home</a>
-            <a href="{{ route('page.about') }}">About Us</a>
-            <a href="{{ route('page.privacy') }}">Privacy Policy</a>
+            <a href="{{ route('page.about') }}">About us</a>
+            <a href="{{ route('page.privacy') }}">Privacy policy</a>
             <a href="{{ route('page.terms') }}">Terms of Service</a>
             <a href="{{ route('page.faq') }}">FAQs</a>
             <a href="{{ route('page.contacts') }}">Contact us!</a>
+            @auth
+                @if(!Auth::user()->isAdmin())
+                    <a href="{{ route('reports.create') }}">Report an issue</a>
+                @endif
+            @endauth
         </div>
 
         <p>
