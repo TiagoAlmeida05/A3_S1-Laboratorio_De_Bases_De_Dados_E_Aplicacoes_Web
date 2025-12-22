@@ -127,4 +127,16 @@ class JobPostingPolicy
 
         return $jobCompanyId && $myCompanyId && ($jobCompanyId == $myCompanyId);
     }
+
+    public function apply(User $user, JobPosting $jobPosting): bool
+    {
+        if (!$user->isJobSeeker()) return false;
+        if ($jobPosting->status !== 'Active') return false;
+
+        $hasApplied = \App\Models\Application::where('job_seeker_id', $user->id)
+            ->where('job_posting_id', $jobPosting->id)
+            ->exists();
+
+        return !$hasApplied;
+    }
 }

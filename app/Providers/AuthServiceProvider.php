@@ -11,6 +11,8 @@ class AuthServiceProvider extends ServiceProvider
 
     protected $policies = [
         Company::class => CompanyPolicy::class,
+        JobSeeker::class => JobSeekerPolicy::class,
+        JobPosting::class => JobPostingPolicy::class,
     ];
 
     public function boot()

@@ -4,17 +4,13 @@
 
 @section('content')
 <section id="job_seeker_profile">
-    @auth
-        @if(Auth::id() == $jobSeeker->registered_user_id)
-            <a class="button button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.profile.edit') }}">Edit profile</a>
-        @endif
+    @can('update', $jobSeeker)
+        <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('jobseeker.profile.edit') }}">Edit profile</a>
+    @endcan
 
-        @auth
-            @if(auth()->user()->isRecruiter() && auth()->id() != $jobSeeker->registered_user_id)
-                <a class="button button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('messages.index', $jobSeeker->registered_user_id) }}">Message</a>
-            @endif
-        @endauth
-    @endauth
+    @can('message', $jobSeeker)
+        <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('messages.index', $jobSeeker->registered_user_id) }}">Message</a>
+    @endcan
 
     @auth
         @if(!Auth::user()->isAdmin() && Auth::id() != $jobSeeker->registered_user_id)
