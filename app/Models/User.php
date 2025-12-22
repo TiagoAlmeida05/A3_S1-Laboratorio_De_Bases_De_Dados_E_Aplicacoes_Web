@@ -35,7 +35,8 @@ class User extends Authenticatable
         'birthday',
         'age',
         'status',
-        'sign_up_date'
+        'sign_up_date',
+        'google_id'
     ];
 
     /**

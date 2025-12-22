@@ -19,6 +19,8 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\CompleteRegistrationController;
 
 Route::get('/', [JobPostingController::class, 'index'])->name('homepage');
 
@@ -71,6 +73,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/conversations/json', [App\Http\Controllers\MessageController::class, 'conversationsJson'])->name('conversations.json');
     Route::get('/settings/notifications', [NotificationController::class, 'settings'])->name('notifications.settings');
     Route::post('/settings/notifications', [NotificationController::class, 'updateSettings'])->name('notifications.settings.update');
+    Route::get('/complete-registration', [CompleteRegistrationController::class, 'show'])->name('register.complete');
+    Route::post('/complete-registration', [CompleteRegistrationController::class, 'store'])->name('register.complete.store');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -141,3 +145,6 @@ Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEm
 
 Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);

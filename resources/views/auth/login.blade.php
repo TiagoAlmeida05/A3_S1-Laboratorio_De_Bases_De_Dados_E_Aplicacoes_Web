@@ -51,6 +51,20 @@
         </a>
     </div>
 
+    <div style="margin-top: 2rem; border-top: 1px solid #f0f0f0; padding-top: 1.5rem; text-align: center;">
+        <span style="display: block; margin-bottom: 1rem; color: #666;">
+            Ou...
+        </span>
+        
+        <a href="{{ route('auth.google') }}" style= "color: #3c4043; border: 1px solid #dadce0;">
+            <img src="https://thumbs.dreamstime.com/b/google-logo-vector-format-white-background-illustration-407571048.jpg" 
+                alt="Google Logo" 
+                style="width: 20px; height: 20px; margin-right: 12px; object-fit: contain;">
+            
+            <span>Continuar com o Google</span>
+        </a>
+    </div>
+
     @if (session('status'))
         <p class="success" role="status">{{ session('status') }}</p>
     @endif
