@@ -351,13 +351,16 @@ CREATE FUNCTION update_jp_for_searching()
 RETURNS TRIGGER AS $$
 BEGIN
     IF TG_OP = 'INSERT' THEN
-        NEW.tsvectors = (setweight(to_tsvector('english', NEW.title), 'A') ||
-                        setweight(to_tsvector('english', NEW.description), 'B'));
+        NEW.tsvectors := (setweight(to_tsvector('english', NEW.title), 'A') ||
+                        setweight(to_tsvector('english', NEW.description), 'B') ||
+                        setweight(to_tsvector('english', COALESCE(NEW.requirements, '')), 'C'));
+
     END IF;
     IF TG_OP = 'UPDATE' THEN
-        IF (NEW.title <> OLD.title OR NEW.description <> OLD.description) THEN
-            NEW.tsvectors = (setweight(to_tsvector('english', NEW.title), 'A') ||
-                        setweight(to_tsvector('english', NEW.description), 'B'));
+        IF (NEW.title <> OLD.title OR NEW.description <> OLD.description OR COALESCE(NEW.requirements, '') <> COALESCE(OLD.requirements, '')) THEN
+            NEW.tsvectors := (setweight(to_tsvector('english', NEW.title), 'A') ||
+                            setweight(to_tsvector('english', NEW.description), 'B') ||
+                            setweight(to_tsvector('english', COALESCE(NEW.requirements, '')), 'C'));
         END IF;
     END IF;
     RETURN NEW;

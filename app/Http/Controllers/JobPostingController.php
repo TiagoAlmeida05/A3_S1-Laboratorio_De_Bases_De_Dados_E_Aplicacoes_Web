@@ -57,15 +57,19 @@ class JobPostingController extends Controller {
         $allCompanies = \App\Models\Company::orderBy('name')->get();
         $allTags = \App\Models\Tag::orderBy('name')->get();
 
-        $jobsQuery = JobPosting::with('city')->where('status', 'Active');
+        $jobsQuery = JobPosting::with(['city', 'recruiter.department.company', 'tags'])->where('status', 'Active');
+
         $companies = collect();
         $jobSeekers = collect();
 
         if (!empty($searchTerm)) {
             if(strlen($searchTerm) < 3){
-                $jobsQuery->where('title', 'ILIKE', "%{searchTerm}%")
-                          ->orderBy('id', 'desc');
-
+                $jobsQuery->where(function($q) use ($searchTerm) {
+                    $q->where('title', 'ILIKE', "%{searchTerm}%")
+                      ->orWhere('description', 'ILIKE', "%{searchTerm}%")
+                      ->orWhere('requirements', 'ILIKE', "%{searchTerm}%");
+                })->orderBy('id', 'desc');
+                          
                 $companies = \App\Models\Company::with('city')
                                 ->where('name', 'ILIKE', "%{$searchTerm}%")
                                 ->orderBy('name')
@@ -130,8 +134,8 @@ class JobPostingController extends Controller {
 
         return view('pages.job_postings', [
             'job_postings' => $jobPostings,
-            'companies' => $companies,
-            'jobSeekers' => $jobSeekers,
+            'companies' => $companies ?? collect(),
+            'jobSeekers' => $jobSeekers ?? collect(),
             'searchTerm' => $searchTerm,
             'filterCities' => $allCities,
             'filterCompanies' => $allCompanies,

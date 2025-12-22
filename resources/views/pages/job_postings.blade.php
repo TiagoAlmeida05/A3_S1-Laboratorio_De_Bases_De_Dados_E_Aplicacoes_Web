@@ -3,139 +3,178 @@
 @section('content')
 
 <section id="search-section">
-    {{-- Search Bar & Filters--}}
-    <div class="search-container mb-6" style="margin-bottom: 2rem;">
+    <div class="container mt-4">
         <form method="GET" action="{{ route('homepage') }}" id="searchForm">
-            <div class="navbar navbar-light bg-light">
-                <input class="form-control mr-sm-2 mx-auto" style="width: 80vw;"
-                    type="text" 
-                    name="search" 
-                    id="searchInput"
-                    value="{{ request('search') }}"
-                    placeholder="⌕ Search jobs, users or companies..."
-                    class="search-input"
-                    autocomplete="off"
-                >
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-
-                {{-- Tags Filter --}}
-                <select name="tag" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
-                    <option value="">All Tags</option>
-                    @foreach($filterTags as $tag)
-                        <option value="{{ $tag->id }}" {{ request('tag') == $tag->id ? 'selected' : '' }}>
-                            {{ $tag->name }}
-                        </option>
-                    @endforeach
-                </select>
-
-                {{-- Company Filter --}}
-                <select name="company" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
-                    <option value="">All Companies</option>
-                    @foreach($filterCompanies as $company)
-                        <option value="{{ $company->id }}" {{ request('company') == $company->id ? 'selected' : '' }}>
-                            {{ $company->name }}
-                        </option>
-                    @endforeach
-                </select>
-
-                {{-- Region (City) Filter --}}
-                <select name="region" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
-                    <option value="">All Regions</option>
-                    @foreach($filterCities as $city)
-                        <option value="{{ $city->id }}" {{ request('region') == $city->id ? 'selected' : '' }}>
-                            {{ $city->name }}
-                        </option>
-                    @endforeach
-                </select>
-                
-                {{-- Minimum Salary Filter --}}
-                <input 
-                    type="number" 
-                    name="min_salary" 
-                    id="minSalaryInput"
-                    placeholder="Min Salary (€)"
-                    value="{{ request('min_salary') }}"
-                    class="form-control p-2 border rounded w-full" 
-                    onchange="this.form.submit()"
-                    min="0"
-                >
-            </div>
-            {{-- Reset Filters Button (Optional but helpful) --}}
-            @if(request('search') || request('field') || request('company') || request('region'))
-                <div class="mt-3 text-right">
-                    <a href="{{ route('homepage') }}" class="text-sm text-red-500 hover:underline">Clear all filters</a>
+            
+            {{-- Main Search Input --}}
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">⌕</span>
+                        <input type="text" 
+                               name="search" 
+                               class="form-control border-start-0" 
+                               placeholder="Search jobs (title, requirements...), users or companies..."
+                               value="{{ request('search') }}"
+                               autocomplete="off">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
                 </div>
-            @endif
+            </div>
+
+            {{-- Filters Row --}}
+            <div class="row g-2">
+                
+                {{-- 1. TAGS FILTER (Multi-Select) --}}
+                <div class="col-md-3">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Tags
+                        </button>
+                        <ul class="dropdown-menu w-100 p-2" style="max-height: 300px; overflow-y: auto;">
+                            <li><h6 class="dropdown-header">Select Tags</h6></li>
+                            @foreach($filterTags as $tag)
+                                <li>
+                                    <div class="form-check">
+                                        {{-- Note: name="tag[]" creates an array --}}
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="tag[]" 
+                                               value="{{ $tag->id }}" 
+                                               id="tag_{{ $tag->id }}"
+                                               {{ in_array($tag->id, request('tag', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label w-100" for="tag_{{ $tag->id }}">
+                                            {{ $tag->name }}
+                                        </label>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+
+                {{-- 2. COMPANIES FILTER (Multi-Select) --}}
+                <div class="col-md-3">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Companies
+                        </button>
+                        <ul class="dropdown-menu w-100 p-2" style="max-height: 300px; overflow-y: auto;">
+                            <li><h6 class="dropdown-header">Select Companies</h6></li>
+                            @foreach($filterCompanies as $company)
+                                <li>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="company[]" 
+                                               value="{{ $company->id }}" 
+                                               id="comp_{{ $company->id }}"
+                                               {{ in_array($company->id, request('company', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label w-100" for="comp_{{ $company->id }}">
+                                            {{ $company->name }}
+                                        </label>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+
+                {{-- 3. REGIONS/CITIES FILTER (Multi-Select) --}}
+                <div class="col-md-3">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Regions
+                        </button>
+                        <ul class="dropdown-menu w-100 p-2" style="max-height: 300px; overflow-y: auto;">
+                            <li><h6 class="dropdown-header">Select Regions</h6></li>
+                            @foreach($filterCities as $city)
+                                <li>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="regions[]" 
+                                               value="{{ $city->id }}" 
+                                               id="city_{{ $city->id }}"
+                                               {{ in_array($city->id, request('regions', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label w-100" for="city_{{ $city->id }}">
+                                            {{ $city->name }}
+                                        </label>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+
+                {{-- 4. MIN SALARY --}}
+                <div class="col-md-3">
+                    <input type="number" 
+                           name="min_salary" 
+                           class="form-control" 
+                           placeholder="Min Salary (€)" 
+                           value="{{ request('min_salary') }}"
+                           min="0">
+                </div>
+            </div>
+
+            {{-- Filter Actions --}}
+            <div class="row mt-2">
+                <div class="col-12 d-flex justify-content-end gap-2">
+                    @if(request()->hasAny(['search', 'tag', 'company', 'regions', 'min_salary']))
+                        <a href="{{ route('homepage') }}" class="btn btn-link text-danger text-decoration-none">Clear Filters</a>
+                    @endif
+                    <button type="submit" class="btn btn-secondary btn-sm">Apply Filters</button>
+                </div>
+            </div>
         </form>
     </div>
 
-    {{-- Companies Results (only shown when searching) --}}
-    <div id="companiesContainer">
-        @if(request('search') && request('search') !== '')
-            @if($companies->count() > 0)
-                <div class="mb-8">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-4">
-                        Companies ({{ $companies->count() }})
-                    </h2>
-                    <div class="space-y-4">
-                        @foreach($companies as $company)
+    {{-- RESULTS DISPLAY BELOW --}}
+    <div class="container mt-4">
+        {{-- Companies Results --}}
+        @if(request('search') && isset($companies) && $companies->count() > 0)
+            <div class="mb-5">
+                <h3 class="h5 mb-3 border-bottom pb-2">Companies ({{ $companies->count() }})</h3>
+                <div class="row g-3">
+                    @foreach($companies as $company)
+                        <div class="col-12">
                             @include('partials.company_post', ['company' => $company])
-                        @endforeach
-                    </div>
+                        </div>
+                    @endforeach
                 </div>
-            @else
-                <div>
-                    <h2>
-                        Companies ({{ $companies->count() }})
-                    </h2>
-                    <p>No company found for "{{ request('search') }}"</p>
-                </div>
-            @endif
-        @endif
-    </div>
-
-    <div id="jobSeekerContainer">
-        @if(request('search') && request('search') !== '')
-            @if($jobSeekers->count() > 0)
-                <div>
-                    <h2>
-                        Job Seekers ({{ $jobSeekers->count() }})
-                    </h2>
-                    <div>
-                        @foreach($jobSeekers as $jobSeeker)
-                            @include('partials.job_seeker_part', ['jobSeeker' => $jobSeeker])
-                        @endforeach
-                    </div>
-                </div>
-            @else
-                <div>
-                    <h2>
-                        Job Seekers ({{ $jobSeekers->count() }})
-                    </h2>
-                    <p>No job seekers found for "{{ request('search') }}"</p>
-                </div>
-            @endif
-        @endif
-    </div>
-
-    {{-- Job Postings --}}
-    <div id="jobPostingsContainer">
-        @if(request('search') && request('search') !== '')
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">
-                Job Postings ({{ $job_postings->count() }})
-            </h2>
-        @endif
-        
-        @if($job_postings->count() > 0)
-            <div class="space-y-4">
-                @each('partials.job_posting', $job_postings, 'job_posting')
             </div>
-        @else
-            <p class="no-results text-gray-500 text-center py-8">
-                No job postings found.
-            </p>
         @endif
+
+        {{-- Job Seeker Results --}}
+        @if(request('search') && isset($jobSeekers) && $jobSeekers->count() > 0)
+            <div class="mb-5">
+                <h3 class="h5 mb-3 border-bottom pb-2">Job Seekers ({{ $jobSeekers->count() }})</h3>
+                <div class="row g-3">
+                    @foreach($jobSeekers as $jobSeeker)
+                        <div class="col-md-6">
+                            @include('partials.job_seeker_part', ['jobSeeker' => $jobSeeker])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Job Postings Results --}}
+        <div id="jobPostingsContainer">
+            <h3 class="h5 mb-3 border-bottom pb-2">
+                Job Postings ({{ $job_postings->count() }})
+            </h3>
+            
+            @if($job_postings->count() > 0)
+                <div class="d-flex flex-column gap-3">
+                    @foreach($job_postings as $job_posting)
+                        @include('partials.job_posting', ['job_posting' => $job_posting])
+                    @endforeach
+                </div>
+            @else
+                <div class="alert alert-light text-center border mt-3">
+                    No job postings found matching your criteria.
+                </div>
+            @endif
+        </div>
     </div>
 </section>
 <script src="{{ asset('js/search.js') }}"></script>
