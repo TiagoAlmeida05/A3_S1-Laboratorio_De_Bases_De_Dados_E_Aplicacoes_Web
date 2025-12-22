@@ -104,6 +104,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/recruiters', [AdminController::class, 'manageRecruiters'])->name('admin.recruiters');
     Route::patch('/admin/recruiters/{id}/promote', [AdminController::class, 'promoteToManager'])->name('admin.recruiters.promote');
     Route::delete('/admin/recruiters/{id}', [AdminController::class, 'deleteRecruiter'])->name('admin.recruiters.delete');
+    Route::get('/admin/applications/{application}', [JobPostingController::class, 'viewApplication'])->name('admin.view-application');
 });
 
 Route::get('/recruiter-dashboard', function () {

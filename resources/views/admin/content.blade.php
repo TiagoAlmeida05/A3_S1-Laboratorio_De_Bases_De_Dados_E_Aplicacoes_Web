@@ -47,7 +47,7 @@
                             @elseif($reportType === 'Company' && $report->reportedCompany)
                                 <a href="{{ route('companies.show', $report->reported_company_id) }}">{{ $report->reportedCompany->name }}</a>
                             @elseif($reportType === 'Application' && $report->reportedApplication)
-                                <a href="{{ route('applications.view-application', $report->reported_application_id) }}">Application #{{ $report->reported_application_id }}</a>
+                                <a href="{{ route('admin.view-application', $report->reported_application_id) }}">Application #{{ $report->reported_application_id }}</a>
                             @else
                                 N/A
                             @endif
