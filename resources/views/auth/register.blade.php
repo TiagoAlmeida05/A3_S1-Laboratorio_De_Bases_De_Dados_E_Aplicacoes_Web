@@ -64,7 +64,7 @@
         autocomplete="new-password"
     >
 
-    <button type="submit" class="btn btn-primary" style="background-color: #1c4eb1eb;">Register</button>
-    <a class="btn btn-primary" style="font-size: 0.6em; background-color: #1c4eb1eb;" href="{{ route('login') }}"><- Return to Login</a>
+    <button type="submit" class="btn btn-primary">Register</button>
+    <a class="btn btn-primary" href="{{ route('login') }}">Return to login</a>
 </form>
 @endsection

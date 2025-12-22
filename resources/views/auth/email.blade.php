@@ -3,7 +3,7 @@
 @section('content')
 <div class="container" style="display: flex; justify-content: center; padding-top: 50px;">
     <div class="card" style="width: 100%; max-width: 500px; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
-        <h3 class="text-center mb-4">Recuperar Password</h3>
+        <h3 class="text-center mb-4">Password recovery</h3>
         
         <div class="card-body">
             @if (session('status'))
@@ -16,7 +16,7 @@
                 @csrf
 
                 <div class="form-group mb-3">
-                    <label for="email" class="form-label">Endereço de Email</label>
+                    <label for="email" class="form-label">E-mail</label>
                     <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" 
                            name="email" value="{{ old('email') }}" required autocomplete="email" autofocus
                            style="width: 100%; padding: 8px; margin-top: 5px;">
@@ -29,13 +29,13 @@
                 </div>
 
                 <div class="form-group mb-0 text-center">
-                    <button type="submit" class="btn btn-primary" style="background-color: #1c4eb1eb; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                        Enviar Link de Recuperação
+                    <button type="submit" class="btn btn-primary">
+                        Send recovery link
                     </button>
                 </div>
                 
                 <div class="mt-3 text-center">
-                    <a href="{{ route('login') }}" style="text-decoration: none; color: #666;">Voltar ao Login</a>
+                    <a href="{{ route('login') }}" style="text-decoration: none; color: #666;">Return to login</a>
                 </div>
             </form>
         </div>
