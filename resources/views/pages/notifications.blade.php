@@ -2,66 +2,57 @@
 @section('title', 'My Notifications')
 
 @section('content')
-<div class="container mx-auto p-4 max-w-4xl">
+<div class="all-notifications-container mx-auto p-4">
     
-    {{-- Header Section --}}
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">My Notifications</h1>
-        
-        <button onclick="markAllOnPageRead()" class="button button-outline text-sm">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>My notifications</h1>
+        <button onclick="markAllOnPageRead()" class="btn btn-primary">
             Mark all as read
         </button>
     </div>
 
-    <div class="notification-list-container space-y-4">
+    <div class="notification-list-container">
         @forelse($notifications as $notification)
             @php
                 $isRead = !is_null($notification->read_date);
             @endphp
 
             <div id="notif-{{ $notification->id }}"
-                 class="p-5 rounded-lg transition duration-200 relative
-                 {{ $isRead 
-                    ? 'bg-gray-50 border border-gray-200' 
-                    : 'bg-white border-l-4 border-purple-600 shadow-md unread-item' 
-                 }}">
+                 class="card mb-2 {{ $isRead ? 'read-notif' : 'unread-notif' }}">
                 
-                <div class="flex justify-between items-start gap-4">
-                    <div class="flex-1">
-                        {{-- Content --}}
-                        <p class="notif-content text-base leading-relaxed {{ $isRead ? 'font-normal text-gray-500' : 'font-bold text-gray-900' }}">
+                <div class="card-body py-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="notif-content mb-0 {{ $isRead ? 'text-muted' : 'fw-bold' }}">
                             {{ $notification->content }}
                         </p>
-                        
-                        {{-- Date --}}
-                        <small class="block mt-2 text-gray-400 text-xs">
+                        <small class="text-muted">
                             {{ \Carbon\Carbon::parse($notification->issue_date)->diffForHumans() }}
                         </small>
                     </div>
 
-                    {{-- Action Button --}}
                     @if(!$isRead)
                         <button onclick="markSingleAsRead({{ $notification->id }}, this)" 
-                                class="text-sm text-purple-600 hover:text-purple-800 font-semibold p-0 m-0 h-auto leading-none bg-transparent border-0">
-                            Mark Read
+                                class="btn btn-primary btn-sm">
+                            Mark as read
                         </button>
                     @else
-                        <span class="text-gray-300 text-xl">✓</span>
+                        <span class="text-success">✓</span>
                     @endif
                 </div>
             </div>
         @empty
-            {{-- Empty State --}}
-            <div class="text-center py-16 px-4 bg-gray-50 rounded-lg border border-gray-100">
-                <h3 class="text-gray-400 text-lg font-semibold mb-2">No notifications yet</h3>
-                <p class="text-gray-500">We will let you know when something important happens!</p>
+            <div class="card">
+                <div class="card-body text-center py-4">
+                    <h3 class="text-muted mb-2">No notifications yet.</h3>
+                    <p class="text-muted mb-0">We will let you know when something important happens!</p>
+                </div>
             </div>
         @endforelse
     </div>
 
-    {{-- Pagination --}}
-    <div class="mt-8">
+    <div class="mt-4">
         {{ $notifications->links('pagination::bootstrap-5') }}
     </div>
 </div>
+<script src="{{ asset('js/notifications-page.js') }}"></script>
 @endsection

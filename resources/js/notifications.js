@@ -3,19 +3,19 @@ import axios from 'axios';
 console.log("✅ Notifications.js loaded");
 
 document.addEventListener('DOMContentLoaded', function() {
-    const bell = document.getElementById('notificationBell');
+    const bell = document.getElementById('notification-bell');
     if (bell) {     
         bell.addEventListener('click', function(e) {
             console.log("🔔 Bell clicked!"); 
             loadNotifications();
         });
     } else {
-        console.error("❌ Could not find element with id 'notificationBell'");
+        console.error("❌ Could not find element with id 'notification-bell'");
     }
 });
 
 async function loadNotifications() {
-    const list = document.getElementById('notificationList');    
+    const list = document.getElementById('notification-list');    
 
     try {
         const response = await axios.get('/notifications/fetch');
@@ -32,7 +32,7 @@ async function loadNotifications() {
 
                 let dateStr = "Just now";
                 if (notif.issue_date) {
-                    dateStr = new Date(notif.issue_date).toLocaleDateString();
+                    dateStr = new Date(notif.issue_date).toLocaleDateString('en-GB');
                 }
 
                 const item = `
@@ -57,8 +57,8 @@ window.markItemAsRead = function(id, element){
         div.classList.remove('unread');
         div.classList.add('read');
 
-        const remainingUnreadCount = document.querySelectorAll('#notificationList .notification-item.unread').length;
-        const badge = document.getElementById('notificationBadge');
+        const remainingUnreadCount = document.querySelectorAll('#notification-list .notification-item.unread').length;
+        const badge = document.getElementById('notification-badge');
 
         if(badge){
             if(remainingUnreadCount === 0){
@@ -83,7 +83,7 @@ window.markAllNotificationsRead = function(e){
 
     console.log("Cleaning up notifications...");
 
-    const badge = document.getElementById('notificationBadge');
+    const badge = document.getElementById('notification-badge');
     if(badge) badge.style.display = 'none';
 
     const unreadItems = document.querySelectorAll('.notification-item.unread');

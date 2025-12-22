@@ -11,101 +11,19 @@
 
         <title>@yield('title', config('app.name', 'Laravel'))</title>
         
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-
-        <link rel="stylesheet" href="{{ asset('css/milligram.css') }}">
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
         @stack('styles')
-
-        @vite(['resources/js/app.js'])
         @stack('scripts')
-
-        <style>
-            header {
-                display: flex !important; justify-content: space-between !important;
-                align-items: center !important; background-color: white;
-                padding: 0 2rem; height: 80px; border-bottom: 1px solid #e1e1e1;
-                position: relative; z-index: 100;
-            }
-            .header-actions {
-                display: flex !important; flex-direction: row !important;
-                align-items: center !important; gap: 20px !important; width: auto !important;
-            }
-            .icon-btn {
-                position: relative !important; display: flex !important;
-                align-items: center; justify-content: center; width: 40px; height: 40px;
-                text-decoration: none !important; border: none !important;
-                box-shadow: none !important; background: transparent; transition: color 0.2s;
-            }
-            .icon-btn:hover {
-                color: #9b4dca; background-color: #f8f9fa; border-radius: 50%;
-            }
-            .icon-btn svg {
-                width: 24px; height: 24px; color: #606c76;
-            }
-
-            /* =========================================
-               4. UNIFIED BADGE STYLING (Fixes Alignment)
-               ========================================= */
-            .icon-badge {
-                position: absolute;
-                top: 6px;              /* Exact vertical position for both */
-                right: 6px;            /* Exact horizontal position for both */
-                background-color: #ff4444;
-                border: 2px solid white;
-                border-radius: 50%;
-                z-index: 10;
-                pointer-events: none;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-            }
-
-            /* Bell Dot (Small, no numbers) */
-            #notificationBadge {
-                width: 10px;
-                height: 10px;
-                padding: 0;
-            }
-
-            /* Message Counter (Larger, contains text) */
-            #messageBadge {
-                min-width: 18px;
-                height: 18px;
-                font-size: 0.65rem;
-                padding: 0 4px;
-                line-height: 1;
-            }
-
-            .user-dropdown-toggle { cursor: pointer; font-weight: 700; color: #9b4dca; text-decoration: none !important; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
-            .user-dropdown-toggle:hover { color: #606c76; }
-            .dropdown-menu.notification-menu { width: 360px; max-height: 480px; overflow-y: auto; padding: 0; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.12); border-radius: 12px; margin-top: 10px; }
-            .dropdown-header.notification-header-text { background-color: #ffffff; padding: 15px 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #333; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 10; }
-            .notification-item { display: flex; flex-direction: column; gap: 4px; }
-            .notification-date { font-size: 0.75rem; color: #adb5bd; font-weight: 500; }
-            .notification-content { font-size: 0.95rem; color: #343a40; line-height: 1.4; }
-            .notification-item.unread { background-color: #ffffff; font-weight: 700; border-left: 4px solid #9b4dca; }
-            .notification-item.read { background-color: #f8f9fa; color: #6c757d; border-left: 4px solid transparent; }
-            .notification-item.read .notification-content { color: #6c757d; }
-            .notification-footer-link { display: block; text-align: center; padding: 15px; background: #fff; color: #9b4dca; font-weight: 600; font-size: 0.9rem; text-decoration: none; border-top: 1px solid #f0f0f0; }
-            .notification-footer-link:hover { background: #f1f1f1; color: #8a3cb0; }
-            .notification { position: fixed; top: 20px; right: 20px; width: 350px; background: white; border-left: 6px solid #ff4444; padding: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 4px; z-index: 1000; transform: translateX(150%); transition: transform 0.3s ease-out; }
-            .notification.show { transform: translateX(0); }
-            .notification-header { font-weight: bold; margin-bottom: 5px; }
-            .notification-body button { margin-top: 10px; }
-        </style>
     </head>
     <body>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-        
         <main>
             <header>
-                <h1 style="margin: 0; font-size: 2.4rem;">
-                    <a href="{{ url('/') }}" style="text-decoration: none; color: inherit;">HireUp!</a>
+                <h1 id="header-website-name">
+                    <a href="{{ url('/') }}">HireUp!</a>
                 </h1>
 
-                <div class="header-actions">
+                <div class="header-options">
                     @auth
                         @php
                             $user = Auth::user();
@@ -117,76 +35,73 @@
                             $jobSeekerId = $isJobSeeker ? $user->jobSeeker->registered_user_id : null;
                         @endphp
                         
-                        {{-- BELL ICON --}}
-                        <div class="dropdown" style="position: relative;">
-                            <a href="#" class="icon-btn" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        {{-- Notifications: bell icon --}}
+                        <div class="dropdown">
+                            <a href="#" class="icon-btn" id="notification-bell" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A4175" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                                 </svg>
                                 
-                                <span id="notificationBadge" class="icon-badge" 
+                                <span id="notification-badge" class="icon-badge"
                                       style="display: {{ (isset($bellCount) && $bellCount > 0) ? 'block' : 'none' }};">
                                 </span>
                             </a>
 
-                            <ul class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="notificationBell">
-                                <li class="dropdown-header notification-header-text" style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span>Recent Notifications</span>
-                                    <a href="#" onclick="markAllNotificationsRead(event)" style="font-size: 0.7rem; text-decoration: none; cursor: pointer;">
+                            <ul class="dropdown-menu dropdown-menu-end notification-menu shadow-sm bg-white rounded" aria-labelledby="notification-bell">
+                                <li class="dropdown-header notification-header-text">
+                                    <span>Recent notifications</span>
+                                    <a href="#" class="notif-mark-all-read" onclick="markAllNotificationsRead(event)">
                                         Mark all read
                                     </a>
                                 </li>
-                                <div id="notificationList">
+                                <div id="notification-list">
                                     <li class="p-4 text-center text-muted">Loading...</li>
                                 </div>
-                                <li><a class="notification-footer-link" href="{{ route('notifications.index') }}">View All Notifications</a></li>
+                                <li><a class="notification-footer-link" href="{{ route('notifications.index') }}">View all notifications</a></li>
                             </ul>
                         </div>
 
-                        {{-- MESSAGE ICON --}}
+                        {{-- Messages: envelope icon --}}
                         <a href="{{ route('messages.index') }}" class="icon-btn" title="Messages">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A4175" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                 <polyline points="22,6 12,13 2,6"></polyline>
                             </svg>
 
-                            <span id="messageBadge" class="icon-badge"
+                            <span id="message-badge" class="icon-badge"
                                   style="display: {{ (isset($letterCount) && $letterCount > 0) ? 'flex' : 'none' }};">
                                 {{ $letterCount ?? 0 }}
                             </span>
                         </a>
 
-                        {{-- USER MENU --}}
+                        {{-- User menu --}}
                         <div class="dropdown">
-                            <a href="#" class="user-dropdown-toggle dropdown-toggle" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a href="#" class="user-dropdown-toggle dropdown-toggle" id="user-menu-button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ $user->name }}
                             </a>
                             
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuButton">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm p-3 mb-5 bg-white rounded" aria-labelledby="user-menu-button">
                                 @if($isJobSeeker)
-                                    <li><a class="dropdown-item" href="{{ route('jobseeker.profile', $jobSeekerId) }}">View Profile</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('jobseeker.applications') }}">My Applications</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('jobseeker.bookmarks') }}">My Bookmarks</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('jobseeker.profile', $jobSeekerId) }}">View profile</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('jobseeker.applications') }}">My applications</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('jobseeker.bookmarks') }}">My bookmarks</a></li>
                                 @endif
                                 @if($isManager)
-                                    <li><a class="dropdown-item" href="{{ route('companies.edit', $companyId) }}">Edit Company Profile</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('recruiter-dashboard.index') }}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('companies.edit', $companyId) }}">Edit company profile</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('recruiter-dashboard.index') }}">My dashboard</a></li>
                                 @elseif($isRecruiter && !$isManager)
-                                    <li><a class="dropdown-item" href="{{ route('recruiter-dashboard.index') }}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('recruiter-dashboard.index') }}">My dashboard</a></li>
                                 @endif
-
-                                {{-- ADDED: Notification Settings Link --}}
-                                <li><a class="dropdown-item" href="{{ route('notifications.settings') }}">Notification Settings</a></li>
-                                
+                                <li><a class="dropdown-item" href="{{ route('notifications.settings') }}">Notification settings</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{{ url('/logout') }}">Log Out</a></li>
+                                <li><a class="dropdown-item text-center log-out" href="{{ url('/logout') }}">Log out</a></li>
                             </ul>
                         </div>
 
                     @else
-                        <a class="button button-outline" href="{{ url('/login') }}">Login</a>
-                        <a class="button" href="{{ url('/register') }}">Register</a>
+                        <a class="button btn btn-primary" href="{{ url('/login') }}">Login</a>
+                        <a class="button btn btn-primary" href="{{ url('/register') }}">Register</a>
                     @endauth
                 </div>
             </header>

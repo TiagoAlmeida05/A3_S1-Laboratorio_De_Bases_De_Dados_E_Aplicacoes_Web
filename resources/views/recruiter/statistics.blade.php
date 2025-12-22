@@ -19,7 +19,7 @@
     </div>
 
     <div style="margin: 2rem 0;">
-        <h3>Statistics of the past month (from {{ now()->setTimezone('Europe/Lisbon')->subMonth()->format('d-M-Y') }} to today)</h3>
+        <h3>Statistics of the past month (from {{ now()->setTimezone('Europe/Lisbon')->subMonth()->format('d/m/Y') }} to today)</h3>
         <p><strong>Total number of job postings created this month</strong>: {{ $totalJobsCreatedThisMonth }}</p>
         <p><strong>Active job postings</strong>: {{ $activeJobsCreatedThisPastMonth }}</p>
         <p><strong>Pending job postings</strong>: {{ $pendingJobsCreatedThisPastMonth }}</p>

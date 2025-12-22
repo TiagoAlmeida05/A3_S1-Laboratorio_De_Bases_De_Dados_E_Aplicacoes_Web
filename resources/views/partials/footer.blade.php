@@ -1,6 +1,6 @@
-<footer style="background-color: #f4f5f6; border-top: 1px solid #e1e1e1; padding: 20px 0; margin-top: 50px; text-align: center;">
-    <div class="container">
-        <div>
+<footer>
+    <div class="d-flex flex-column align-items-start">
+        <div class="d-flex flex-column ms-3">
             <a href="{{ url('/') }}">Home</a>
             <a href="{{ route('page.about') }}">About us</a>
             <a href="{{ route('page.privacy') }}">Privacy policy</a>
@@ -17,7 +17,7 @@
             @endauth
         </div>
 
-        <p>
+        <p class="align-self-center mt-3">
             {{ date('Y') }} HireUp!
         </p>
     </div>

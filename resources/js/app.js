@@ -1,4 +1,4 @@
-import './bootstrap';
+import 'bootstrap';
 import './notifications';
 import './notifications-page';
 import Echo from "laravel-echo";
@@ -8,7 +8,7 @@ import Pusher from "pusher-js";
 const key = import.meta.env.VITE_PUSHER_APP_KEY;
 
 if (!key) {
-    console.error("❌ CRITICAL ERROR: VITE_PUSHER_APP_KEY is missing! Check your .env file.");
+    console.error("VITE_PUSHER_APP_KEY missing.");
 }
 
 window.Echo = new Echo({
@@ -28,7 +28,7 @@ if(userId){
 
             if(e.typeId == 2){
                 console.log("New Message Received!");
-                const msgBadge = document.getElementById('messageBadge');
+                const msgBadge = document.getElementById('message-badge');
 
                 if(msgBadge){
                     msgBadge.style.display = 'flex';
@@ -39,7 +39,7 @@ if(userId){
                 }
             }
             else{           
-                const badge = document.getElementById('notificationBadge');
+                const badge = document.getElementById('notification-badge');
                 if(badge) {
                     badge.style.display = 'block';
 
@@ -69,7 +69,7 @@ if(userId){
                     card.classList.remove('show');
 
                     if(e.typeId != 2){
-                        const badge = document.getElementById('notificationBadge');
+                        const badge = document.getElementById('notification-badge');
                         if(badge) {
                             let currentCount = parseInt(badge.innerText);
                             if(isNaN(currentCount)) currentCount = 1;
@@ -96,6 +96,4 @@ if(userId){
                 setTimeout(() => card.classList.remove('show'), 6000);
             }
         });
-}else{
-    console.log("User not authenticated. Real-time listener disabled.")
 }

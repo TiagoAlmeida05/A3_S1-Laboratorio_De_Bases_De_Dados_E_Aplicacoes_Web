@@ -36,7 +36,7 @@
                     @foreach($applications as $application)
                         <tr>
                             <td><a href="{{ route('jobseeker.profile', $application->jobSeeker->registered_user_id) }}">{{ $application->jobSeeker->registeredUser->name }}</a></td>
-                            <td>{{ $application->date->format('d-m-Y') }}</td>
+                            <td>{{ $application->date->format('d/m/Y') }}</td>
                             <td>{{ $application->cover_letter ? 'Yes' : 'No' }}</td>
                             <td>{{ $application->recommendation_letter ? 'Yes' : 'No' }}</td>
                             <td>
