@@ -62,12 +62,12 @@ class JobSeekerController extends Controller
             'experience.*.position_name' => 'nullable|string|max:255',
             'experience.*.employer' => 'nullable|string|max:255',
             'experience.*.start_date' => 'required|date',
-            'experience.*.end_date' => 'required|date',
+            'experience.*.end_date' => 'nullable|date',
             'education' => 'array',
             'education.*.name' => 'nullable|string|max:255',
             'education.*.issued_by' => 'nullable|string|max:255',
             'education.*.start_date' => 'nullable|date',
-            'education.*.end_date' => 'required|date',
+            'education.*.end_date' => 'nullable|date',
             'certifications' => 'array',
             'certifications.*.name' => 'nullable|string|max:255',
             'certifications.*.issued_by' => 'nullable|string|max:255',
@@ -115,7 +115,7 @@ class JobSeekerController extends Controller
         $submittedIds = [];
 
         foreach ($experience as $expData) {
-            if (empty($expData['position_name']) || empty($expData['employer']) || empty($expData['start_date']) || empty($expData['end_date'])) {
+            if (empty($expData['position_name']) || empty($expData['employer']) || empty($expData['start_date'])) {
                 continue;
             }
 
@@ -126,7 +126,7 @@ class JobSeekerController extends Controller
                     'position_name' => $expData['position_name'],
                     'employer'      => $expData['employer'],
                     'start_date'    => $expData['start_date'],
-                    'end_date'      => $expData['end_date'],
+                    'end_date'      => $expData['end_date'] ?? null,
                 ]);
 
                 $submittedIds[] = $exp->id;
@@ -138,7 +138,7 @@ class JobSeekerController extends Controller
                     'position_name' => $expData['position_name'],
                     'employer'      => $expData['employer'],
                     'start_date'    => $expData['start_date'],
-                    'end_date'      => $expData['end_date'],
+                    'end_date'      => $expData['end_date'] ?? null,
                 ]);
 
                 $submittedIds[] = $newExp->id;
@@ -156,7 +156,7 @@ class JobSeekerController extends Controller
         $submittedIds = [];
 
         foreach ($education as $eduData) {
-            if (empty($eduData['name']) || empty($eduData['issued_by']) || empty($eduData['end_date'])) {
+            if (empty($eduData['name']) || empty($eduData['issued_by'])) {
                 continue;
             }
 
@@ -167,7 +167,7 @@ class JobSeekerController extends Controller
                     'name'          => $eduData['name'],
                     'issued_by'     => $eduData['issued_by'],
                     'start_date'    => !empty($eduData['start_date']) ? $eduData['start_date'] : null,
-                    'end_date'      => $eduData['end_date'],
+                    'end_date'      => $eduData['end_date'] ?? null,
                 ]);
 
                 $submittedIds[] = $edu->id;
@@ -178,7 +178,7 @@ class JobSeekerController extends Controller
                     'name'          => $eduData['name'],
                     'issued_by'     => $eduData['issued_by'],
                     'start_date'    => !empty($eduData['start_date']) ? $eduData['start_date'] : null,
-                    'end_date'      => $eduData['end_date'],
+                    'end_date'      => $eduData['end_date'] ?? null,
                 ]);
 
                 $submittedIds[] = $newEdu->id;

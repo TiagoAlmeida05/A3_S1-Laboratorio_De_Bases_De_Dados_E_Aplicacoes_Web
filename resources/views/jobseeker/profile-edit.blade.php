@@ -343,7 +343,7 @@ function addExperience() {
             </div>
             <div>
                 <label>End Date</label>
-                <input type="date" name="experience[${experienceIndex}][end_date]" required>
+                <input type="date" name="experience[${experienceIndex}][end_date]">
             </div>
         </div>
         <button type="button" 
@@ -393,7 +393,7 @@ function addEducation() {
             </div>
             <div>
                 <label>End Date</label>
-                <input type="date" name="education[${educationIndex}][end_date]" required>
+                <input type="date" name="education[${educationIndex}][end_date]">
             </div>
         </div>
         <button type="button" 
