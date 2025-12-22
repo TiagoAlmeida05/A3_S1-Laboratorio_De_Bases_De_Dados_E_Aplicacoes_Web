@@ -37,6 +37,7 @@
         <select name="user_type" id="userTypeSelector" onchange="toggleRecruiterFields()">
             <option value="job_seeker" {{ old('user_type') == 'job_seeker' ? 'selected' : '' }}>Job Seeker</option>
             <option value="recruiter" {{ old('user_type') == 'recruiter' ? 'selected' : '' }}>Recruiter</option>
+            <option value="admin" {{ old('user_type') == 'admin' ? 'selected' : '' }}>Administrator</option>
         </select>
 
         {{-- Campos de Recruiter (Usa o atributo 'hidden' do HTML5) --}}

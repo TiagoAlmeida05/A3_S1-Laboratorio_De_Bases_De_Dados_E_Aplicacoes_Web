@@ -52,11 +52,16 @@ class GoogleController extends Controller
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
                 'google_id' => $googleUser->getId(),
-                'avatar' => $googleUser->getAvatar(),
                 'password' => Hash::make(Str::random(16)),
                 'status' => 'Active',
                 'sign_up_date' => now(),
                 'birthday' => null, // temporariamente
+            ]);
+
+            $newUser->jobSeeker()->create([
+                'show_cv' => true, 
+                'profile_photo' => $googleUser->getAvatar(),
+                'about_me' => null,
             ]);
 
             Auth::login($newUser);

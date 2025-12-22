@@ -313,15 +313,20 @@ class AdminController extends Controller
             return back()->with('error', 'You cannot delete the only remaining active administrator account.');
         }
 
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+        if (is_null($user->google_id)) {
+            $request->validate([
+                'password' => ['required', 'current_password'],
+            ]);
+        }
 
         DB::transaction(function () use ($user) {
             $user->name = 'Deleted Admin ' . $user->id;
             $user->email = 'deleted_admin_' . $user->id . '@hireup.com';
             $user->password = Hash::make(uniqid());
             $user->status = 'Deleted';
+            $user->google_id = null;
+            $user->age = null;
+            $user->birthday = null;
             
             $user->save();
         });
@@ -381,6 +386,11 @@ class AdminController extends Controller
                         'registered_user_id' => $user->id,
                         'department_id' => $request->department_id,
                         'is_company_manager' => false, // Forçamos sempre a false aqui
+                    ]);
+                }
+                elseif ($request->user_type === 'admin') {
+                    Administrator::create([
+                        'registered_user_id' => $user->id
                     ]);
                 }
             });

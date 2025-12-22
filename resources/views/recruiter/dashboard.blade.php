@@ -282,11 +282,17 @@
     @endif
 
 
-    {{-- DELETE ACCOUNT --}}
 
     <hr style="margin-top: 3rem;">
     <div class="delete-account-container">
         <h2 style="color: #dc3545;">Delete Account</h2>
+        
+        @if(session('error'))
+            <div style="color: #dc3545">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <p>
             <strong>Warning:</strong> Deleting your account is permanent. 
             All your <strong>Active</strong> and <strong>Pending</strong> job postings will be automatically <strong>Closed</strong>. 
@@ -297,10 +303,24 @@
             @csrf
             @method('DELETE')
 
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label for="password_delete">Confirm Password to delete:</label>
-                <input type="password" id="password_delete" name="password" required class="form-control" style="max-width: 400px;">
-            </div>
+            @if(is_null(Auth::user()->google_id))
+                {{-- CENÁRIO NORMAL: Pede Password --}}
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="password_delete">Confirm Password to delete:</label>
+                    <input type="password" id="password_delete" name="password" required class="form-control" style="max-width: 400px;">
+                    
+                    @error('password')
+                        <div style="color: #dc3545;">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            @else
+                {{-- CENÁRIO GOOGLE: Aviso informativo --}}
+                <div>
+                    <strong>Note:</strong> Since you logged in via Google, you don't need to enter a password to delete your account.
+                </div>
+            @endif
             
             <button type="submit" 
                     class="button" 
