@@ -9,7 +9,7 @@
         </p>
     </div>
 
-    @auth
-    <a href="{{ route('messages.index', $jobSeeker->registered_user_id) }}">Message</a>
-    @endauth
+    @can('message', $jobSeeker)
+        <a class="btn btn-primary btn-sm" href="{{ route('messages.index', $jobSeeker->registered_user_id) }}">Message</a>
+    @endcan
 </div>
