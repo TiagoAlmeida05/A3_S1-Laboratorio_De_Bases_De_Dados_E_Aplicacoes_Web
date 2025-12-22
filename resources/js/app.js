@@ -1,4 +1,4 @@
-import './bootstrap';
+import 'bootstrap';
 import './notifications';
 import './notifications-page';
 import Echo from "laravel-echo";

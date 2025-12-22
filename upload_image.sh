@@ -29,6 +29,7 @@ composer install
 php artisan config:clear
 php artisan clear-compiled
 php artisan optimize
+npm run build
 
 # Build & push image
 docker buildx build \
