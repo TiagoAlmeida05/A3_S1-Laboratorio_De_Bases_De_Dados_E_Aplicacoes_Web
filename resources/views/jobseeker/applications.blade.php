@@ -12,7 +12,7 @@
 
     @php
         $groups = [
-            ['title' => 'Pending', 'items' => $pending, 'badge' => 'bg-warning text-dark'],
+            ['title' => 'Pending', 'items' => $pending, 'badge' => 'bg-warning'],
             ['title' => 'Accepted', 'items' => $accepted, 'badge' => 'bg-success'],
             ['title' => 'Rejected', 'items' => $rejected, 'badge' => 'bg-danger']
         ];

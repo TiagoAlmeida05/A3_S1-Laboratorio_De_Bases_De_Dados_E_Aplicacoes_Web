@@ -407,3 +407,9 @@ footer {
     color:#174cbe;
 }
 
+.profile-preview,
+.company-logo-preview {
+    max-height: 140px;
+    width: auto;
+    object-fit: contain;
+}
