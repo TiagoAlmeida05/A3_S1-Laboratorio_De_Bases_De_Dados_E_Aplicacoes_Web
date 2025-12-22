@@ -71,7 +71,7 @@
         <div class='job-postings'>
             {{-- Active & Pending --}}
             <div class='active-pending-jps'>
-                <h3>Your opened job postings</h3>
+                <h3>My opened job postings</h3>
                 @forelse ($job_postings->whereIn('status', ['Active', 'Pending']) as $job_posting)                
                     @include('recruiter.active_pending_jp_partial')
                 @empty
@@ -81,7 +81,7 @@
 
             {{-- Expired --}}
             <div class='expired-jps'>
-                <h3>Your expired job postings</h3>
+                <h3>My expired job postings</h3>
                 @forelse ($job_postings->where('status', 'Expired') as $job_posting)
                     @include('recruiter.expired_jp_partial')
                 @empty
@@ -91,7 +91,7 @@
 
             {{-- Closed --}}
             <div class='closed-jps'>
-                <h3>Your closed job postings</h3>
+                <h3>My closed job postings</h3>
                 @forelse ($job_postings->where('status', 'Closed') as $job_posting)
                     @include('recruiter.closed_jp_partial')
                 @empty
