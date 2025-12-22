@@ -16,6 +16,15 @@
         </div>
     </div>
 
+    @auth
+        @php
+            $isCompanyManager = Auth::user()->isRecruiter() && Auth::user()->recruiter->is_company_manager && Auth::user()->recruiter->department->company_id == $company->id;
+        @endphp
+        @if(!Auth::user()->isAdmin() && !$isCompanyManager)
+            <a href="{{ route('reports.create', ['type' => 'Company', 'entity_id' => $company->id]) }}" class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;">Report company</a>
+        @endif
+    @endauth
+
     <div class="mb-4">
         <h2 class="text-xl font-semibold">Company statistics</h2>
         <div>

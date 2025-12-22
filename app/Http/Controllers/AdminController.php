@@ -35,14 +35,25 @@ class AdminController extends Controller
         return redirect()->route('admin.jobs')->with('success', 'Job Posting removed!');
     }
 
-    
-    public function manageContent() {
-        $reports = Report::orderBy('solved', 'asc')->orderBy('id', 'asc')->paginate(4);
-        
-        return view('admin.content', ['reports' => $reports]);
+    public function manageUserReports() {
+        $pendingReports = Report::where('solved', false)
+            ->orderBy('date', 'desc')
+            ->get()
+            ->groupBy(function($report) {
+                return $report->getReportType();
+            });
+
+        $solvedReports = Report::where('solved', true)
+            ->orderBy('date', 'desc')
+            ->get();
+
+        return view('admin.user_reports', [
+            'pendingReports' => $pendingReports,
+            'solvedReports' => $solvedReports
+        ]);
     }
 
-    public function solveReport($id) {
+    public function solveUserReport($id) {
         $report = Report::findOrFail($id);
         
         $report->solved = true;
@@ -50,16 +61,7 @@ class AdminController extends Controller
         
         $report->save();
 
-        return redirect()->route('admin.content')->with('Report marked as resolved!');
-    }
-
-    public function reopenReport($id) {
-        $report = Report::findOrFail($id);
-        $report->solved = false;
-        $report->handled_by_id = null;
-        $report->save();
-
-        return redirect()->route('admin.content')->with('success', 'Report reopened.');
+        return redirect()->route('admin.user_reports')->with('Report marked as resolved!');
     }
 
     public function editPages() {
