@@ -1,8 +1,8 @@
 function updateHeaderBadge(){
-    const badge = document.getElementById('notificationBadge');
+    const badge = document.getElementById('notification-badge');
     if(!badge) return;
 
-    const unreadOnPage = document.querySelectorAll(".unread-item").length;
+    const unreadOnPage = document.querySelectorAll(".unread-notif").length;
 
     if(unreadOnPage === 0){
         badge.style.setProperty('display', 'none', 'important');
@@ -13,15 +13,15 @@ window.markSingleAsRead = function(id, btn){
     const card = document.getElementById(`notif-${id}`);
     const text = card.querySelector('.notif-content');
 
-    card.classList.remove('bg-white', 'border-l-4', 'border-purple-600', 'shadow-md', 'unread-item');
-    card.classList.add('bg-gray-50', 'border', 'border-gray-200');
+    card.classList.remove('unread-notif');
+    card.classList.add('read-notif');
 
-    text.classList.remove('font-bold', 'text-gray-900');
-    text.classList.add('font-normal', 'text-gray-500');
+    text.classList.remove('fw-bold');
+    text.classList.add('text-muted');
 
     const checkmark = document.createElement('span');
     checkmark.innerHTML = '✓';
-    checkmark.className = 'text-gray-300 text-xl';
+    checkmark.className = 'text-success';
     btn.parentNode.replaceChild(checkmark, btn);
     
     updateHeaderBadge();
@@ -31,23 +31,23 @@ window.markSingleAsRead = function(id, btn){
 
 window.markAllOnPageRead = function() {
 
-    const badge = document.getElementById('notificationBadge');
+    const badge = document.getElementById('notification-badge');
     if(badge) badge.style.setProperty('display', 'none', 'important');
 
-    document.querySelectorAll('.unread-item').forEach(card => {
+    document.querySelectorAll('.unread-notif').forEach(card => {
         const btn = card.querySelector('button');
         if(btn) {
             const text = card.querySelector('.notif-content');
 
-            card.classList.remove('bg-white', 'border-l-4', 'border-purple-600', 'shadow-md', 'unread-item');
-            card.classList.add('bg-gray-50', 'border', 'border-gray-200');
+            card.classList.remove('unread-notif');
+            card.classList.add('read-notif');
 
-            text.classList.remove('font-bold', 'text-gray-900');
-            text.classList.add('font-normal', 'text-gray-500');
+            text.classList.remove('fw-bold');
+            text.classList.add('text-muted');
 
             const checkmark = document.createElement('span');
             checkmark.innerHTML = '✓';
-            checkmark.className = 'text-gray-300 text-xl';
+            checkmark.className = 'text-success';
             btn.parentNode.replaceChild(checkmark, btn);
         }
     });

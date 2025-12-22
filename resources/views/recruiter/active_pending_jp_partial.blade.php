@@ -13,10 +13,10 @@
         @endif
 
         <div class="jp-creation-date">
-            <p><strong>Creation date</strong>: {{ \Carbon\Carbon::parse($job_posting->creation_date)->format('d-m-Y') }}</p>
+            <p><strong>Creation date</strong>: {{ \Carbon\Carbon::parse($job_posting->creation_date)->format('d/m/Y') }}</p>
         </div>
         <div class="jp-deadline">
-            <p><strong>Deadline</strong>: {{ \Carbon\Carbon::parse($job_posting->deadline)->format('d-m-Y') }}</p>
+            <p><strong>Deadline</strong>: {{ \Carbon\Carbon::parse($job_posting->deadline)->format('d/m/Y') }}</p>
         </div>
         <div class="jp-status">
             <p><strong>Status</strong>: {{ $job_posting->status }}</p>

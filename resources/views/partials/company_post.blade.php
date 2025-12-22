@@ -53,7 +53,7 @@
                 @if(isset($company->tags) && $company->tags->count() > 0)
                     <p><strong>Skills & Technologies</strong>: 
                         @foreach($company->tags->take(5) as $tag)
-                            <span class="badge bg-secondary me-1">{{ $tag->name }}</span>
+                            <span class="badge me-1">{{ $tag->name }}</span>
                         @endforeach
                         @if($company->tags->count() > 5)
                             <span class="text-muted">+{{ $company->tags->count() - 5 }} more</span>

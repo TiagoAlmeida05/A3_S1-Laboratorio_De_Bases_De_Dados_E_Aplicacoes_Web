@@ -3,65 +3,77 @@
 @section('content')
 
 <section id="search-section">
-    {{-- Search Bar & Filters--}}
     <div class="search-container mb-6" style="margin-bottom: 2rem;">
         <form method="GET" action="{{ route('homepage') }}" id="searchForm">
             <div class="navbar navbar-light bg-light">
-                <input class="form-control mr-sm-2 mx-auto" style="width: 80vw;"
-                    type="text" 
-                    name="search" 
-                    id="searchInput"
-                    value="{{ request('search') }}"
-                    placeholder="⌕ Search jobs, users or companies..."
-                    class="search-input"
-                    autocomplete="off"
-                >
+                <div class="input-group mx-auto w-75">
+                     <span class="input-group-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input class="form-control mr-sm-2 mx-auto"
+                        type="text" 
+                        name="search" 
+                        id="searchInput"
+                        value="{{ request('search') }}"
+                        placeholder="Search jobs, users or companies..."
+                        class="search-input"
+                        autocomplete="off"
+                    >
+                </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div class="row g-3 mt-3">
+                    <div class="col-md-3">
+                        <select name="tag" class="form-select" onchange="this.form.submit()">
+                            <option value="">All tags</option>
+                            @foreach($filterTags as $tag)
+                                <option value="{{ $tag->id }}" {{ request('tag') == $tag->id ? 'selected' : '' }}>
+                                    {{ $tag->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                {{-- Tags Filter --}}
-                <select name="tag" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
-                    <option value="">All Tags</option>
-                    @foreach($filterTags as $tag)
-                        <option value="{{ $tag->id }}" {{ request('tag') == $tag->id ? 'selected' : '' }}>
-                            {{ $tag->name }}
-                        </option>
-                    @endforeach
-                </select>
+                    <div class="col-md-3">
+                        <select name="company" class="form-select" onchange="this.form.submit()">
+                            <option value="">All companies</option>
+                            @foreach($filterCompanies as $company)
+                                <option value="{{ $company->id }}" {{ request('company') == $company->id ? 'selected' : '' }}>
+                                    {{ $company->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                {{-- Company Filter --}}
-                <select name="company" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
-                    <option value="">All Companies</option>
-                    @foreach($filterCompanies as $company)
-                        <option value="{{ $company->id }}" {{ request('company') == $company->id ? 'selected' : '' }}>
-                            {{ $company->name }}
-                        </option>
-                    @endforeach
-                </select>
-
-                {{-- Region (City) Filter --}}
-                <select name="region" class="form-select p-2 border rounded w-full" onchange="this.form.submit()">
-                    <option value="">All Regions</option>
-                    @foreach($filterCities as $city)
-                        <option value="{{ $city->id }}" {{ request('region') == $city->id ? 'selected' : '' }}>
-                            {{ $city->name }}
-                        </option>
-                    @endforeach
-                </select>
-                
-                {{-- Minimum Salary Filter --}}
-                <input 
-                    type="number" 
-                    name="min_salary" 
-                    id="minSalaryInput"
-                    placeholder="Min Salary (€)"
-                    value="{{ request('min_salary') }}"
-                    class="form-control p-2 border rounded w-full" 
-                    onchange="this.form.submit()"
-                    min="0"
-                >
+                    <div class="col-md-3">
+                        <select name="region" class="form-select" onchange="this.form.submit()">
+                            <option value="">All regions</option>
+                            @foreach($filterCities as $city)
+                                <option value="{{ $city->id }}" {{ request('region') == $city->id ? 'selected' : '' }}>
+                                    {{ $city->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <input 
+                            type="number" 
+                            name="min_salary" 
+                            id="minSalaryInput"
+                            placeholder="Minimum salary (€)"
+                            value="{{ request('min_salary') }}"
+                            class="form-control" 
+                            onchange="this.form.submit()"
+                            min="0"
+                        >
+                    </div>
+                </div>
             </div>
-            {{-- Reset Filters Button (Optional but helpful) --}}
+
             @if(request('search') || request('field') || request('company') || request('region'))
                 <div class="mt-3 text-right">
                     <a href="{{ route('homepage') }}" class="text-sm text-red-500 hover:underline">Clear all filters</a>
@@ -120,7 +132,7 @@
     </div>
 
     {{-- Job Postings --}}
-    <div id="jobPostingsContainer">
+    <div id="jobPostingsContainer" class="px-5">
         @if(request('search') && request('search') !== '')
             <h2 class="text-2xl font-bold text-gray-900 mb-4">
                 Job Postings ({{ $job_postings->count() }})
@@ -128,7 +140,7 @@
         @endif
         
         @if($job_postings->count() > 0)
-            <div class="space-y-4">
+            <div class="row g-4">
                 @each('partials.job_posting', $job_postings, 'job_posting')
             </div>
         @else

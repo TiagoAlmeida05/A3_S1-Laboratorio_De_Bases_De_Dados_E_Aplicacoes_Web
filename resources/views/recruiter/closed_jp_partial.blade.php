@@ -4,7 +4,7 @@
             {{ $job_posting->title }}
         </a>
         <div class="jp-creation-date">
-            <p><strong>Closed on</strong>: {{ \Carbon\Carbon::parse($job_posting->deadline)->format('d-m-Y') }}</p>
+            <p><strong>Closed on</strong>: {{ \Carbon\Carbon::parse($job_posting->deadline)->format('d/m/Y') }}</p>
         </div>
         @if($job_posting->applications_count > 0)
             <div class="jp-actions d-flex">

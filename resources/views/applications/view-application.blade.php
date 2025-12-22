@@ -21,7 +21,7 @@
 
     <div>
         <h3>Application details</h3>
-        <p><strong>Application date</strong>: {{ $application->date->format('d-m-Y @ H:i') }}</p>
+        <p><strong>Application date</strong>: {{ $application->date->format('d/m/Y @ H:i') }}</p>
         <p><strong>Status</strong>:
             @if($application->evaluated)
                 @if($application->accepted)
