@@ -15,16 +15,12 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @stack('styles')
         @stack('scripts')
-
-        <style>
-
-        </style>
     </head>
     <body>
         <main>
             <header>
-                <h1 style="margin: 0; font-size: 2.4rem;">
-                    <a href="{{ url('/') }}" style="text-decoration: none; color: inherit;">HireUp!</a>
+                <h1 id="header-website-name">
+                    <a href="{{ url('/') }}">HireUp!</a>
                 </h1>
 
                 <div class="header-actions">
