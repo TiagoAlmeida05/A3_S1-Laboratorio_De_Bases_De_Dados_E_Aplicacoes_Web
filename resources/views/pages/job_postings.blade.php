@@ -3,29 +3,29 @@
 @section('content')
 
 <section id="search-section">
-    <div class="container mt-4">
+    <div class="search-container mb-4">
         <form method="GET" action="{{ route('homepage') }}" id="searchForm">
-            
-            {{-- Main Search Input --}}
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0">⌕</span>
-                        <input type="text" 
-                               name="search" 
-                               class="form-control border-start-0" 
-                               placeholder="Search jobs (title, requirements...), users or companies..."
-                               value="{{ request('search') }}"
-                               autocomplete="off">
-                        <button class="btn btn-primary" type="submit">Search</button>
-                    </div>
+            <div class="navbar navbar-light bg-light">
+                <div class="input-group mx-auto w-75">
+                    <span class="input-group-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input class="form-control"
+                        type="text" 
+                        name="search" 
+                        id="searchInput"
+                        value="{{ request('search') }}"
+                        placeholder="Search jobs (title, requirements...), users or companies..."
+                        autocomplete="off"
+                    >
+                    <button class="btn btn-primary" type="submit">Search</button>
                 </div>
             </div>
 
-            {{-- Filters Row --}}
-            <div class="row g-2">
-                
-                {{-- 1. TAGS FILTER (Multi-Select) --}}
+            <div class="row g-3 mt-3">
                 <div class="col-md-3">
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -36,7 +36,6 @@
                             @foreach($filterTags as $tag)
                                 <li>
                                     <div class="form-check">
-                                        {{-- Note: name="tag[]" creates an array --}}
                                         <input class="form-check-input" type="checkbox" 
                                                name="tag[]" 
                                                value="{{ $tag->id }}" 
@@ -52,7 +51,6 @@
                     </div>
                 </div>
 
-                {{-- 2. COMPANIES FILTER (Multi-Select) --}}
                 <div class="col-md-3">
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -78,7 +76,6 @@
                     </div>
                 </div>
 
-                {{-- 3. REGIONS/CITIES FILTER (Multi-Select) --}}
                 <div class="col-md-3">
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -103,79 +100,71 @@
                         </ul>
                     </div>
                 </div>
-
-                {{-- 4. MIN SALARY --}}
+                
                 <div class="col-md-3">
-                    <input type="number" 
-                           name="min_salary" 
-                           class="form-control" 
-                           placeholder="Min Salary (€)" 
-                           value="{{ request('min_salary') }}"
-                           min="0">
+                    <input 
+                        type="number" 
+                        name="min_salary" 
+                        id="minSalaryInput"
+                        placeholder="Minimum salary (€)"
+                        value="{{ request('min_salary') }}"
+                        class="form-control" 
+                        min="0"
+                    >
                 </div>
             </div>
 
-            {{-- Filter Actions --}}
-            <div class="row mt-2">
+            <div class="row mt-3">
                 <div class="col-12 d-flex justify-content-end gap-2">
                     @if(request()->hasAny(['search', 'tag', 'company', 'regions', 'min_salary']))
                         <a href="{{ route('homepage') }}" class="btn btn-link text-danger text-decoration-none">Clear Filters</a>
                     @endif
-                    <button type="submit" class="btn btn-secondary btn-sm">Apply Filters</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Apply filters</button>
                 </div>
             </div>
         </form>
     </div>
 
-    {{-- RESULTS DISPLAY BELOW --}}
-    <div class="container mt-4">
-        {{-- Companies Results --}}
+    <div id="companiesContainer" class="px-5">
         @if(request('search') && isset($companies) && $companies->count() > 0)
-            <div class="mb-5">
-                <h3 class="h5 mb-3 border-bottom pb-2">Companies ({{ $companies->count() }})</h3>
-                <div class="row g-3">
-                    @foreach($companies as $company)
-                        <div class="col-12">
-                            @include('partials.company_post', ['company' => $company])
-                        </div>
-                    @endforeach
-                </div>
+            <div class="mb-4">
+                <h2 class="h5 mb-3 border-bottom pb-2">Companies ({{ $companies->count() }})</h2>
+                @foreach($companies as $company)
+                    @include('partials.company_post', ['company' => $company])
+                @endforeach
             </div>
         @endif
+    </div>
 
-        {{-- Job Seeker Results --}}
+    <div id="jobSeekerContainer" class="px-5">
         @if(request('search') && isset($jobSeekers) && $jobSeekers->count() > 0)
-            <div class="mb-5">
-                <h3 class="h5 mb-3 border-bottom pb-2">Job Seekers ({{ $jobSeekers->count() }})</h3>
-                <div class="row g-3">
-                    @foreach($jobSeekers as $jobSeeker)
-                        <div class="col-md-6">
-                            @include('partials.job_seeker_part', ['jobSeeker' => $jobSeeker])
-                        </div>
-                    @endforeach
+            <div class="mb-4">
+                <h2 class="h5 mb-3 border-bottom pb-2">Job Seekers ({{ $jobSeekers->count() }})</h2>
+                @foreach($jobSeekers as $jobSeeker)
+                    @include('partials.job_seeker_part', ['jobSeeker' => $jobSeeker])
+                @endforeach
+            </div>
+        @endif
+    </div>
+
+    <div id="jobPostingsContainer" class="px-5">
+        <h2 class="h5 mb-3 border-bottom pb-2">Job Postings ({{ $job_postings->count() }})</h2>
+        
+        @if($job_postings->count() > 0)
+            <div class="row g-4">
+                @foreach($job_postings as $job_posting)
+                    @include('partials.job_posting', ['job_posting' => $job_posting])
+                @endforeach
+            </div>
+        @else
+            <div class="card">
+                <div class="card-body text-center py-4">
+                    <p class="text-muted mb-0">No job postings found matching your criteria.</p>
                 </div>
             </div>
         @endif
-
-        {{-- Job Postings Results --}}
-        <div id="jobPostingsContainer">
-            <h3 class="h5 mb-3 border-bottom pb-2">
-                Job Postings ({{ $job_postings->count() }})
-            </h3>
-            
-            @if($job_postings->count() > 0)
-                <div class="d-flex flex-column gap-3">
-                    @foreach($job_postings as $job_posting)
-                        @include('partials.job_posting', ['job_posting' => $job_posting])
-                    @endforeach
-                </div>
-            @else
-                <div class="alert alert-light text-center border mt-3">
-                    No job postings found matching your criteria.
-                </div>
-            @endif
-        </div>
     </div>
 </section>
+
 <script src="{{ asset('js/search.js') }}"></script>
 @endsection

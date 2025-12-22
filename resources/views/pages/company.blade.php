@@ -7,7 +7,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="d-flex align-items-center gap-3">
                     @if($company->logo)
-                        <img src="{{ asset('storage/' . $company->logo) }}" alt="{{ $company->name }} Logo" class="rounded-circle company-profile-pic">
+                        <img src="{{ asset('storage/' . $company->logo) }}" alt="{{ $company->name }} Logo" class="rounded-circle profile-pic">
                     @else
                         <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
                             <span class="text-muted fs-3 fw-bold">{{ substr($company->name, 0, 1) }}</span>

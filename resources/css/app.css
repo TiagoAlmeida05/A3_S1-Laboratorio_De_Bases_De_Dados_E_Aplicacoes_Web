@@ -393,11 +393,11 @@ footer {
     border-radius: 0.5rem;
 }
 
-.company-profile-container {
+.company-profile-container, .seeker-profile-container {
     max-width: 70rem;
 }
 
-.company-profile-pic {
+.profile-pic {
     width: 80px; 
     height: 80px; 
     object-fit: cover;
