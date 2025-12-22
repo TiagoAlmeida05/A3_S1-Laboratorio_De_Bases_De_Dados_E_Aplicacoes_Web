@@ -20,7 +20,9 @@ return new class extends Migration
             $table->enum('type', ['JSK', 'RCR', 'MNG', 'ADM'])->default('JSK');
             $table->string('image')->nullable();
             $table->boolean('is_blocked')->default(false);
-            
+            $table->string('google_id')->nullable()->unique();
+            $table->date('birthday')->nullable();
+            $table->integer('age')->nullable();            
             $table->rememberToken();
             $table->timestamps();
         });

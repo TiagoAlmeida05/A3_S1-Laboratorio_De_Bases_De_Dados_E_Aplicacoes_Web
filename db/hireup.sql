@@ -22,10 +22,11 @@ CREATE TABLE registered_user (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    birthday DATE NOT NULL,
-    age INT NOT NULL CHECK (age >= 18),
+    birthday DATE,
+    age INT CHECK (age >= 18),
     sign_up_date DATE NOT NULL DEFAULT CURRENT_DATE,
-    status account_status NOT NULL
+    status account_status NOT NULL,
+    google_id VARCHAR
 );
 
 CREATE TABLE administrator (
