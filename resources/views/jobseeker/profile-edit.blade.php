@@ -261,18 +261,24 @@
             @csrf
             @method('DELETE')
 
-            <div>
-                <label for="password_delete">Confirm Password to delete:</label>
-                <input type="password" id="password_delete" name="password" required>
-                
-                @error('password')
-                    <div style="color: red;">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
+            @if(is_null($jobSeeker->registeredUser->google_id))
+                <div class="mb-3">
+                    <label for="password_delete">Confirm Password to delete:</label>
+                    <input type="password" id="password_delete" name="password" required>
+                    
+                    @error('password')
+                        <div style="color: red; margin-top: 5px;">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            @else
+                <div>
+                    <strong>Note:</strong> Since you logged in via Google, you don't need to enter a password to delete your account.
+                </div>
+            @endif
             
-            <button type="submit" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+            <button type="submit" style="background-color: #dc3545;" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
                 Delete Account
             </button>
         </form>
