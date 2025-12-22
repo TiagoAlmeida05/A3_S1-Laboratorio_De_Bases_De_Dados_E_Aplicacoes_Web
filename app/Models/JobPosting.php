@@ -80,4 +80,9 @@ class JobPosting extends Model {
         ->withPivot(['date_added', 'is_active']);
     }
 
+    public function getCompanyAttribute()
+    {
+        return $this->recruiter?->department?->company;
+    }
+
 }

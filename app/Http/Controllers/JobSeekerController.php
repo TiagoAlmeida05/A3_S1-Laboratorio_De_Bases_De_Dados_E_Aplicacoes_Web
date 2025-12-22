@@ -341,7 +341,7 @@ class JobSeekerController extends Controller
 
     public function applications()
     {
-        $allApplications = Application::with(['jobPosting.company', 'jobPosting.city'])
+        $allApplications = Application::with(['jobPosting.recruiter.department.company', 'jobPosting.city'])
             ->where('job_seeker_id', Auth::id())
             ->orderBy('date', 'desc')
             ->get();

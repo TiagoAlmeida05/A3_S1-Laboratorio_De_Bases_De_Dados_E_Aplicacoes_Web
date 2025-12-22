@@ -25,7 +25,7 @@
                 </div>
             </div>
 
-            <div class="row g-3 mt-3">
+            <div class="row g-3 mt-3 align-items-center">
                 <div class="col-md-3">
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
