@@ -11,7 +11,7 @@ $do$ LANGUAGE plpgsql;
 
 CREATE TYPE notification_type_name AS ENUM ('PlatformAlert', 'Message', 'BookmarkDeadline', 'ApplicationStatus', 'NewJobPosting', 'JobPostingUpdate', 'TeamAction');
 CREATE TYPE job_posting_status AS ENUM('Pending', 'Active', 'Expired', 'Closed');
-CREATE TYPE account_status AS ENUM('Active', 'Suspended', 'Deleted');
+CREATE TYPE account_status AS ENUM('Pending','Active', 'Suspended', 'Deleted');
 
 CREATE TABLE notification_type (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

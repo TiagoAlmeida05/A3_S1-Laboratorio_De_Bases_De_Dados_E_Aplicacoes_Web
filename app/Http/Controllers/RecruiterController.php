@@ -36,18 +36,24 @@ class RecruiterController extends Controller {
                 ->orderBy('creation_date', 'desc')
                 ->get();
             
-            if($viewMode !== 'staff') $viewMode = 'personal';
+            if(!in_array($viewMode, ['staff', 'departments'])) {
+                $viewMode = 'personal';
+            }
         }
 
         $companyStaff = null;
         $departments = collect();
 
-        if($viewMode === 'staff' && $recruiter->is_company_manager){
+        if(in_array($viewMode, ['staff', 'departments']) && $recruiter->is_company_manager){
             $companyId = $recruiter->department->company_id;
-            $departments = Department::where('company_id', $companyId)->get();
-            $companyStaff = Recruiter::whereHas('department', function($q) use ($companyId) {
-                $q->where('company_id', $companyId);
-            })->with(['user', 'department'])->get();
+            $departments = Department::where('company_id', $companyId)
+                ->withCount('recruiters') 
+                ->get();
+            if($viewMode === 'staff') {
+                $companyStaff = Recruiter::whereHas('department', function($q) use ($companyId) {
+                    $q->where('company_id', $companyId);
+                })->with(['user', 'department'])->get();
+            }
         }
 
         $companyManager = null;
@@ -320,5 +326,83 @@ class RecruiterController extends Controller {
         }catch(\Exception $e) {
             return back()->with('error', 'Error demoting user: ' . $e->getMessage());
         }
+    }
+
+    public function storeDepartment(Request $request)
+    {
+        $user = Auth::user();
+        
+        if (!$user->recruiter || !$user->recruiter->is_company_manager) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        Department::create([
+            'name' => $request->name,
+            'company_id' => $user->recruiter->department->company_id,
+        ]);
+
+        return redirect()->route('recruiter-dashboard.index', ['view' => 'departments'])
+            ->with('success', 'Department created successfully!');
+    }
+
+    public function destroyDepartment($id)
+    {
+        $user = Auth::user();
+
+        if (!$user->recruiter || !$user->recruiter->is_company_manager) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+
+        $department = Department::findOrFail($id);
+        $managerCompanyId = $user->recruiter->department->company_id;
+
+        if ($department->company_id !== $managerCompanyId) {
+            return back()->with('error', 'You cannot delete a department from another company.');
+        }
+
+        if ($department->id === $user->recruiter->department_id) {
+            return back()->with('error', 'You cannot delete your own department.');
+        }
+
+        if ($department->recruiters()->count() > 0) {
+            return back()->with('error', 'Cannot delete this department because it has recruiters assigned to it.');
+        }
+
+        $department->delete();
+
+        return redirect()->route('recruiter-dashboard.index', ['view' => 'departments'])
+            ->with('success', 'Department deleted successfully.');
+    }
+    public function updateStaffDepartment(Request $request, $id)
+    {
+        $manager = Auth::user()->recruiter;
+
+        if (!$manager || !$manager->is_company_manager) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+
+        $targetRecruiter = Recruiter::where('registered_user_id', $id)->firstOrFail();
+
+        if ($targetRecruiter->department->company_id !== $manager->department->company_id) {
+            return back()->with('error', 'This user does not belong to your company.');
+        }
+
+        $request->validate([
+            'department_id' => 'required|exists:department,id',
+        ]);
+
+        $newDept = Department::findOrFail($request->department_id);
+        if ($newDept->company_id !== $manager->department->company_id) {
+            return back()->with('error', 'Invalid department selection.');
+        }
+
+        $targetRecruiter->department_id = $request->department_id;
+        $targetRecruiter->save();
+
+        return back()->with('success', 'Staff department updated successfully.');
     }
 }

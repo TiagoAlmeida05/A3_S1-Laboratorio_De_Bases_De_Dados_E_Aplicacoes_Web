@@ -30,8 +30,28 @@ class LoginController extends Controller
         $credentials['status'] = 'Active';
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
-+            $request->session()->regenerate();
+            $request->session()->regenerate();
             $user = Auth::user();
+
+            if($user->status === 'Pending'){
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Your account is pending Admin approval. Please wait for confirmation.',
+                ])->onlyInput('email');
+            }
+
+            if ($user->status !== 'Active') {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Your account has been suspended or deleted.',
+                ])->onlyInput('email');
+            }
 
             if ($user->isAdmin()) {
                 return redirect()->route('admin.jobs');

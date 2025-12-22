@@ -9,6 +9,9 @@
             <a href="{{ route('page.contacts') }}">Contact us!</a>
             @auth
                 @if(!Auth::user()->isAdmin())
+                @if(!Auth::user()->recruiter)
+                        <a href="{{ route('companies.create') }}">Register Company</a>
+                    @endif
                     <a href="{{ route('reports.create') }}">Report an issue</a>
                 @endif
             @endauth
