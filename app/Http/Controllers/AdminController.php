@@ -215,7 +215,7 @@ class AdminController extends Controller
 
         DB::transaction(function () use ($user) {
             
-            $jobSeeker = $user->isJobSeeker();
+            $jobSeeker = $user->jobSeeker;
 
             if ($jobSeeker->cv) {
                 Storage::disk('public')->delete($jobSeeker->cv);
@@ -230,6 +230,9 @@ class AdminController extends Controller
             $jobSeeker->website = null;
             $jobSeeker->show_cv = false;
             $jobSeeker->city_id = null;
+            $user->birthday = null;
+            $user->age = null;
+            $user->google_id = null; 
             $jobSeeker->save();
 
             $jobSeeker->experienceEntries()->delete();
@@ -458,6 +461,9 @@ class AdminController extends Controller
             $user->email = 'deleted_rec_' . $user->id . '@hireup.com';
             $user->password = Hash::make(uniqid());
             $user->status = 'Deleted';
+            $user->birthday = null;
+            $user->age = null;
+            $user->google_id = null;
             
             $user->save();
         });
