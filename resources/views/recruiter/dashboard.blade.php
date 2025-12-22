@@ -24,7 +24,7 @@
                               border-bottom: 2px solid {{ request('view', 'personal') === 'personal' ? '#1c4eb1' : 'transparent' }}; 
                               color: {{ request('view', 'personal') === 'personal' ? '#1c4eb1' : '#666' }}; 
                               font-weight: {{ request('view', 'personal') === 'personal' ? 'bold' : 'normal' }};">
-                        My Job Postings
+                        My job postings
                     </a>
                 </li>
                 {{-- TAB 2: COMPANY JOBS --}}
@@ -34,7 +34,7 @@
                               border-bottom: 2px solid {{ request('view') === 'company' ? '#1c4eb1' : 'transparent' }}; 
                               color: {{ request('view') === 'company' ? '#1c4eb1' : '#666' }}; 
                               font-weight: {{ request('view') === 'company' ? 'bold' : 'normal' }};">
-                        All Company Jobs
+                        All company job postings
                     </a>
                 </li>
                 {{-- TAB 3: MANAGE STAFF --}}
@@ -44,7 +44,7 @@
                               border-bottom: 2px solid {{ request('view') === 'staff' ? '#1c4eb1' : 'transparent' }}; 
                               color: {{ request('view') === 'staff' ? '#1c4eb1' : '#666' }}; 
                               font-weight: {{ request('view') === 'staff' ? 'bold' : 'normal' }};">
-                        Manage Staff
+                        Manage staff
                     </a>
                 </li>
                 {{-- TAB 4: MANAGE DEPARTMENTS (NEW) --}}
@@ -54,7 +54,7 @@
                               border-bottom: 2px solid {{ request('view') === 'departments' ? '#1c4eb1' : 'transparent' }}; 
                               color: {{ request('view') === 'departments' ? '#1c4eb1' : '#666' }}; 
                               font-weight: {{ request('view') === 'departments' ? 'bold' : 'normal' }};">
-                        Manage Departments
+                        Manage departments
                     </a>
                 </li>
             </ul>
@@ -111,38 +111,38 @@
         <div class="staff-management" style="margin-top: 2rem;">
             {{-- 1. FORM: Promote User --}}
             <div class="card p-4 mb-4" style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
-                <h4 style="margin-bottom: 0.5rem;">Add New Recruiter</h4>
+                <h4 style="margin-bottom: 0.5rem;">Add new recruiter</h4>
                 <p class="text-muted small" style="margin-bottom: 1rem;">Enter the email of a user and assign them to a department to promote them.</p>
                 
                 <form action="{{ route('recruiter.promote') }}" method="POST" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
                     @csrf
                     <div style="flex-grow: 1; min-width: 250px;">
-                        <label for="email" style="font-weight: bold; font-size: 0.9rem;">User Email</label>
+                        <label for="email" style="font-weight: bold; font-size: 0.9rem;">User e-mail</label>
                         <input type="email" name="email" id="email" required placeholder="user@example.com" class="form-control" style="width: 100%;">
                     </div>
                     <div style="flex-grow: 1; min-width: 250px;">
-                        <label for="department_id" style="font-weight: bold; font-size: 0.9rem;">Assign Department</label>
+                        <label for="department_id" style="font-weight: bold; font-size: 0.9rem;">Assign department</label>
                         <select name="department_id" id="department_id" required class="form-control" style="width: 100%; background-color: white;">
-                            <option value="" disabled selected>Select a Department...</option>
+                            <option value="" disabled selected>Select a department...</option>
                             @foreach($departments as $dept)
                                 <option value="{{ $dept->id }}">{{ $dept->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div style="margin-bottom: 2px;">
-                        <button type="submit" class="button btn-primary" style="background-color: #1c4eb1eb; border: none;">Promote User</button>
+                        <button type="submit" class="button btn btn-primary">Promote user</button>
                     </div>
                 </form>
             </div>
 
             {{-- 2. TABLE: Staff List --}}
-            <h3>Current Recruiters</h3>
+            <h3>Current recruiters</h3>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Email</th>
+                            <th>E-mail</th>
                             <th style="width: 250px;">Department</th>
                             <th>Role</th>
                             <th>Action</th>
@@ -220,7 +220,7 @@
             
             {{-- 1. FORM: Create Department --}}
             <div class="card p-4 mb-4" style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
-                <h4 style="margin-bottom: 0.5rem;">Create New Department</h4>
+                <h4 style="margin-bottom: 0.5rem;">Create new department</h4>
                 <p class="text-muted small" style="margin-bottom: 1rem;">Add a new department to your company structure.</p>
                 
                 <form action="{{ route('departments.store') }}" method="POST" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
@@ -228,25 +228,25 @@
                     
                     {{-- Name Input --}}
                     <div style="flex-grow: 1; min-width: 250px;">
-                        <label for="name" style="font-weight: bold; font-size: 0.9rem;">Department Name</label>
+                        <label for="name" style="font-weight: bold; font-size: 0.9rem;">Department name</label>
                         <input type="text" name="name" id="name" required placeholder="e.g. Human Resources" class="form-control" style="width: 100%;">
                     </div>
 
                     {{-- Submit Button --}}
                     <div style="margin-bottom: 2px;">
-                        <button type="submit" class="button btn-primary" style="background-color: #1c4eb1eb; border: none;">Create Department</button>
+                        <button type="submit" class="button btn btn-primary">Create department</button>
                     </div>
                 </form>
             </div>
 
             {{-- 2. TABLE: Departments List --}}
-            <h3>Existing Departments</h3>
+            <h3>Existing departments</h3>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Department Name</th>
-                            <th>Recruiters Count</th>
+                            <th>Department name</th>
+                            <th>Recruiters count</th>
                             <th style="width: 150px;">Action</th>
                         </tr>
                     </thead>
@@ -285,7 +285,7 @@
 
     <hr style="margin-top: 3rem;">
     <div class="delete-account-container">
-        <h2 style="color: #dc3545;">Delete Account</h2>
+        <h2 style="color: #dc3545;">Delete account</h2>
         
         @if(session('error'))
             <div style="color: #dc3545">
@@ -293,20 +293,17 @@
             </div>
         @endif
 
-        <p>
-            <strong>Warning:</strong> Deleting your account is permanent. 
-            All your <strong>Active</strong> and <strong>Pending</strong> job postings will be automatically <strong>Closed</strong>. 
-            Your personal data will be anonymized, but the job history will remain associated with the company.
-        </p>
+        <p><strong>Warning:</strong> Deleting your account is permanent.</p> 
+        <p>All your <strong>Active</strong> and <strong>Pending</strong> job postings will be automatically <strong>Closed</strong>.</p>
+        <p>Your personal data will be anonymized, but the job history will remain associated with the company.</p>
         
         <form action="{{ route('recruiter.dashboard.destroy') }}" method="POST">
             @csrf
             @method('DELETE')
 
             @if(is_null(Auth::user()->google_id))
-                {{-- CENÁRIO NORMAL: Pede Password --}}
                 <div class="form-group" style="margin-bottom: 1rem;">
-                    <label for="password_delete">Confirm Password to delete:</label>
+                    <label for="password_delete">Confirm password to delete:</label>
                     <input type="password" id="password_delete" name="password" required class="form-control" style="max-width: 400px;">
                     
                     @error('password')
@@ -316,17 +313,15 @@
                     @enderror
                 </div>
             @else
-                {{-- CENÁRIO GOOGLE: Aviso informativo --}}
                 <div>
                     <strong>Note:</strong> Since you logged in via Google, you don't need to enter a password to delete your account.
                 </div>
             @endif
             
             <button type="submit" 
-                    class="button" 
-                    style="background-color: #dc3545; border-color: #dc3545; color: white;"
+                    class="button btn btn-danger" 
                     onclick="return confirm('Are you sure? This will close all your active jobs and delete your account.');">
-                Delete Account
+                Delete account
             </button>
         </form>
     </div>
