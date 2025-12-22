@@ -25,7 +25,7 @@ class AdminController extends Controller
 {
     
     public function manageJobs() {
-        $jobs = JobPosting::orderBy('id', 'asc')->paginate(4);
+        $jobs = JobPosting::orderBy('id', 'asc')->paginate(10);
         return view('admin.jobs', ['jobs' => $jobs]);
     }
 
