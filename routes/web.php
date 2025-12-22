@@ -81,10 +81,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/jobs', [AdminController::class, 'manageJobs'])->name('admin.jobs'); 
     Route::delete('/admin/jobs/{id}', [AdminController::class, 'deleteJob'])->name('admin.jobs.delete');
-    Route::get('/admin/content', [AdminController::class, 'manageContent'])->name('admin.content');
-    Route::patch('/admin/content/{id}/solve', [AdminController::class, 'solveReport'])->name('admin.reports.solve');
+    Route::get('/admin/user_reports', [AdminController::class, 'manageUserReports'])->name('admin.user_reports');
+    Route::patch('/admin/user_reports/{id}/solve', [AdminController::class, 'solveUserReport'])->name('admin.user_reports.solve');
     Route::get('/admin/pages', [AdminController::class, 'editPages'])->name('admin.pages');
-    Route::patch('/admin/content/{id}/reopen', [AdminController::class, 'reopenReport'])->name('admin.reports.reopen');
     Route::get('/admin/pages/{id}/edit', [AdminController::class, 'showPageForm'])->name('admin.pages.edit');
     Route::put('/admin/pages/{id}', [AdminController::class, 'updatePage'])->name('admin.pages.update');
     Route::patch('/admin/users/{id}/block', [AdminController::class, 'blockUser'])->name('admin.users.block');

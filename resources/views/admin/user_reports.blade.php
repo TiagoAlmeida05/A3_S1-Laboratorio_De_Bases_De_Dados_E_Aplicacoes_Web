@@ -52,9 +52,9 @@
                                 N/A
                             @endif
                         </td>
-                        <td>{{ Str::limit($report->description, 80) }}</td>
+                        <td>{{ $report->description }}</td>
                         <td>
-                            <form action="{{ route('admin.reports.solve', $report->id) }}" method="POST">
+                            <form action="{{ route('admin.user_reports.solve', $report->id) }}" method="POST">
                                 @csrf @method('PATCH')
                                 <button class="button">Mark as solved</button>
                             </form>
@@ -82,18 +82,35 @@
                 <th>Type</th>
                 <th>Reporter name</th>
                 <th>Reporter e-mail</th>
+                <th>Reported content</th>
                 <th>Description</th>
                 <th>Handled by</th>
             </tr>
         </thead>
         <tbody>
             @foreach($solvedReports as $report)
+                @php 
+                    $reportType = $report->getReportType(); 
+                @endphp
                 <tr>
                     <td>{{ $report->date->format('d/m/Y H:i') }}</td>
                     <td>{{ $report->getReportTypeLabel() }}</td>
                     <td>{{ $report->reporter->name ?? 'Anonymous user' }}</td>
                     <td>{{ $report->reporter->email ?? 'N/A' }}</td>
-                    <td>{{ Str::limit($report->description, 60) }}</td>
+                    <td>
+                        @if($reportType === 'JobSeeker' && $report->reportedJobSeeker)
+                            <a href="{{ route('jobseeker.profile', $report->reported_job_seeker_id) }}">{{ $report->reportedJobSeeker->registeredUser->name }}</a>
+                        @elseif($reportType === 'JobPosting' && $report->reportedJobPosting)
+                            <a href="{{ route('job_postings.show', $report->reported_job_posting_id) }}">{{ $report->reportedJobPosting->title ?? 'Deleted job posting' }} </a>
+                        @elseif($reportType === 'Company' && $report->reportedCompany)
+                            <a href="{{ route('companies.show', $report->reported_company_id) }}">{{ $report->reportedCompany->name }}</a>
+                        @elseif($reportType === 'Application' && $report->reportedApplication)
+                            <a href="{{ route('admin.view-application', $report->reported_application_id) }}">Application #{{ $report->reported_application_id }}</a>
+                        @else
+                            N/A
+                        @endif
+                    </td>
+                    <td>{{ $report->description }}</td>
                     <td>{{ $report->handler->name }}</td>
                 </tr>
             @endforeach
