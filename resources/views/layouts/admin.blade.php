@@ -23,6 +23,7 @@
             <a href="{{ route('admin.job_seekers') }}" class=button>Job Seeker Management</a>
             <a href="{{ route('admin.companies') }}" class=button>Company Management</a>
             <a href="{{ route('admin.recruiters') }}" class=button>Recruiter Management</a>
+            <a href="{{ route('admin.content') }}" class="button">Add Content (Tags/Loc)</a>
             <a href="{{ route('admin.notifications.create') }}" class="button">Send Notification</a>
             <a href="{{ route('admin.users.create') }}" class=button>Create New User</a>
             <a href="{{ route('admin.settings') }}" class=button>Settings</a>

@@ -464,16 +464,18 @@ class JobSeekerController extends Controller
         $user = Auth::user();
 
         if (!$user->isJobSeeker()) {
-            return redirect('/')->with('error', 'Apenas candidatos podem usar esta rota.');
+            return redirect('/')->with('error', 'Unauthorized.');
         }
 
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+        if (is_null($user->google_id)) {
+            $request->validate([
+                'password' => ['required', 'current_password'],
+            ]);
+        }
 
         \DB::transaction(function () use ($user) {
             
-            $jobSeeker = $user->isJobSeeker();
+            $jobSeeker = $user->jobSeeker;
             if ($jobSeeker) {
                 if ($jobSeeker->cv) Storage::disk('public')->delete($jobSeeker->cv);
                 if ($jobSeeker->profile_photo) Storage::disk('public')->delete($jobSeeker->profile_photo);
@@ -484,6 +486,9 @@ class JobSeekerController extends Controller
                 $jobSeeker->website = null;
                 $jobSeeker->show_cv = false;
                 $jobSeeker->city_id = null;
+                $user->birthday = null;
+                $user->age = null;
+                $user->google_id = null;
                 $jobSeeker->save();
                 $jobSeeker->experienceEntries()->delete();
                 

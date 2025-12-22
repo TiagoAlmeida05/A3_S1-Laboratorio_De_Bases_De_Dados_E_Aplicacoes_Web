@@ -313,15 +313,20 @@ class AdminController extends Controller
             return back()->with('error', 'You cannot delete the only remaining active administrator account.');
         }
 
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+        if (is_null($user->google_id)) {
+            $request->validate([
+                'password' => ['required', 'current_password'],
+            ]);
+        }
 
         DB::transaction(function () use ($user) {
             $user->name = 'Deleted Admin ' . $user->id;
             $user->email = 'deleted_admin_' . $user->id . '@hireup.com';
             $user->password = Hash::make(uniqid());
             $user->status = 'Deleted';
+            $user->google_id = null;
+            $user->age = null;
+            $user->birthday = null;
             
             $user->save();
         });
@@ -381,6 +386,11 @@ class AdminController extends Controller
                         'registered_user_id' => $user->id,
                         'department_id' => $request->department_id,
                         'is_company_manager' => false, // Forçamos sempre a false aqui
+                    ]);
+                }
+                elseif ($request->user_type === 'admin') {
+                    Administrator::create([
+                        'registered_user_id' => $user->id
                     ]);
                 }
             });
@@ -471,5 +481,112 @@ class AdminController extends Controller
         });
 
         return back()->with('success', 'Recruiter account deleted successfully.');
+    }
+
+    public function approveManager($user_id)
+    {
+        $user = User::findOrFail($user_id);
+        if ($user->status !== 'Pending' || !$user->recruiter || !$user->recruiter->is_company_manager) {
+            return back()->with('error', 'Invalid approval request. This user is not a pending manager.');
+        }
+
+        $user->status = 'Active';
+        $user->save();
+        
+        return back()->with('success', 'Company approved and Manager account activated successfully.');
+    }
+
+    public function manageCities(){
+        $cities = City::with('country')->orderBy('name')->paginate(10);
+        $countries = \App\Models\Country::orderBy('name')->get();
+        
+        return view('admin.cities', compact('cities', 'countries'));
+    }
+
+    public function storeCity(Request $request){
+        $request->validate([
+            'name' => 'required|string|max:255|unique:city,name',
+            'country_id' => 'required|exists:country,id',
+        ]);
+
+        City::create([
+            'name' => $request->name,
+            'country_id' => $request->country_id
+        ]);
+
+        return back()->with('success', 'City added successfully!');
+    }
+
+    public function deleteCity($id){
+        try {
+            $city = City::findOrFail($id);
+            $city->delete();
+            return back()->with('success', 'City deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Cannot delete this city because it is currently in use.');
+        }
+    }
+
+    public function manageTags(){
+        $tags = Tag::orderBy('name')->paginate(10);
+        return view('admin.tags', compact('tags'));
+    }
+
+    public function storeTag(Request $request){
+        $request->validate([
+            'name' => 'required|string|max:255|unique:tag,name',
+            'job_posting_exclusive' => 'nullable|boolean',
+        ]);
+
+        Tag::create([
+            'name' => $request->name,
+            'job_posting_exclusive' => $request->has('job_posting_exclusive')
+        ]);
+
+        return back()->with('success', 'Tag added successfully!');
+    }
+
+    public function deleteTag($id){
+        try {
+            $tag = Tag::findOrFail($id);
+            $tag->delete();
+            return back()->with('success', 'Tag deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Cannot delete this tag because it is in use.');
+        }
+    }
+    public function manageCountries() {
+        $countries = \App\Models\Country::orderBy('name')->paginate(10);
+        return view('admin.countries', compact('countries'));
+    }
+
+    public function storeCountry(Request $request) {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:country,name',
+        ]);
+
+        \App\Models\Country::create([
+            'name' => $request->name
+        ]);
+
+        return back()->with('success', 'Country added successfully!');
+    }
+
+    public function deleteCountry($id) {
+        try {
+            $country = \App\Models\Country::findOrFail($id);
+            $country->delete();
+            return back()->with('success', 'Country deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Cannot delete this country because it has cities associated with it.');
+        }
+    }
+    public function content()
+    {
+        $tags = \App\Models\Tag::orderBy('name')->get();
+        $cities = \App\Models\City::with('country')->orderBy('name')->get();
+        $countries = \App\Models\Country::orderBy('name')->get();
+
+        return view('admin.content_hub', compact('tags', 'cities', 'countries'));
     }
 }

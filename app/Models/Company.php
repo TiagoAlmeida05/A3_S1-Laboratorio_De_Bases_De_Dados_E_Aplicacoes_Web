@@ -13,7 +13,9 @@ class Company extends Model {
         'website',
         'logo',
         'about_us',
-        'city_id'
+        'city_id',
+        'status',
+        'request_manager_email'
     ];
 
     public function city()
@@ -67,5 +69,16 @@ class Company extends Model {
             'total_company_applications' => $applications->count(),
             'total_company_accepted_applications' => $applications->where('accepted', true)->count(),
         ];
+    }
+    public function recruiters()
+    {
+        return $this->hasManyThrough(
+            Recruiter::class,
+            Department::class,
+            'company_id',
+            'department_id',
+            'id',
+            'id'
+        );
     }
 }

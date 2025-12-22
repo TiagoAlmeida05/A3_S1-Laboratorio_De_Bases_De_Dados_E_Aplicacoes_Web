@@ -14,7 +14,6 @@
     @endif
 
     {{-- MANAGER TABS --}}
-
     @if(Auth::user()->recruiter->is_company_manager)
         <div class="mb-4" style="margin-top: 20px; border-bottom: 1px solid #ddd;">
             <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" style="display: flex; gap: 1rem; list-style: none; padding: 0;">               
@@ -48,13 +47,22 @@
                         Manage Staff
                     </a>
                 </li>
+                {{-- TAB 4: MANAGE DEPARTMENTS (NEW) --}}
+                <li class="mr-2">
+                    <a href="{{ route('recruiter-dashboard.index', ['view' => 'departments']) }}" 
+                       style="text-decoration: none; padding: 10px; 
+                              border-bottom: 2px solid {{ request('view') === 'departments' ? '#1c4eb1' : 'transparent' }}; 
+                              color: {{ request('view') === 'departments' ? '#1c4eb1' : '#666' }}; 
+                              font-weight: {{ request('view') === 'departments' ? 'bold' : 'normal' }};">
+                        Manage Departments
+                    </a>
+                </li>
             </ul>
         </div>
     @endif
 
-    {{-- VIEW: JOB POSTINGS --}}
-
-    @if(request('view') !== 'staff')
+    {{-- VIEW: JOB POSTINGS (Personal or Company) --}}
+    @if(!in_array(request('view'), ['staff', 'departments']))
         
         <div class="dashboard-create-job" style="margin: 1rem 0rem;">
             <a class="button btn btn-primary" style="background-color: #1c4eb1eb; padding: 0.5rem 0.4rem;" href="{{ route('job_postings.create') }}" class="a-as-button">Create new job posting</a>
@@ -98,11 +106,9 @@
 
 
     {{-- VIEW: MANAGE STAFF --}}
-
-    @elseif(isset($companyStaff) && isset($departments))
+    @elseif(request('view') === 'staff' && isset($companyStaff) && isset($departments))
         
         <div class="staff-management" style="margin-top: 2rem;">
-            
             {{-- 1. FORM: Promote User --}}
             <div class="card p-4 mb-4" style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
                 <h4 style="margin-bottom: 0.5rem;">Add New Recruiter</h4>
@@ -110,14 +116,10 @@
                 
                 <form action="{{ route('recruiter.promote') }}" method="POST" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
                     @csrf
-                    
-                    {{-- Email Input --}}
                     <div style="flex-grow: 1; min-width: 250px;">
                         <label for="email" style="font-weight: bold; font-size: 0.9rem;">User Email</label>
                         <input type="email" name="email" id="email" required placeholder="user@example.com" class="form-control" style="width: 100%;">
                     </div>
-
-                    {{-- Department Select --}}
                     <div style="flex-grow: 1; min-width: 250px;">
                         <label for="department_id" style="font-weight: bold; font-size: 0.9rem;">Assign Department</label>
                         <select name="department_id" id="department_id" required class="form-control" style="width: 100%; background-color: white;">
@@ -127,8 +129,6 @@
                             @endforeach
                         </select>
                     </div>
-
-                    {{-- Submit Button --}}
                     <div style="margin-bottom: 2px;">
                         <button type="submit" class="button btn-primary" style="background-color: #1c4eb1eb; border: none;">Promote User</button>
                     </div>
@@ -143,7 +143,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Department</th>
+                            <th style="width: 250px;">Department</th>
                             <th>Role</th>
                             <th>Action</th>
                         </tr>
@@ -151,24 +151,44 @@
                     <tbody>
                         @foreach($companyStaff as $staff)
                             <tr>
-                                {{-- Accessing 'user' relation to match your Model --}}
-                                <td>{{ $staff->user->name }}</td>
-                                <td>{{ $staff->user->email }}</td>
-                                <td>
-                                    {{ $staff->department ? $staff->department->name : 'N/A' }}
+                                <td style="vertical-align: middle;">{{ $staff->user->name }}</td>
+                                <td style="vertical-align: middle;">{{ $staff->user->email }}</td>
+                                
+                                {{-- EDITABLE DEPARTMENT COLUMN --}}
+                                <td style="vertical-align: middle;">
+                                    @if($staff->registered_user_id === Auth::id())
+                                        {{ $staff->department ? $staff->department->name : 'N/A' }}
+                                    @else
+                                        <form action="{{ route('recruiter.staff.update_department', $staff->registered_user_id) }}" method="POST" style="margin:0; display:flex; align-items: center; gap: 5px;">
+                                            @csrf
+                                            @method('PATCH')
+                                            
+                                            <select name="department_id" class="form-control" style="width: auto; padding: 0.2rem 0.5rem; height: auto; font-size: 0.9rem; margin-bottom: 0;">
+                                                @foreach($departments as $dept)
+                                                    <option value="{{ $dept->id }}" {{ $staff->department_id == $dept->id ? 'selected' : '' }}>
+                                                        {{ $dept->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+
+                                            <button type="submit" class="button button-outline" style="border: 1px solid #1c4eb1; color: #1c4eb1; background: transparent; padding: 0.2rem 0.6rem; font-size: 0.8rem; height: auto; line-height: 1.5; margin-bottom: 0;">
+                                                Save
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
-                                <td>
+
+                                <td style="vertical-align: middle;">
                                     @if($staff->is_company_manager)
                                         <span class="badge" style="background-color: #d1e7dd; color: #0f5132; padding: 0.25em 0.6em; border-radius: 4px; font-weight: bold;">Manager</span>
                                     @else
                                         <span class="badge" style="background-color: #e2e3e5; color: #41464b; padding: 0.25em 0.6em; border-radius: 4px;">Recruiter</span>
                                     @endif
                                 </td>
-                                <td>
+                                <td style="vertical-align: middle;">
                                     @if($staff->registered_user_id !== Auth::id())
-                                        <form action="{{ route('recruiter.demote', $staff->registered_user_id) }}" method="POST" onsubmit="return confirm('Are you sure? This user will lose recruiter access and become a Job Seeker.');" style="margin: 0;">
-                                            @csrf
-                                            @method('DELETE')
+                                        <form action="{{ route('recruiter.demote', $staff->registered_user_id) }}" method="POST" onsubmit="return confirm('Are you sure? This user will lose recruiter access.');" style="margin: 0;">
+                                            @csrf @method('DELETE')
                                             <button type="submit" class="button button-outline" style="border: 1px solid #dc3545; color: #dc3545; background: transparent; padding: 0.2rem 0.6rem; font-size: 0.8rem; height: auto; line-height: 1.5;">
                                                 Demote
                                             </button>
@@ -177,18 +197,13 @@
                                         <span class="text-muted" style="font-size: 0.9rem;">(You)</span>
                                     @endif
                                 </td>
-
-                                <td>
-                                    @if($staff->registered_user_id !== Auth::id())
-                                        @if(!$staff->is_company_manager)
-                                            <form action="{{ route('messages.index', $staff->registered_user_id) }}" method="GET" style="display: inline-block;">
-                                                <button type="submit" class="button btn-primary" style="background-color: #1c4eb1eb;">
-                                                    Send Message
-                                                </button>
-                                            </form>
-                                        @endif
-                                    @else
-                                        <span class="text-muted" style="font-size: 0.9rem;">(You)</span>
+                                <td style="vertical-align: middle;">
+                                    @if($staff->registered_user_id !== Auth::id() && !$staff->is_company_manager)
+                                        <form action="{{ route('messages.index', $staff->registered_user_id) }}" method="GET" style="display: inline-block; margin:0;">
+                                            <button type="submit" class="button btn-primary" style="background-color: #1c4eb1eb; padding: 0.2rem 0.6rem; font-size: 0.8rem; height: auto; line-height: 1.5;">
+                                                Message
+                                            </button>
+                                        </form>
                                     @endif
                                 </td>
                             </tr>
@@ -197,14 +212,87 @@
                 </table>
             </div>
         </div>
+
+    {{-- VIEW: MANAGE DEPARTMENTS --}}
+    @elseif(request('view') === 'departments' && isset($departments))
+
+        <div class="departments-management" style="margin-top: 2rem;">
+            
+            {{-- 1. FORM: Create Department --}}
+            <div class="card p-4 mb-4" style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+                <h4 style="margin-bottom: 0.5rem;">Create New Department</h4>
+                <p class="text-muted small" style="margin-bottom: 1rem;">Add a new department to your company structure.</p>
+                
+                <form action="{{ route('departments.store') }}" method="POST" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                    @csrf
+                    
+                    {{-- Name Input --}}
+                    <div style="flex-grow: 1; min-width: 250px;">
+                        <label for="name" style="font-weight: bold; font-size: 0.9rem;">Department Name</label>
+                        <input type="text" name="name" id="name" required placeholder="e.g. Human Resources" class="form-control" style="width: 100%;">
+                    </div>
+
+                    {{-- Submit Button --}}
+                    <div style="margin-bottom: 2px;">
+                        <button type="submit" class="button btn-primary" style="background-color: #1c4eb1eb; border: none;">Create Department</button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- 2. TABLE: Departments List --}}
+            <h3>Existing Departments</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Department Name</th>
+                            <th>Recruiters Count</th>
+                            <th style="width: 150px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($departments as $dept)
+                            <tr>
+                                <td>{{ $dept->name }}</td>
+                                <td>
+                                    {{-- Safe count check --}}
+                                    {{ $dept->recruiters_count ?? $dept->recruiters->count() ?? 0 }}
+                                </td>
+                                <td>
+                                    {{-- Prevent deleting the user's own department --}}
+                                    @if(Auth::user()->recruiter->department_id === $dept->id)
+                                        <span class="text-muted small">(Current)</span>
+                                    @else
+                                        <form action="{{ route('departments.destroy', $dept->id) }}" method="POST" onsubmit="return confirm('Are you sure? Delete {{ $dept->name }}?');" style="margin: 0;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="button button-outline" style="border: 1px solid #dc3545; color: #dc3545; background: transparent; padding: 0.2rem 0.6rem; font-size: 0.8rem; height: auto; line-height: 1.5;">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     @endif
 
 
-    {{-- DELETE ACCOUNT --}}
 
     <hr style="margin-top: 3rem;">
     <div class="delete-account-container">
         <h2 style="color: #dc3545;">Delete Account</h2>
+        
+        @if(session('error'))
+            <div style="color: #dc3545">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <p>
             <strong>Warning:</strong> Deleting your account is permanent. 
             All your <strong>Active</strong> and <strong>Pending</strong> job postings will be automatically <strong>Closed</strong>. 
@@ -215,10 +303,24 @@
             @csrf
             @method('DELETE')
 
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label for="password_delete">Confirm Password to delete:</label>
-                <input type="password" id="password_delete" name="password" required class="form-control" style="max-width: 400px;">
-            </div>
+            @if(is_null(Auth::user()->google_id))
+                {{-- CENÁRIO NORMAL: Pede Password --}}
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="password_delete">Confirm Password to delete:</label>
+                    <input type="password" id="password_delete" name="password" required class="form-control" style="max-width: 400px;">
+                    
+                    @error('password')
+                        <div style="color: #dc3545;">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            @else
+                {{-- CENÁRIO GOOGLE: Aviso informativo --}}
+                <div>
+                    <strong>Note:</strong> Since you logged in via Google, you don't need to enter a password to delete your account.
+                </div>
+            @endif
             
             <button type="submit" 
                     class="button" 

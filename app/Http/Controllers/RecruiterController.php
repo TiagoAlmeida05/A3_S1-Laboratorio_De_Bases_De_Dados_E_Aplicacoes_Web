@@ -36,18 +36,24 @@ class RecruiterController extends Controller {
                 ->orderBy('creation_date', 'desc')
                 ->get();
             
-            if($viewMode !== 'staff') $viewMode = 'personal';
+            if(!in_array($viewMode, ['staff', 'departments'])) {
+                $viewMode = 'personal';
+            }
         }
 
         $companyStaff = null;
         $departments = collect();
 
-        if($viewMode === 'staff' && $recruiter->is_company_manager){
+        if(in_array($viewMode, ['staff', 'departments']) && $recruiter->is_company_manager){
             $companyId = $recruiter->department->company_id;
-            $departments = Department::where('company_id', $companyId)->get();
-            $companyStaff = Recruiter::whereHas('department', function($q) use ($companyId) {
-                $q->where('company_id', $companyId);
-            })->with(['user', 'department'])->get();
+            $departments = Department::where('company_id', $companyId)
+                ->withCount('recruiters') 
+                ->get();
+            if($viewMode === 'staff') {
+                $companyStaff = Recruiter::whereHas('department', function($q) use ($companyId) {
+                    $q->where('company_id', $companyId);
+                })->with(['user', 'department'])->get();
+            }
         }
 
         $companyManager = null;
@@ -141,23 +147,42 @@ class RecruiterController extends Controller {
             return redirect('/')->with('error', 'Unauthorized action.');
         }
 
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+        if (is_null($user->google_id)) {
+            $request->validate([
+                'password' => ['required', 'current_password'],
+            ]);
+        }
 
-        DB::transaction(function () use ($user) {
-            $recruiter = $user->recruiter;
+        try {
+            DB::transaction(function () use ($user) {
+                $recruiter = $user->recruiter;
 
-            $recruiter->job_postings()
-                ->whereIn('status', ['Active', 'Pending'])
-                ->update(['status' => 'Closed']);
+                $recruiter->job_postings()
+                    ->whereIn('status', ['Active', 'Pending'])
+                    ->update(['status' => 'Closed']);
+                if ($recruiter->is_company_manager) {
+                    $recruiter->is_company_manager = false;
+                    $recruiter->save(); 
+                }
 
-            $user->name = 'Deleted Recruiter ' . $user->id;
-            $user->email = 'deleted_' . $user->id . '@hireup.com';
-            $user->password = Hash::make(uniqid());
-            $user->status = 'Deleted';
-            $user->save();
-        });
+                $recruiter->department_id = null;
+                $recruiter->save();
+
+                $user->name = 'Deleted Recruiter ' . $user->id;
+                $user->email = 'deleted_' . $user->id . '@hireup.com';
+                $user->password = Hash::make(uniqid());
+                $user->status = 'Deleted';
+                
+                $user->age = null;
+                $user->birthday = null;
+                $user->google_id = null;
+                
+                $user->save();
+            });
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error: You cannot delete your account because you are the only Manager of your company. Please promote another Recruiter to Manager first.');
+        }
 
         Auth::logout();
         $request->session()->invalidate();
@@ -273,7 +298,6 @@ class RecruiterController extends Controller {
             
             return back()->with('success', "{$request->name} has been promoted to Recruiter.");      
         }catch(\Exception $e) {
-            return back()->with('error', 'Error promoting user: ' . $e->getMessage());
         }
     }
 
@@ -320,5 +344,83 @@ class RecruiterController extends Controller {
         }catch(\Exception $e) {
             return back()->with('error', 'Error demoting user: ' . $e->getMessage());
         }
+    }
+
+    public function storeDepartment(Request $request)
+    {
+        $user = Auth::user();
+        
+        if (!$user->recruiter || !$user->recruiter->is_company_manager) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        Department::create([
+            'name' => $request->name,
+            'company_id' => $user->recruiter->department->company_id,
+        ]);
+
+        return redirect()->route('recruiter-dashboard.index', ['view' => 'departments'])
+            ->with('success', 'Department created successfully!');
+    }
+
+    public function destroyDepartment($id)
+    {
+        $user = Auth::user();
+
+        if (!$user->recruiter || !$user->recruiter->is_company_manager) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+
+        $department = Department::findOrFail($id);
+        $managerCompanyId = $user->recruiter->department->company_id;
+
+        if ($department->company_id !== $managerCompanyId) {
+            return back()->with('error', 'You cannot delete a department from another company.');
+        }
+
+        if ($department->id === $user->recruiter->department_id) {
+            return back()->with('error', 'You cannot delete your own department.');
+        }
+
+        if ($department->recruiters()->count() > 0) {
+            return back()->with('error', 'Cannot delete this department because it has recruiters assigned to it.');
+        }
+
+        $department->delete();
+
+        return redirect()->route('recruiter-dashboard.index', ['view' => 'departments'])
+            ->with('success', 'Department deleted successfully.');
+    }
+    public function updateStaffDepartment(Request $request, $id)
+    {
+        $manager = Auth::user()->recruiter;
+
+        if (!$manager || !$manager->is_company_manager) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+
+        $targetRecruiter = Recruiter::where('registered_user_id', $id)->firstOrFail();
+
+        if ($targetRecruiter->department->company_id !== $manager->department->company_id) {
+            return back()->with('error', 'This user does not belong to your company.');
+        }
+
+        $request->validate([
+            'department_id' => 'required|exists:department,id',
+        ]);
+
+        $newDept = Department::findOrFail($request->department_id);
+        if ($newDept->company_id !== $manager->department->company_id) {
+            return back()->with('error', 'Invalid department selection.');
+        }
+
+        $targetRecruiter->department_id = $request->department_id;
+        $targetRecruiter->save();
+
+        return back()->with('success', 'Staff department updated successfully.');
     }
 }

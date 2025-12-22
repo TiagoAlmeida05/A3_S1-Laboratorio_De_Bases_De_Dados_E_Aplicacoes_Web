@@ -104,6 +104,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/admin/recruiters/{id}/promote', [AdminController::class, 'promoteToManager'])->name('admin.recruiters.promote');
     Route::delete('/admin/recruiters/{id}', [AdminController::class, 'deleteRecruiter'])->name('admin.recruiters.delete');
     Route::get('/admin/applications/{application}', [JobPostingController::class, 'viewApplication'])->name('admin.view-application');
+    Route::patch('/admin/users/{id}/approve', [AdminController::class, 'approveManager'])->name('admin.users.approve');
+    Route::get('/admin/content', [App\Http\Controllers\AdminController::class, 'content'])->name('admin.content');
+    Route::get('/admin/tags', [App\Http\Controllers\AdminController::class, 'manageTags'])->name('admin.tags');
+    Route::post('/admin/tags', [App\Http\Controllers\AdminController::class, 'storeTag'])->name('admin.tags.store');
+    Route::delete('/admin/tags/{id}', [App\Http\Controllers\AdminController::class, 'deleteTag'])->name('admin.tags.delete');
+    Route::get('/admin/cities', [App\Http\Controllers\AdminController::class, 'manageCities'])->name('admin.cities');
+    Route::post('/admin/cities', [App\Http\Controllers\AdminController::class, 'storeCity'])->name('admin.cities.store');
+    Route::delete('/admin/cities/{id}', [App\Http\Controllers\AdminController::class, 'deleteCity'])->name('admin.cities.delete');
+    Route::get('/admin/countries', [App\Http\Controllers\AdminController::class, 'manageCountries'])->name('admin.countries');
+    Route::post('/admin/countries', [App\Http\Controllers\AdminController::class, 'storeCountry'])->name('admin.countries.store');
+    Route::delete('/admin/countries/{id}', [App\Http\Controllers\AdminController::class, 'deleteCountry'])->name('admin.countries.delete');
 });
 
 Route::get('/recruiter-dashboard', function () {
@@ -127,8 +138,13 @@ Route::middleware('user-role:recruiter')->controller(RecruiterController::class)
     Route::delete('/job-postings/{job_posting}', [JobPostingController::class, 'delete'])->name('job_postings.delete');
     Route::post('/recruiter/staff/promote', 'promoteToRecruiter')->name('recruiter.promote');
     Route::delete('/recruiter/staff/{id}/demote', 'demoteToJobSeeker')->name('recruiter.demote');
+    Route::post('/recruiter/departments', [RecruiterController::class, 'storeDepartment'])->name('departments.store');
+    Route::delete('/recruiter/departments/{id}', [RecruiterController::class, 'destroyDepartment'])->name('departments.destroy');
+    Route::patch('/recruiter/staff/{id}/department', [RecruiterController::class, 'updateStaffDepartment'])->name('recruiter.staff.update_department');
 });
 
+Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create')->middleware('auth');
+Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store')->middleware('auth');
 Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit')->middleware('auth');
 Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')->middleware('auth');

@@ -53,7 +53,7 @@
 
     <div style="margin-top: 2rem; border-top: 1px solid #f0f0f0; padding-top: 1.5rem; text-align: center;">
         <span style="display: block; margin-bottom: 1rem; color: #666;">
-            Ou...
+            Or...
         </span>
         
         <a href="{{ route('auth.google') }}" style= "color: #3c4043; border: 1px solid #dadce0;">
@@ -61,7 +61,7 @@
                 alt="Google Logo" 
                 style="width: 20px; height: 20px; margin-right: 12px; object-fit: contain;">
             
-            <span>Continuar com o Google</span>
+            <span>Continue with Google</span>
         </a>
     </div>
 
