@@ -13,6 +13,7 @@ body {
     font-family: 'Roboto', system-ui, sans-serif;
     background-color: #ffffffe2;
     color: #03163db9;
+    line-height: 1.4;
 }
 
 a {
@@ -97,12 +98,20 @@ main > header {
     position: absolute;
     top: 0.1rem;
     right: 0.1rem;
+    min-width: 1.05rem;
+    height: 1.05rem;
+    font-size: 0.65rem;
+    padding: 0 4px;
+    line-height: 1;
 }
 
 #notification-badge {
     position: absolute;
     top: 0.35rem;
     right: 0.35rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    padding: 0;
 }
 
 .icon-badge {
@@ -256,16 +265,6 @@ main > header {
     color: #606c76; 
 }
 
-
-
-
-
-
-
-
-
-
-
 #content > form {
     margin: 0 auto;
     padding: 1em;
@@ -321,9 +320,7 @@ input[type=password]:focus {
     border-color: #375ed4;
 }
 
-/*RECENTLY ADDED!!!!!! */
-
-
+/* RECENTLY ADDED!!!!!! */
 
 .icon-btn {
     position: relative !important; display: flex !important;
@@ -337,30 +334,6 @@ input[type=password]:focus {
 .icon-btn svg {
     width: 24px; height: 24px; color: #606c76;
 }
-
-/* =========================================
-    4. UNIFIED BADGE STYLING (Fixes Alignment)
-    ========================================= */
-
-
-/* Bell Dot (Small, no numbers) */
-#notification-badge {
-    width: 0.5rem;
-    height: 0.5rem;
-    padding: 0;
-}
-
-/* Message Counter (Larger, contains text) */
-#message-badge {
-    min-width: 1.05rem;
-    height: 1.05rem;
-    font-size: 0.65rem;
-    padding: 0 4px;
-    line-height: 1;
-}
-
-
-
 
 footer {
     background-color: #f4f5f6; 
