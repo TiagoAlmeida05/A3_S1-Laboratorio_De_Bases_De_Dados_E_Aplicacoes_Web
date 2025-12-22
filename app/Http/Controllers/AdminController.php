@@ -388,6 +388,11 @@ class AdminController extends Controller
                         'is_company_manager' => false, // Forçamos sempre a false aqui
                     ]);
                 }
+                elseif ($request->user_type === 'admin') {
+                    Administrator::create([
+                        'registered_user_id' => $user->id
+                    ]);
+                }
             });
 
             return redirect()->route('admin.job_seekers')->with('success', 'User successfully created!');
