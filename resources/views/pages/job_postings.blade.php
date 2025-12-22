@@ -113,15 +113,6 @@
                     >
                 </div>
             </div>
-
-            <div class="row mt-3">
-                <div class="col-12 d-flex justify-content-end gap-2">
-                    @if(request()->hasAny(['search', 'tag', 'company', 'regions', 'min_salary']))
-                        <a href="{{ route('homepage') }}" class="btn btn-link text-danger text-decoration-none">Clear Filters</a>
-                    @endif
-                    <button type="submit" class="btn btn-primary btn-sm">Apply filters</button>
-                </div>
-            </div>
         </form>
     </div>
 

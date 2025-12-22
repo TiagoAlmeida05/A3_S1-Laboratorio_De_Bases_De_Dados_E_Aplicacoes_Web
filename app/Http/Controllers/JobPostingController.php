@@ -107,8 +107,8 @@ class JobPostingController extends Controller {
             $jobsQuery->orderBy('id');
         }
 
-        if ($request->filled('region')) {
-            $jobsQuery->where('city_id', $request->input('region'));
+        if ($request->filled('regions')) {
+            $jobsQuery->whereIn('city_id', $request->input('regions'));
         }
         if ($request->filled('company')) {
             $jobsQuery->whereHas('recruiter.department.company', function($q) use ($request) {
