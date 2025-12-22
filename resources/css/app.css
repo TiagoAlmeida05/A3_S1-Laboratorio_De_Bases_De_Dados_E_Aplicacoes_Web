@@ -24,7 +24,6 @@ a {
 .button, button {
     background-color: #1c4eb1eb;
     border-color: #0a2863b9;
-    margin: 0.5rem;
     font-weight: bold;
     color: white;
 }
@@ -379,10 +378,6 @@ footer {
     max-width: 70%;
 }
 
-.all-notifications-container {
-    max-width: 70rem;
-}
-
 .unread-notif {
     background-color:#80a9dc;
     border-radius: 0.5rem;
@@ -393,7 +388,8 @@ footer {
     border-radius: 0.5rem;
 }
 
-.company-profile-container, .seeker-profile-container {
+.company-profile-container, .seeker-profile-container,
+.bookmarks-container, .all-notifications-container, .applications-container {
     max-width: 70rem;
 }
 
@@ -410,3 +406,4 @@ footer {
 .title-colored {
     color:#174cbe;
 }
+
